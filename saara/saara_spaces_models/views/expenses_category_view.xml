@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="project_expenses_category_view_tree" model="ir.ui.view">
+        <field name="name">expenses category.view.tree</field>
+        <field name="model">expenses.category</field>
+        <field name="arch" type="xml">
+            <tree string="Customer">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="project_expenses_category_action" model="ir.actions.act_window">
+        <field name="name">Expenses</field>
+        <field name="res_model">expenses.category</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="expenses_configuration_root" sequence="80" parent="customer_payment_root"
+              name="Configuration" groups="saara_spaces_models.group_super_admin"/>
+
+    <menuitem id="project_expenses_config_menu" parent="expenses_configuration_root"
+              name="Expenses Category" action="project_expenses_category_action"
+    />
+</odoo>

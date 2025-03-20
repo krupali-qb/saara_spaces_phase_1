@@ -1,0 +1,151 @@
+//Colors
+$one__light: #FFF !default;
+$one__primary: #386aeb !default;
+$one__sidebar-color-hover: #274aa5 !important;
+$one__sidebar-border: #386aeb !important;
+$one__sidebar-color: #386aeb !important;
+$one__sidebar_text: #fff !default;
+$one__primary-light: #ebf0fd !default;
+$one__primary-dark: #274aa5 !important;
+$one__light-font-primary: #097275 !important;
+$one__light-font-secondary: #575757 !important;
+$one__hover-bkg-light: #f5f5f5 !important;
+$one__border-light: #d4d4d4 !important;
+$one__info: #454555 !important;
+
+//NAVBAR
+.o_main_navbar {
+  -webkit-box-shadow: 0 0.75rem 1.5rem rgba(18,38,63,.03) !important;
+  box-shadow: 0 0.75rem 1.5rem rgba(18,38,63,.03) !important;
+  background-color: #097275 !important;
+  border-bottom: none;
+  -moz-box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.5) 0px 6px 6px;
+  -webkit-box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.5) 0px 6px 6px;
+  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.5) 0px 6px 6px;
+  color: $one__light-font-primary;
+  //height: 60px !important;
+}
+
+.o_main_navbar .o_menu_sections .o_nav_entry, .o_main_navbar .o_menu_sections .dropdown-toggle {
+    background:#097275 !important;
+    }
+
+.btn-primary{
+        background-color:#097275 !important;
+        border-color:#097275 !important;
+        color:#fff !important;
+    }
+
+.btn-primary:hover{
+    background-color:#097275 !important;
+        border-color:#097275 !important;
+        color:#fff !important;
+    }
+
+.btn-outline-primary {
+    color: #097275 !important;
+    border-color: #097275 !important;
+    }
+
+.btn-outline-primary:hover{
+    color: #fff !important;
+    border-color: #097275 !important;
+    background-color:#097275 !important;
+    }
+
+.text-primary{
+    color:#097275 !important;
+    }
+
+.o_tour_pointer{
+    --TourPointer__color: #097275 !important;
+    --TourPointer__color-accent: #097275 !important;
+    }
+.btn-link{
+    color:#097275 !important;
+    }
+// a{
+//     color:#4a95d0 !important;
+//     }
+.form-check-input:checked {
+    background-color:#097275 !important;
+    border-color: #097275 !important;
+    }
+
+.form-check:hover, .form-check:hover .form-check-input:not(:disabled), .form-select:hover, .form-select:hover .form-check-input:not(:disabled) {
+    border-color: #097275 !important;
+    }
+
+.badge.text-primary{
+    outline: 1px solid #097275 !important;
+    }
+
+.bg-action, .text-bg-action{
+    background-color:#097275 !important;
+    }
+
+.o_field_statusbar > .o_statusbar_status > .o_arrow_button.o_arrow_button_current:not(.d-none):disabled, .o_field_statusbar_duration > .o_statusbar_status > .o_arrow_button.o_arrow_button_current:not(.d-none):disabled, .o_field_statusbar > .o_statusbar_status > .o_arrow_button:not(.d-none):active:not(.o_first), .o_field_statusbar_duration > .o_statusbar_status > .o_arrow_button:not(.d-none):active:not(.o_first){
+    background-color:#097275 !important;
+      border-color: #097275 !important;
+      color: #212529 !important;
+    }
+
+.o-form-buttonbox .oe_stat_button .o_button_icon{
+    color: #097275 !important;
+    }
+
+.text-info{
+    color: #097275 !important;
+    }
+
+.nav-tabs .nav-link.active{
+    color:#097275 !important;
+    }
+
+.o_form_uri{
+    color:#097275 !important;
+    }
+
+.o_section_and_note_list_view > tbody > tr > td > a {
+     color:#097275 !important;
+    }
+
+.o_list_table > tbody > tr > td > a {
+     color:#097275 !important;
+    }
+
+.o_notebook_headers > ul > li > a{
+    color: black !important;
+    }
+
+.o_breadcrumb > ol > li > a {
+    color: black !important;
+    }
+
+.o_field_product_label_section_and_note_cell > a > span > span{
+     color:#097275 !important;
+    }
+
+.o_field_widget > a > span {
+    color:#097275 !important;
+    }
+
+.o_stat_value {
+    color: black !important;
+    }
+
+.fa-question-circle{
+    color:#097275 !important;
+    }
+
+.o_searchable_setting > div > label > span.o_enterprise_label{
+    background-color:#097275 !important;
+    }
+
+.o_setting_right_pane > div > a {
+    color:#097275 !important;
+    }
+
+.o-mail-Chatter-sendMessage{
+    display: contents !important;
+    }

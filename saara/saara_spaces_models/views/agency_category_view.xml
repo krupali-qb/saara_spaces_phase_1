@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="project_agency_category_view_tree" model="ir.ui.view">
+        <field name="name">agency category.view.tree</field>
+        <field name="model">agency.category</field>
+        <field name="arch" type="xml">
+            <tree string="Agency Category">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="project_agency_category_action" model="ir.actions.act_window">
+        <field name="name">Agency Category</field>
+        <field name="res_model">agency.category</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
+    <menuitem id="project_agency_config_menu" parent="expenses_configuration_root"
+              name="Agency Category" action="project_agency_category_action"
+    />
+</odoo>
