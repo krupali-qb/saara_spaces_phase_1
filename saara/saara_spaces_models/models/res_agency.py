@@ -19,8 +19,8 @@ class ResAgency(models.Model):
     zip = fields.Char(string='Zip', required=True, size=6)
     country_id = fields.Many2one('res.country', string='Country*', required=True,
                                  default=lambda self: self._default_state())
-    phone = fields.Char(string='Phone*', required=True, size=10)
-    mobile = fields.Char(string='Mobile*', required=True, size=10)
+    phone = fields.Char(string='Phone*', required=True, size=13, default='+91')
+    mobile = fields.Char(string='Mobile*', required=True, size=13, default='+91')
     email = fields.Char(string='Email*', required=True, size=50)
     note = fields.Html(string='Note')
     image_1998 = fields.Image(string='Image', store=True)
@@ -55,7 +55,7 @@ class ResAgency(models.Model):
     @api.constrains('mobile')
     def _check_mobile(self):
         """ Validate mobile number (only digits and length 10) """
-        mobile_regex = re.compile(r'^\+?\d{10}$')
+        mobile_regex = re.compile(r'^(?:\+91|91)?[6-9]\d{9}$')
         for record in self:
             if record.mobile and not mobile_regex.match(record.mobile):
                 raise ValidationError("Invalid Mobile Number! It should contain only digits and be 10 characters long.")
@@ -63,7 +63,7 @@ class ResAgency(models.Model):
     @api.constrains('phone')
     def _check_phone(self):
         """ Validate mobile number (only digits and length 10) """
-        mobile_regex = re.compile(r'^\+?\d{10}$')
+        mobile_regex = re.compile(r'^(?:\+91|91)?[6-9]\d{9}$')
         for record in self:
             if record.phone and not mobile_regex.match(record.phone):
                 raise ValidationError("Invalid Phone Number! It should contain only digits and be 10 characters long.")

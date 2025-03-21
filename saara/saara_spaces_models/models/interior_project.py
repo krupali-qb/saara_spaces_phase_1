@@ -48,7 +48,8 @@ class InteriorProject(models.Model):
     country_id = fields.Many2one('res.country', string='Country*', required=True,
                                  default=lambda self: self._default_state())
     poc_name = fields.Char(string='POC Name*', required=True, size=25)
-    contact_information = fields.Char(string='Contact Information*', required=True, size=10)
+    contact_information = fields.Char(string='Contact Information*', required=True, size=13, default='+91')
+    new_contact_field = fields.Char(string="New Contact", default='+91')
     expenses_ids = fields.One2many(comodel_name='project.expenses',
                                    inverse_name='project_id',
                                    string="Expenses",
@@ -79,7 +80,7 @@ class InteriorProject(models.Model):
     @api.constrains('contact_information')
     def _check_mobile(self):
         """ Validate mobile number (only digits and length 10) """
-        mobile_regex = re.compile(r'^\+?\d{10}$')
+        mobile_regex = re.compile(r'^(?:\+91|91)?[6-9]\d{9}$')
         for record in self:
             if record.contact_information and not mobile_regex.match(record.contact_information):
                 raise ValidationError("Invalid Mobile Number! It should contain only digits and be 10 characters long.")

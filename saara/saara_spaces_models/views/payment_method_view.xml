@@ -57,5 +57,5 @@
     <menuitem id="customer_payment_root" name="Accounts" sequence="40"/>
 
     <menuitem id="customer_payments_menu" parent="customer_payment_root" sequence="50"
-              name="Received" action="customer_payments_action"/>
+              name="Receivable" action="customer_payments_action"/>
 </odoo>

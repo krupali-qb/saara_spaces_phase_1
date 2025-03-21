@@ -58,6 +58,7 @@
                             <field name="company_id" invisible="1"
                                    readonly="status in ['quote_lock','inprogress', 'completed', 'new']"/>
                             <field name="poc_name" placeholder="Name"/>
+<!--                            <field name="new_contact_field" placeholder="+91 "/>-->
                             <field name="contact_information" placeholder="+91 xxxxx xxxxx"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="cost_price" widget="monetary" options="{'currency_field': 'currency_id'}"
@@ -117,6 +118,8 @@
                                     <field name="name"/>
                                     <field name="category_id" options="{'no_create': True}"/>
                                     <field name="agency_id"/>
+                                    <field name="is_person"/>
+                                    <field name="person_name" invisible="is_person == False" placeholder="Name"/>
                                     <field name="agency_category" options="{'no_create': True}"/>
                                     <field name="paid_by_employee_id"/>
                                     <field name="payment_type"/>

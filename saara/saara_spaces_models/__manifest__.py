@@ -26,8 +26,8 @@
 
     'assets': {
         'web.assets_backend': [
-
-               #'saara_spaces_models/static/src/components/*',
+            # '/saara_spaces_models/static/src/js/readonly_mobile.js',
+            # 'saara_spaces_models/static/src/components/*',
 
         ],
     },
