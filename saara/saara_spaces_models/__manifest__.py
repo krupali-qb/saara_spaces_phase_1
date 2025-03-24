@@ -8,11 +8,10 @@
     'company': 'quantumbot',
     'maintainer': 'quantumbot',
     'website': "https://quantumbot.in/",
-    'depends': ['web', 'base', 'mail'],
+    'depends': ['web', 'base', 'mail','base_import'],
     'data': [
         'security/security_template.xml',
         'security/ir.model.access.csv',
-
         'views/interior_projects_view.xml',
         'views/payment_method_view.xml',
         'views/vendor_payment_method_view.xml',
@@ -23,14 +22,12 @@
         'views/agency_category_view.xml',
         'views/project_expense_view.xml',
     ],
-
     'assets': {
         'web.assets_backend': [
-            # '/saara_spaces_models/static/src/js/readonly_mobile.js',
-            # 'saara_spaces_models/static/src/components/*',
-
+            'saara_spaces_models/static/src/**/*.xml',
         ],
     },
+
     'license': 'LGPL-3',
     'installable': True,
     'auto_install': False,
