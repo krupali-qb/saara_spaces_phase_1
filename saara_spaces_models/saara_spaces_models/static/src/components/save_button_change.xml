@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+        
+         <t t-name="account.ListView.Buttonsd" t-inherit="web.ListView.Buttons" t-inherit-mode="primary">
+        <xpath expr="//div[hasclass('o_list_buttons')]" position="inside">
+           <span>test</span>
+        </xpath>
+    </t>
+</templates>
+

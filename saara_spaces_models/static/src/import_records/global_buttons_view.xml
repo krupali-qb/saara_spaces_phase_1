@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates>
+     <t t-inherit="base_import.ImportRecords" t-inherit-mode="extension">
+            <xpath expr="//DropdownItem[contains(@class, 'o_import_menu')]" position="replace">
+                <!-- Remove the element completely -->
+            </xpath>
+    </t>
+    
+</templates>
+

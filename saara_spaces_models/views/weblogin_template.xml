@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="sara_login_layout" inherit_id="web.login_layout">
+        <!-- Example: Modify the card width -->
+        <xpath expr="//div[@class='text-center small mt-4 pt-3 border-top']" position="replace">
+            <!-- You can either replace it with an empty string (to remove) or modify it -->
+        </xpath>
+    </template>
+
+    <template id="sara_auth_signup_login" inherit_id="auth_signup.login">
+        <!-- Remove the div containing the links for "Don't have an account?" and "Reset Password" -->
+        <xpath expr="//div[@class='justify-content-between mt-2 d-flex small']" position="replace">
+            <!-- Replacing it with nothing effectively removes it -->
+        </xpath>
+    </template>
+
+    <template id="sara_login_inherit" inherit_id="web.login">
+        <xpath expr="//button[@name='redirect']" position="replace">
+            <!-- Button removed -->
+        </xpath>
+    </template>
+
+<!--    <template id="sara_header" inherit_id="website.layout" name="Header Visibility Standard">-->
+<!--        <xpath expr="//header" position="replace">-->
+<!--            &lt;!&ndash;        <attribute name="t-attf-class" add="o_header_standard" separator=" "/>&ndash;&gt;-->
+<!--        </xpath>-->
+<!--    </template>-->
+
+<!--    <template id="sara_footer" inherit_id="website.layout">-->
+<!--        <xpath expr="//footer" position="replace">-->
+<!--            &lt;!&ndash;        <span class="o_footer_copyright_name me-2">Copyright &amp;copy; Company name</span>&ndash;&gt;-->
+<!--        </xpath>-->
+
+<!--    </template>-->
+
+</odoo>
