@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="report_project_template">
+        <t t-call="web.html_container">
+            <t t-if="data">
+                <!-- Table for displaying report data -->
+                <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                    <!-- Left side: CTC -->
+                    <div>
+                        <strong>Total Paid: </strong>
+                        <t t-esc="ctc_value"/> <!-- Assuming you will calculate and pass the CTC -->
+                    </div>
+                    <!-- Right side: Total Paid -->
+                    <div>
+                        <strong>CTC: </strong>
+                        <t t-esc="total_paid_value"/> <!-- Assuming you will calculate and pass the Total Paid -->
+                    </div>
+                </div>
+                <table class="table table-bordered" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th style="border: 1px solid #000; padding: 8px;">Project Name</th>
+                            <th style="border: 1px solid #000; padding: 8px;">Agency</th>
+                            <th style="border: 1px solid #000; padding: 8px;">Amount</th>
+                            <th style="border: 1px solid #000; padding: 8px;">Payment Type</th>
+                            <th style="border: 1px solid #000; padding: 8px;">Work Category</th>
+                            <th style="border: 1px solid #000; padding: 8px;">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="data" t-as="record">
+                            <tr>
+                                <td style="border: 1px solid #000; padding: 8px;">
+                                    <t t-esc="record['name']"/> <!-- Project Name -->
+                                </td>
+                                <td style="border: 1px solid #000; padding: 8px;">
+                                    <t t-esc="record['agency']"/> <!-- Agency -->
+                                </td>
+                                <td style="border: 1px solid #000; padding: 8px;">
+                                    <t t-esc="record['amount']"/> <!-- Amount -->
+                                </td>
+                                <td style="border: 1px solid #000; padding: 8px;">
+                                    <t t-esc="record['payment_type']"/> <!-- Payment Type -->
+                                </td>
+                                <td style="border: 1px solid #000; padding: 8px;">
+                                    <t t-esc="record['work_category']"/> <!-- Work Category -->
+                                </td>
+                                <td style="border: 1px solid #000; padding: 8px;">
+                                    <t t-esc="record['expense_date']"/> <!-- Date -->
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </t>
+           
+        </t>
+    </template>
+</odoo>
+

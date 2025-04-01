@@ -22,10 +22,14 @@
         'views/agency_category_view.xml',
         'views/project_expense_view.xml',
         'views/weblogin_template.xml',
+        'wizard/project_report_view.xml',
+        'wizard/project_report_menu_view.xml',
+        'wizard/project_report_template.xml',
+        
     ],
     'assets': {
         'web.assets_backend': [
-            'saara_spaces_models/static/src/**/*.xml',
+            # 'saara_spaces_models/static/src/**/*.xml',
         ],
     },
 

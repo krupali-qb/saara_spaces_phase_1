@@ -47,12 +47,12 @@ class VendorPaymentMethod(models.Model):
         projects = payment_record.project_form_id
         for project in projects:
             vendor_payment = self.env['vendor.payment.method'].create({
-                    'name': payment_record.name,
-                    'vendor_id': payment_record.vendor_id.id,
-                    'interior_project_id': project.project_id.id,
-                    'agency_category': project.agency_category.id,
-                    'payment_date': payment_record.payment_date,
-                    'vendor_payment': project.vendor_payment,
+                'name': payment_record.name,
+                'vendor_id': payment_record.vendor_id.id,
+                'interior_project_id': project.project_id.id,
+                'agency_category': project.agency_category.id,
+                'payment_date': payment_record.payment_date,
+                'vendor_payment': project.vendor_payment,
             })
         if payment_record.interior_project_id:
             if payment_record.expenses == False:

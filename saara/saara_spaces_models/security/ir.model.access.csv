@@ -21,3 +21,4 @@ access_project_expenses_admin,access.project.expenses.admin,model_project_expens
 access_project_expenses_a,access.project.expenses.a,model_project_expenses,saara_spaces_models.group_admin,1,1,1,1
 access_expenses_category,access.expenses.category,model_expenses_category,saara_spaces_models.group_employee,1,1,1,1
 access_agency_category,access.agency.category,model_agency_category,saara_spaces_models.group_employee,1,1,1,1
+saara_spaces_models.access_project_report,access_project_report,saara_spaces_models.model_project_report,saara_spaces_models.group_super_admin,1,1,1,1

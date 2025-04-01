@@ -1,0 +1,14 @@
+<odoo>
+    <data>
+        <!-- Report Action Definition -->
+        <record id="project_report_action_template" model="ir.actions.report">
+            <field name="name">Project Report</field>
+            <field name="model">project.report</field>
+            <field name="report_type">qweb-pdf</field>  <!-- Specify report type: qweb-pdf, qweb-html, etc. -->
+            <field name="report_name">saara_spaces_models.report_project_template</field> <!-- Report QWeb Template -->
+            <field name="report_file">saara_spaces_models.report_project_template</field>
+            <field name="binding_model_id" ref="model_project_report"/>
+            <field name="binding_type">report</field>
+        </record>
+    </data>
+</odoo>
