@@ -162,10 +162,32 @@
         </field>
     </record>
 
+    <record id="project_interior_view_graph" model="ir.ui.view">
+        <field name="name">project.interior.view.graph</field>
+        <field name="model">project.interior</field>
+        <field name="arch" type="xml">
+            <graph string="Project Interior" type="bar">
+                <field name="name" type="row"/>
+                <field name="cost_price" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="project_interior_view_pivot" model="ir.ui.view">
+        <field name="name">project.interior.view.pivot</field>
+        <field name="model">project.interior</field>
+        <field name="arch" type="xml">
+            <pivot string="Project Interior">
+                <field name="name" type="row"/>
+                <field name="cost_price" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
     <record id="project_interior_action" model="ir.actions.act_window">
         <field name="name">Projects</field>
         <field name="res_model">project.interior</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,form,graph,pivot</field>
     </record>
 
     <menuitem id="project_interior_root" sequence="50"
