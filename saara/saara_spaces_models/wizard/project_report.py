@@ -1,12 +1,22 @@
 from odoo import models, fields, api
-from datetime import datetime
+from datetime import date
+from odoo.exceptions import UserError
 
 class ProjectWizard(models.TransientModel):
     _name = 'project.report'
     _description = 'Report Wizard'
 
-    start_date = fields.Date(string='Start Date', required=True)
-    end_date = fields.Date(string='End Date', required=True)
+    def _default_start_date(self):
+        """Returns the first day of the current month."""
+        today = date.today()
+        return today.replace(day=1)
+
+    def _default_end_date(self):
+        """Returns today's date."""
+        return date.today()
+
+    start_date = fields.Date(string='Start Date', required=True, default=_default_start_date)
+    end_date = fields.Date(string='End Date', required=True, default=_default_end_date)
 
     @api.model
     def default_get(self, fields):
@@ -40,7 +50,6 @@ class ProjectWizard(models.TransientModel):
         # Process records into a list of dictionaries
         report_data_new = []
         for record in records:
-            
             report_data_new.append({
             'name': record.project_id.name,  # Project Name
             'agency': record.agency_id.name,  # Agency Name
@@ -48,6 +57,7 @@ class ProjectWizard(models.TransientModel):
             'payment_type': record.payment_type,  # Payment Type
             'work_category': record.agency_category.name,  # Work Category
             'expense_date': record.expense_date,  # Date
+            'currency_id': record.currency_id.symbol
         })
 
         return report_data_new

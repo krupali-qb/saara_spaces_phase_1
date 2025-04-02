@@ -19,17 +19,26 @@
 
     <!-- Action to open the wizard -->
     <record id="action_report_wizard_new" model="ir.actions.act_window">
-        <field name="name">Generate Report</field>
+        <field name="name">Projects Report</field>
         <field name="res_model">project.report</field>
         <field name="view_mode">form</field>
         <field name="view_id" ref="view_report_wizard_form"/>
         <field name="target">new</field>
         <field name="type">ir.actions.act_window</field>
     </record>
-    
-    
-    <menuitem id="project_reports_menus_new" parent="saara_spaces_models.customer_payment_root" sequence="75"
-              name="Report" action="action_report_wizard_new"
+
+    <record id="reports_action" model="ir.actions.client">
+        <field name="name">Reports</field>
+        <field name="tag">reports_tag</field>
+    </record>
+
+    <menuitem id="reports_roots"  name="Reports"/>
+
+    <menuitem name="Reports" id="project_reports" parent="reports_roots"
+              sequence="0" action="reports_action"/>
+
+    <menuitem id="project_reports_menus_new" parent="saara_spaces_models.reports_roots" sequence="75"
+              name="Projects Report" action="action_report_wizard_new"
     />
 
 </odoo>

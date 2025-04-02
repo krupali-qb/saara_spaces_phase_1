@@ -2,17 +2,22 @@
 <odoo>
     <template id="report_project_template">
         <t t-call="web.html_container">
+            <div>
+                <h2 class="text-center">
+                    <b>Project Expenses &amp;Payment Summary</b>
+                </h2>
+            </div>
             <t t-if="data">
                 <!-- Table for displaying report data -->
                 <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
                     <!-- Left side: CTC -->
                     <div>
-                        <strong>Total Paid: </strong>
+                        <strong>Total Paid:</strong>
                         <t t-esc="ctc_value"/> <!-- Assuming you will calculate and pass the CTC -->
                     </div>
                     <!-- Right side: Total Paid -->
                     <div>
-                        <strong>CTC: </strong>
+                        <strong>CTC:</strong>
                         <t t-esc="total_paid_value"/> <!-- Assuming you will calculate and pass the Total Paid -->
                     </div>
                 </div>
@@ -37,6 +42,7 @@
                                     <t t-esc="record['agency']"/> <!-- Agency -->
                                 </td>
                                 <td style="border: 1px solid #000; padding: 8px;">
+                                    <t t-esc="record['currency_id']"/>
                                     <t t-esc="record['amount']"/> <!-- Amount -->
                                 </td>
                                 <td style="border: 1px solid #000; padding: 8px;">
@@ -53,7 +59,6 @@
                     </tbody>
                 </table>
             </t>
-           
         </t>
     </template>
 </odoo>

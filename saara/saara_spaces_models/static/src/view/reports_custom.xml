@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates>
+    <t t-name="saara_spaces_models.CustomReports">
+        <div class="">
+            <div>
+                <center>
+                    <h1 style="margin:20px;">
+                    Reports</h1>
+                </center>
+            </div>
+        </div>
+    </t>
+</templates>

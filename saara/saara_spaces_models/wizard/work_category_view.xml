@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_work_category_report_wizard_form" model="ir.ui.view">
+        <field name="name">project.report.form</field>
+        <field name="model">work.category.report</field>
+        <field name="arch" type="xml">
+            <form string="Generate Report">
+                <group>
+                    <field name="project_id"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                </group>
+                <footer>
+                    <button string="Generate Report" type="object" name="work_category_generate_report" class="btn-primary"/>
+                    <button string="Cancel" type="object" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action to open the wizard -->
+    <record id="action_work_category_report_wizard_new" model="ir.actions.act_window">
+        <field name="name">Projects Work Category Report</field>
+        <field name="res_model">work.category.report</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_work_category_report_wizard_form"/>
+        <field name="target">new</field>
+        <field name="type">ir.actions.act_window</field>
+    </record>
+
+
+    <menuitem id="work_category_reports_menus_new" parent="saara_spaces_models.reports_roots" sequence="75"
+              name="Work Category Report" action="action_work_category_report_wizard_new"
+    />
+
+</odoo>
+
