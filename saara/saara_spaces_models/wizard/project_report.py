@@ -76,9 +76,7 @@ class ProjectWizard(models.TransientModel):
                 'payment_date': payment.payment_date,
                 'customer_payment': payment.customer_payment,
                 'name': payment.name,
-
                 'currency_id': payment.currency_id.symbol
-                
             })
 
         # Loop through expenses (expenses_ids)

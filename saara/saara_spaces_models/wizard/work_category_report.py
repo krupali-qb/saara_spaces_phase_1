@@ -52,16 +52,28 @@ class ProjectWorkCategoryWizard(models.TransientModel):
 
         # Process records into a list of dictionaries
         report_data_new = []
-        for record in records.expenses_ids:
-            print("===record.agency_category.name=====",record.agency_category.name)
-            report_data_new.append({
-                'agency_category': record.agency_category.name,  # Project Name
-                # 'agency': record.agency_id.name,  # Agency Name
-                # 'amount': record.total_amount,  # Amount
-                # 'payment_type': record.payment_type,  # Payment Type
-                # 'work_category': record.agency_category.name,  # Work Category
-                # 'expense_date': record.expense_date,  # Date
-                # 'currency_id': record.currency_id.symbol
-            })
-
-        return report_data_new
+        if records:
+            print("1111111111111111if")
+            for record in records.expenses_ids:
+                print("===recordagency_category.name=====",record.agency_category.name)
+                report_data_new.append({
+                    'name': record.name,  # Project Name
+                    # 'agency': record.agency_id.name,  # Agency Name
+                    # 'amount': record.total_amount,  # Amount
+                    # 'payment_type': record.payment_type,  # Payment Type
+                    # 'work_category': record.agency_category.name,  # Work Category
+                    # 'expense_date': record.expense_date,  # Date
+                    # 'currency_id': record.currency_id.symbol
+                })
+        else:
+            print("222222222222else")
+            results= self.env['project.interior'].search([
+                ('create_date', '>=', start_date),
+                ('create_date', '<=', end_date)])
+            print("--------results-----------",results)
+            for res in results:
+                report_data_new.append({
+                    'name' : res.name
+                })
+            print("report_data_new==================",report_data_new)
+            return report_data_new

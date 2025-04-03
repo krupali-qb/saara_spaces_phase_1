@@ -28,50 +28,50 @@
                                 </div>
                                 <div>
                                     <strong>CTC:</strong>
-<!--                                    <t t-esc="project['project_ctc']"/>-->
+                                    <!--                                    <t t-esc="project['project_ctc']"/>-->
                                 </div>
                             </div>
                         </h3>
 
                         <!-- Vendor Payments Section -->
-<!--                        <h4>Vendor Payments:</h4>-->
-<!--                        <table class="table table-bordered" style="width: 100%; border-collapse: collapse;">-->
-<!--                            <thead>-->
-<!--                                <tr>-->
-<!--                                    <th style="border: 1px solid #000; padding: 8px;">Payment Type</th>-->
-<!--                                    <th style="border: 1px solid #000; padding: 8px;">Type</th>-->
-<!--                                    <th style="border: 1px solid #000; padding: 8px;">Agency</th>-->
-<!--                                    <th style="border: 1px solid #000; padding: 8px;">Payment Category</th>-->
-<!--                                    <th style="border: 1px solid #000; padding: 8px;">Payment Date</th>-->
-<!--                                    <th style="border: 1px solid #000; padding: 8px;">Payment</th>-->
-<!--                                </tr>-->
-<!--                            </thead>-->
-<!--                            <tbody>-->
-<!--                                <t t-foreach="project['vendor_payments']" t-as="payment">-->
-<!--                                    <tr>-->
-<!--                                        <td style="border: 1px solid #000; padding: 8px;">-->
-<!--                                            <t t-esc="payment['payment_method']"/>-->
-<!--                                        </td>-->
-<!--                                        <td style="border: 1px solid #000; padding: 8px;">-->
-<!--                                            <span>Debit</span>-->
-<!--                                        </td>-->
-<!--                                        <td style="border: 1px solid #000; padding: 8px;">-->
-<!--                                            <t t-esc="payment['vendor_id']"/>-->
-<!--                                        </td>-->
-<!--                                        <td style="border: 1px solid #000; padding: 8px;">-->
-<!--                                            <t t-esc="payment['agency_category']"/>-->
-<!--                                        </td>-->
-<!--                                        <td style="border: 1px solid #000; padding: 8px;">-->
-<!--                                            <t t-esc="payment['payment_date']"/>-->
-<!--                                        </td>-->
-<!--                                        <td style="border: 1px solid #000; padding: 8px;">-->
-<!--                                            <t t-esc="payment['currency_id']"/>-->
-<!--                                            <t t-esc="payment['vendor_payment']"/>-->
-<!--                                        </td>-->
-<!--                                    </tr>-->
-<!--                                </t>-->
-<!--                            </tbody>-->
-<!--                        </table>-->
+                        <!--                        <h4>Vendor Payments:</h4>-->
+                        <!--                        <table class="table table-bordered" style="width: 100%; border-collapse: collapse;">-->
+                        <!--                            <thead>-->
+                        <!--                                <tr>-->
+                        <!--                                    <th style="border: 1px solid #000; padding: 8px;">Payment Type</th>-->
+                        <!--                                    <th style="border: 1px solid #000; padding: 8px;">Type</th>-->
+                        <!--                                    <th style="border: 1px solid #000; padding: 8px;">Agency</th>-->
+                        <!--                                    <th style="border: 1px solid #000; padding: 8px;">Payment Category</th>-->
+                        <!--                                    <th style="border: 1px solid #000; padding: 8px;">Payment Date</th>-->
+                        <!--                                    <th style="border: 1px solid #000; padding: 8px;">Payment</th>-->
+                        <!--                                </tr>-->
+                        <!--                            </thead>-->
+                        <!--                            <tbody>-->
+                        <!--                                <t t-foreach="project['vendor_payments']" t-as="payment">-->
+                        <!--                                    <tr>-->
+                        <!--                                        <td style="border: 1px solid #000; padding: 8px;">-->
+                        <!--                                            <t t-esc="payment['payment_method']"/>-->
+                        <!--                                        </td>-->
+                        <!--                                        <td style="border: 1px solid #000; padding: 8px;">-->
+                        <!--                                            <span>Debit</span>-->
+                        <!--                                        </td>-->
+                        <!--                                        <td style="border: 1px solid #000; padding: 8px;">-->
+                        <!--                                            <t t-esc="payment['vendor_id']"/>-->
+                        <!--                                        </td>-->
+                        <!--                                        <td style="border: 1px solid #000; padding: 8px;">-->
+                        <!--                                            <t t-esc="payment['agency_category']"/>-->
+                        <!--                                        </td>-->
+                        <!--                                        <td style="border: 1px solid #000; padding: 8px;">-->
+                        <!--                                            <t t-esc="payment['payment_date']"/>-->
+                        <!--                                        </td>-->
+                        <!--                                        <td style="border: 1px solid #000; padding: 8px;">-->
+                        <!--                                            <t t-esc="payment['currency_id']"/>-->
+                        <!--                                            <t t-esc="payment['vendor_payment']"/>-->
+                        <!--                                        </td>-->
+                        <!--                                    </tr>-->
+                        <!--                                </t>-->
+                        <!--                            </tbody>-->
+                        <!--                        </table>-->
 
                         <!-- Customer Payments Section -->
                         <h4>Customer Payments:</h4>
@@ -81,8 +81,8 @@
                                     <th style="border: 1px solid #000; padding: 8px;">Payment Type</th>
                                     <th style="border: 1px solid #000; padding: 8px;">Type</th>
                                     <th style="border: 1px solid #000; padding: 8px;">Customer</th>
-                                    <th style="border: 1px solid #000; padding: 8px;">Payment Date</th>
                                     <th style="border: 1px solid #000; padding: 8px;">Payment</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Payment Date</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -98,21 +98,22 @@
                                             <t t-esc="payment['customer_id']"/>
                                         </td>
                                         <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="payment['payment_date']"/>
-                                        </td>
-                                        <td style="border: 1px solid #000; padding: 8px;">
                                             <t t-esc="payment['currency_id']"/>
                                             <t t-esc="payment['customer_payment']"/>
                                         </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="payment['payment_date']"/>
+                                        </td>
                                     </tr>
                                 </t>
-                                <td colspan="4" style="border: 1px solid #000; padding: 8px;">
-                                    <span>Total Credit</span>
+                                <td colspan="3" style="border: 1px solid #000; padding: 8px;text-align: end;">
+                                    <span><b>Total Credit:</b></span>
                                 </td>
                                 <td style="border: 1px solid #000; padding: 8px;">
                                     <t t-esc="project['currency_id']"/>
                                     <t t-esc="project['customer_amount']"/>
                                 </td>
+                                <td style="border: 1px solid #000; padding: 8px;"/>
                             </tbody>
                         </table>
 
@@ -122,7 +123,7 @@
                             <thead>
                                 <tr>
                                     <th style="border: 1px solid #000; padding: 8px;">Work Category</th>
-<!--                                    <th style="border: 1px solid #000; padding: 8px;">Name</th>-->
+                                    <!--                                    <th style="border: 1px solid #000; padding: 8px;">Name</th>-->
                                     <th style="border: 1px solid #000; padding: 8px;">Agency</th>
                                     <th style="border: 1px solid #000; padding: 8px;">Expenses Category</th>
                                     <th style="border: 1px solid #000; padding: 8px;">Payment Type</th>
@@ -140,17 +141,17 @@
                                         <td style="border: 1px solid #000; padding: 8px;">
                                             <t t-esc="expense['agency_id']"/>
                                         </td>
-<!--                                        <td style="border: 1px solid #000; padding: 8px;">-->
-<!--                                            <t t-esc="expense['name']"/>-->
-<!--                                        </td>-->
+                                        <!--                                        <td style="border: 1px solid #000; padding: 8px;">-->
+                                        <!--                                            <t t-esc="expense['name']"/>-->
+                                        <!--                                        </td>-->
                                         <td style="border: 1px solid #000; padding: 8px;">
                                             <t t-esc="expense['category_id']"/>
                                         </td>
                                         <td style="border: 1px solid #000; padding: 8px;">
-                                            <span>Expenses</span>
+                                            <t t-esc="expense['payment_type']"/>
                                         </td>
                                         <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="expense['payment_type']"/>
+                                            <span>Expenses</span>
                                         </td>
                                         <td style="border: 1px solid #000; padding: 8px;">
                                             <t t-esc="expense['currency_id']"/>
@@ -160,6 +161,30 @@
                                             <t t-esc="expense['expense_date']"/>
                                         </td>
                                     </tr>
+                                </t>
+                                <t t-foreach="project['vendor_payments']" t-as="payment">
+                                    <td style="border: 1px solid #000; padding: 8px;">
+                                        <t t-esc="payment['agency_category']"/>
+                                    </td>
+                                    <td style="border: 1px solid #000; padding: 8px;">
+                                        <t t-esc="payment['vendor_id']"/>
+                                    </td>
+                                    <td style="border: 1px solid #000; padding: 8px;">
+
+                                    </td>
+                                    <td style="border: 1px solid #000; padding: 8px;">
+                                        <t t-esc="payment['payment_method']"/>
+                                    </td>
+                                    <td style="border: 1px solid #000; padding: 8px;">
+                                        <span>Debit</span>
+                                    </td>
+                                    <td style="border: 1px solid #000; padding: 8px;">
+                                        <t t-esc="payment['currency_id']"/>
+                                        <t t-esc="payment['vendor_payment']"/>
+                                    </td>
+                                    <td style="border: 1px solid #000; padding: 8px;">
+                                        <t t-esc="payment['payment_date']"/>
+                                    </td>
                                 </t>
                             </tbody>
                         </table>
