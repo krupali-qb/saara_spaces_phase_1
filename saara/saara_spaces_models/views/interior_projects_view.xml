@@ -74,7 +74,7 @@
                                     <field name="name"/>
                                     <field name="vendor_id"/>
                                     <field name="agency_category" options="{'no_create': True}"
-                                           string="Payment Category"/>
+                                           string="Work Category"/>
                                     <field name="payment_date"/>
                                     <field name="vendor_payment" widget="monetary"
                                            options="{'currency_field': 'currency_id'}"/>

@@ -31,7 +31,8 @@
     ],
     'assets': {
         'web.assets_backend': [
-            'saara_spaces_models/static/src/**/*.xml',
+            # 'saara_spaces_models/static/src/**/*.xml',
+            'saara_spaces_models/static/src/view/reports_custom.xml',
             'saara_spaces_models/static/src/js/reports_screen.js',
         ],
     },

@@ -15,7 +15,7 @@ class VendorPaymentMethod(models.Model):
     interior_project_id = fields.Many2one('project.interior', string='Interior Project*', compute='_compute_project_id',
                                           store=True)
     vendor_id = fields.Many2one('res.agency', string="Agency*", tracking=True)
-    agency_category = fields.Many2one('agency.category', string="Category")
+    agency_category = fields.Many2one('agency.category', string="Work Category")
     payment_date = fields.Date(string='Payment Date*', tracking=True, required=True)
     currency_id = fields.Many2one(
         'res.currency', string="Currency",
