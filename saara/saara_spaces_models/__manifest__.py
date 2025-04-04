@@ -27,6 +27,9 @@
         'wizard/project_report_template.xml',
         'wizard/work_category_template.xml',
         'wizard/work_category_view.xml',
+        'wizard/agency_report_template.xml',
+        'wizard/agency_report_view.xml',
+
         
     ],
     'assets': {

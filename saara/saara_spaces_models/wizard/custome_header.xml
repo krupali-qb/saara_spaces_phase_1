@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <template id="report_header">
+            <div class="header">
+                <t t-if="company.logo">
+                    <img t-att-src="image_data_uri(company.logo)" class="float-start" alt="Logo"
+                         style="max-height:50px;"/>
+                </t>
+                <h3 style="text-align: center;">
+                    <t t-esc="company.name"/>
+                </h3>
+            </div>
+        </template>
+
+        <template id="report_footer">
+            <div class="footer">
+                <hr/>
+                <p style="text-align: center;">Page
+                    <span class="page"/>
+                    of
+                    <span class="topage"/>
+                </p>
+            </div>
+        </template>
+    </data>
+</odoo>

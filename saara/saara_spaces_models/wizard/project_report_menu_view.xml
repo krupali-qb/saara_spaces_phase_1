@@ -22,5 +22,18 @@
             <field name="binding_model_id" ref="model_work_category_report"/>
             <field name="binding_type">report</field>
         </record>
+
+        <record id="agency_report_action_template" model="ir.actions.report">
+            <field name="name">Agency Report</field>
+            <field name="model">agency.report</field>
+            <field name="report_type">qweb-pdf</field>  <!-- Specify report type: qweb-pdf, qweb-html, etc. -->
+            <field name="report_name">saara_spaces_models.agency_report_project_template</field> <!-- Report QWeb Template -->
+            <field name="report_file">saara_spaces_models.agency_report_project_template</field>
+            <field name="print_report_name">'Agency Reports - ' + object.end_date</field>
+            <field name="binding_model_id" ref="model_work_category_report"/>
+            <field name="binding_type">report</field>
+        </record>
+
+
     </data>
 </odoo>

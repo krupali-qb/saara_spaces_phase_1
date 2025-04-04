@@ -41,5 +41,7 @@
               name="Projects Report" action="action_report_wizard_new"
     />
 
+   
+
 </odoo>
 

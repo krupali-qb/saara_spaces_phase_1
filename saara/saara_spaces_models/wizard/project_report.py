@@ -2,6 +2,8 @@ from odoo import models, fields, api
 from datetime import date
 from odoo.exceptions import UserError
 from datetime import date
+
+
 class ProjectWizard(models.TransientModel):
     _name = 'project.report'
     _description = 'Report Wizard'
@@ -53,6 +55,7 @@ class ProjectWizard(models.TransientModel):
                 'currency_id': project.currency_id.symbol,
                 'customer_amount': project.customer_amount,
                 'cost_price': project.cost_price,
+                'customer_id' : project.customer_id.name,
             'vendor_payments': [],
             'customer_payments': [],
             'expenses': [],
@@ -89,7 +92,8 @@ class ProjectWizard(models.TransientModel):
                 'name': expense.name,
                 'work_catg': expense.agency_category.name,
                 'payment_type': expense.payment_type,
-                'currency_id': expense.currency_id.symbol
+                'currency_id': expense.currency_id.symbol,
+                'person_name': expense.person_name
             })
 
             report_data_new.append(project_data)
