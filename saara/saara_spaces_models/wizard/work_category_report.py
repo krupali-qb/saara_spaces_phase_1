@@ -28,12 +28,15 @@ class ProjectWorkCategoryWizard(models.TransientModel):
         # Ensure the start date is not after the end date
         if self.start_date > self.end_date:
             raise UserError('Start date cannot be later than end date.')
+            
+        company_logo = self.env.company.logo
 
         # Example: Generate a report based on the date range
         report_data = {
             'start_date': self.start_date,
             'end_date': self.end_date,
             'project': self.project_id.name,
+            'company_logo': company_logo,
             'data': self._generate_data(self.start_date, self.end_date, self.project_id.name)
         }
 

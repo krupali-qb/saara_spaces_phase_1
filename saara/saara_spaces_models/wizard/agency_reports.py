@@ -31,9 +31,9 @@ class AgencyWizard(models.TransientModel):
         if self.start_date > self.end_date:
             raise UserError('Start date cannot be later than end date.')
 
-        company_logo = self.env.company.logo  # Company logo field is base64 encoded
-        if company_logo:
-            company_logo = base64.b64encode(company_logo).decode('utf-8')
+        company_logo = self.env.company.logo
+      
+        
 
         # Example: Generate a report based on the date range
         report_data = {
@@ -55,10 +55,23 @@ class AgencyWizard(models.TransientModel):
             ('expense_date', '<=', end_date),
            ('agency_id', '=', agency_id.id),
         ])
+        if not agency_id:
+            projects = self.env['project.expenses'].search([
+            ('expense_date', '>=', start_date),
+            ('expense_date', '<=', end_date),
+           
+        ])
+        
         vendor_projects = self.env['vendor.payment.method'].search([
             ('payment_date', '>=', start_date),
             ('payment_date', '<=', end_date),
            ('vendor_id', '=', agency_id.id),
+            ('expenses', '=', False),
+        ])
+        if not agency_id:
+            vendor_projects = self.env['vendor.payment.method'].search([
+            ('payment_date', '>=', start_date),
+            ('payment_date', '<=', end_date),
             ('expenses', '=', False),
         ])
         print("ddddddddddddddddddddddddddddddddddd",vendor_projects)
@@ -71,7 +84,7 @@ class AgencyWizard(models.TransientModel):
             project_data['expenses_ids'].append({
                 'agency_id':expense.agency_id.name,
                 'project_id': expense.project_id.name,
-               
+                'currency_id': expense.currency_id.symbol,
                 'total_cost': expense.project_id.cost_price,
                 'customer_amount': expense.project_id.customer_amount,
                 'pending': expense.project_id.balance_receivable,
@@ -91,6 +104,7 @@ class AgencyWizard(models.TransientModel):
                 'paid_amount':payment_line.project_id.total_paid,
                 'pending':payment_line.project_id.balance_receivable,
                  'total_amount_vendor':payment_line.vendor_payment,
+                    'currency_id': payment_line.currency_id.symbol,
                 
             })
                 report_data_new.append(project_datav)
