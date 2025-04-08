@@ -3,13 +3,15 @@
     <template id="report_project_template">
         <t t-call="web.html_container">
             <div>
-                <div style="text-align: center; ">
+             <div style="text-align: center; ">
                     <t t-if="company_logo">
-                        <img t-att-src="'data:image/png;base64,' + company_logo" style="
+                                                                   <img t-att-src="'data:image/png;base64,' + company_logo" style=" 
     max-height: 55pt;
     max-width: 90%;" alt="Company Logo"/>
                     </t>
-                </div>
+                   
+
+             </div>
                 <h2 class="text-center">
                     <b>Project Payment and Expense Summary</b>
                 </h2>
@@ -79,14 +81,14 @@
                                             <t t-esc="expense['work_catg']"/>
                                         </td>
                                         <t t-if="expense['agency_id']">
-                                            <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="expense['agency_id']"/>
-                                            </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="expense['agency_id']"/>
+                                        </td>
                                         </t>
                                         <t t-else="">
                                             <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="expense['person_name']"/>
-                                            </td>
+                                            <t t-esc="expense['person_name']"/>
+                                        </td>
                                         </t>
                                         <!--                                        <td style="border: 1px solid #000; padding: 8px;">-->
                                         <!--                                            <t t-esc="expense['name']"/>-->
@@ -169,16 +171,16 @@
                                         </td>
                                     </tr>
                                 </t>
-                                <!--                                <td style="border: 1px solid #000; padding: 8px;text-align: end;">-->
-                                <!--                                    <span>-->
-                                <!--                                        <b>Total Credit:</b>-->
-                                <!--                                    </span>-->
-                                <!--                                </td>-->
-                                <!--                                <td style="border: 1px solid #000; padding: 8px;">-->
-                                <!--                                    <t t-esc="project['currency_id']"/>-->
-                                <!--                                    <t t-esc="project['customer_amount']"/>-->
-                                <!--                                </td>-->
-                                <!--                                <td style="border: 1px solid #000; padding: 8px;"/>-->
+<!--                                <td style="border: 1px solid #000; padding: 8px;text-align: end;">-->
+<!--                                    <span>-->
+<!--                                        <b>Total Credit:</b>-->
+<!--                                    </span>-->
+<!--                                </td>-->
+<!--                                <td style="border: 1px solid #000; padding: 8px;">-->
+<!--                                    <t t-esc="project['currency_id']"/>-->
+<!--                                    <t t-esc="project['customer_amount']"/>-->
+<!--                                </td>-->
+<!--                                <td style="border: 1px solid #000; padding: 8px;"/>-->
                             </tbody>
                         </table>
                         <hr style="border: 1px solid #000; margin-top: 40px; margin-bottom: 20px;"/>
