@@ -13,7 +13,7 @@
         </record>
 
           <record id="work_category_report_action_template" model="ir.actions.report">
-            <field name="name">work category Report</field>
+            <field name="name">Monthly Account Report</field>
             <field name="model">work.category.report</field>
             <field name="report_type">qweb-pdf</field>  <!-- Specify report type: qweb-pdf, qweb-html, etc. -->
             <field name="report_name">saara_spaces_models.work_category_report_project_template</field> <!-- Report QWeb Template -->

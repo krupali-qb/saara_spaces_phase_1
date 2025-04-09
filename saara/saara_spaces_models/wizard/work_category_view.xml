@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <record id="view_work_category_report_wizard_form" model="ir.ui.view">
-        <field name="name">project.report.form</field>
+        <field name="name">project.monthly.report.form</field>
         <field name="model">work.category.report</field>
         <field name="arch" type="xml">
             <form string="Generate Report">
                 <group>
-                    <field name="project_id"/>
+<!--                    <field name="project_id"/>-->
                     <field name="start_date"/>
                     <field name="end_date"/>
                 </group>
@@ -20,7 +20,7 @@
 
     <!-- Action to open the wizard -->
     <record id="action_work_category_report_wizard_new" model="ir.actions.act_window">
-        <field name="name">Projects Work Category Report</field>
+        <field name="name">Projects Monthly Report</field>
         <field name="res_model">work.category.report</field>
         <field name="view_mode">form</field>
         <field name="view_id" ref="view_work_category_report_wizard_form"/>
@@ -30,7 +30,7 @@
 
 
     <menuitem id="work_category_reports_menus_new" parent="saara_spaces_models.reports_roots" sequence="75"
-              name="Work Category Report" action="action_work_category_report_wizard_new"
+              name="Month Account report" action="action_work_category_report_wizard_new"
     />
 
 </odoo>

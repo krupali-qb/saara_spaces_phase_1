@@ -1,8 +1,6 @@
 from odoo import models, fields, api
-from datetime import date
 from odoo.exceptions import UserError
 from datetime import date
-import base64
 
 
 class AgencyWizard(models.TransientModel):
@@ -47,7 +45,6 @@ class AgencyWizard(models.TransientModel):
             # Sum of total_amount_expense
             'total_cash_payment': generated_data['total_cash_payment'],
             'total_bank_payment': generated_data['total_bank_payment'],
-
         }
 
         # Return the report data (or print it, save it as PDF, etc.)
@@ -62,13 +59,12 @@ class AgencyWizard(models.TransientModel):
             ('expense_date', '<=', end_date),
             ('agency_id', '=', agency_id.id),
         ])
+
         if not agency_id:
             projects = self.env['project.expenses'].search([
                 ('expense_date', '>=', start_date),
                 ('expense_date', '<=', end_date),
-
             ])
-
         vendor_projects = self.env['vendor.payment.method'].search([
             ('payment_date', '>=', start_date),
             ('payment_date', '<=', end_date),

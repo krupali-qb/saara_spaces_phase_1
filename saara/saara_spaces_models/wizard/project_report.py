@@ -19,6 +19,7 @@ class ProjectWizard(models.TransientModel):
 
     start_date = fields.Date(string='Start Date', required=True, default=_default_start_date)
     end_date = fields.Date(string='End Date', required=True, default=_default_end_date)
+    project_id = fields.Many2one('project.interior', string="Projects")
 
     @api.model
     def default_get(self, fields):
@@ -47,7 +48,10 @@ class ProjectWizard(models.TransientModel):
     def _generate_data(self, start_date, end_date):
         # Fetch the records from the project.interior model
         today = date.today()
-        projects = self.env['project.interior'].search([])
+        if self.project_id:
+            projects = self.project_id
+        else:
+            projects = self.env['project.interior'].search([])
 
         report_data_new = []
         for project in projects:
