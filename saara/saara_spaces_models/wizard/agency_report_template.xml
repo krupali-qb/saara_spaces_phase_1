@@ -7,7 +7,8 @@
                     <!-- Header with Company Logo -->
                     <div style="text-align: center;">
                         <t t-if="company_logo">
-                            <img t-att-src="'data:image/png;base64,' + company_logo" style="max-height: 55pt; max-width: 90%;" alt="Company Logo"/>
+                            <img t-att-src="'data:image/png;base64,' + company_logo"
+                                 style="max-height: 55pt; max-width: 90%;" alt="Company Logo"/>
                         </t>
                     </div>
 
@@ -30,27 +31,32 @@
                                 <!-- Calculate Total Paid by summing expenses and vendors for each agency -->
                                 <t t-foreach="project['expenses_ids']" t-as="expense">
                                     <!-- Sum expense total -->
-                                    <t t-set="total_paid_agency" t-value="total_paid_agency + expense['total_amount_expense']"/>
-
+                                    <t t-set="total_paid_agency"
+                                       t-value="total_paid_agency + expense['total_amount_expense']"/>
                                     <!-- Check Payment Type and Add to Cash or Bank -->
                                     <t t-if="expense['payment_type'] == 'cash'">
-                                        <t t-set="total_cash_payment" t-value="total_cash_payment + expense['total_amount_expense']"/>
+                                        <t t-set="total_cash_payment"
+                                           t-value="total_cash_payment + expense['total_amount_expense']"/>
                                     </t>
                                     <t t-if="expense['payment_type'] == 'bank'">
-                                        <t t-set="total_bank_payment" t-value="total_bank_payment + expense['total_amount_expense']"/>
+                                        <t t-set="total_bank_payment"
+                                           t-value="total_bank_payment + expense['total_amount_expense']"/>
                                     </t>
                                 </t>
 
                                 <t t-foreach="project['vendor_ids']" t-as="vendor">
                                     <!-- Sum vendor total -->
-                                    <t t-set="total_paid_agency" t-value="total_paid_agency + vendor['total_amount_vendor']"/>
+                                    <t t-set="total_paid_agency"
+                                       t-value="total_paid_agency + vendor['total_amount_vendor']"/>
 
                                     <!-- Check Payment Type and Add to Cash or Bank -->
                                     <t t-if="vendor['payment_type'] == 'cash'">
-                                        <t t-set="total_cash_payment" t-value="total_cash_payment + vendor['total_amount_vendor']"/>
+                                        <t t-set="total_cash_payment"
+                                           t-value="total_cash_payment + vendor['total_amount_vendor']"/>
                                     </t>
                                     <t t-if="vendor['payment_type'] == 'bank'">
-                                        <t t-set="total_bank_payment" t-value="total_bank_payment + vendor['total_amount_vendor']"/>
+                                        <t t-set="total_bank_payment"
+                                           t-value="total_bank_payment + vendor['total_amount_vendor']"/>
                                     </t>
                                 </t>
 
@@ -60,21 +66,29 @@
                                         <tr>
                                             <td style="padding: 5px; font-size:20px;">
                                                 <strong>
-                                                    Agency Name: <t t-esc="project['agency_ids']"/>
+                                                    Agency Name:
+                                                    <t t-esc="project['agency_ids']"/>
                                                 </strong>
                                             </td>
                                             <td style="padding: 5px; font-size: 20px;">
                                                 <strong>Total Paid:</strong>
+                                                <t t-esc="currency_id"/>
                                                 <t t-esc="total_paid_agency"/>
+                                            </td>
+                                            <td style="padding: 5px; font-size: 20px;">
+                                                <strong>Total Remaining:</strong>
+                                                <t t-esc="currency_id"/>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td style="padding: 5px; font-size: 20px;">
                                                 <strong>Total Cash:</strong>
+                                                <t t-esc="currency_id"/>
                                                 <t t-esc="total_cash_payment"/>
                                             </td>
                                             <td style="padding: 5px; font-size: 20px;">
                                                 <strong>Total Bank:</strong>
+                                                <t t-esc="currency_id"/>
                                                 <t t-esc="total_bank_payment"/>
                                             </td>
                                         </tr>
@@ -107,9 +121,10 @@
                                                     <t t-esc="expense['payment_type']"/>
                                                 </td>
                                                 <td style="border: 1px solid #000; padding: 8px;">
+                                                    <t t-esc="expense['currency_id']"/>
                                                     <t t-esc="expense['total_amount_expense']"/>
                                                 </td>
-                                                <td style="border: 1px solid #000; padding: 8px;">
+                                                <td style="border: 1px solid #000; padding: 8px; color:#ff9900;">
                                                     <t t-esc="expense['type']"/>
                                                 </td>
                                                 <td style="border: 1px solid #000; padding: 8px;">
@@ -131,9 +146,10 @@
                                                     <t t-esc="vendor['payment_type']"/>
                                                 </td>
                                                 <td style="border: 1px solid #000; padding: 8px;">
+                                                    <t t-esc="expense['currency_id']"/>
                                                     <t t-esc="vendor['total_amount_vendor']"/>
                                                 </td>
-                                                <td style="border: 1px solid #000; padding: 8px;">
+                                                <td style="border: 1px solid #000; padding: 8px;color:#006600;">
                                                     <t t-esc="vendor['type']"/>
                                                 </td>
                                                 <td style="border: 1px solid #000; padding: 8px;">

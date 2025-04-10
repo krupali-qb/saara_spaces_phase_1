@@ -54,6 +54,30 @@
         </field>
     </record>
 
+    <record id="vendor_payment_method_view_graph" model="ir.ui.view">
+        <field name="name">vendor.payment.method.view.graph</field>
+        <field name="model">vendor.payment.method</field>
+        <field name="arch" type="xml">
+            <graph string="Vendor Payment Analysis" type="bar">
+                <field name="payment_date" type="row"/>
+                <field name="vendor_id" type="col"/>
+                <field name="total_payment" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="vendor_payment_method_view_pivot" model="ir.ui.view">
+        <field name="name">vendor.payment.method.view.pivot</field>
+        <field name="model">vendor.payment.method</field>
+        <field name="arch" type="xml">
+            <pivot string="Vendor Payment Pivot">
+                <field name="vendor_id" type="row"/>
+                <field name="interior_project_id" type="col"/>
+                <field name="total_payment" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
     <record id="view_vendor_payment_method_filter" model="ir.ui.view">
         <field name="name">vendor.payment.method.search</field>
         <field name="model">vendor.payment.method</field>
@@ -64,8 +88,8 @@
                 <separator/>
                 <filter string="Date" name="payment_date" date="payment_date"/>
                 <separator/>
-<!--                <filter string="Expenses" name="analytic_accounts"-->
-<!--                        domain="[('expenses','=', True)]"/>-->
+                <!--                <filter string="Expenses" name="analytic_accounts"-->
+                <!--                        domain="[('expenses','=', True)]"/>-->
                 <filter string="Project" name="project" domain="[('interior_project_id', '!=', False)]"/>
                 <group expand="1" string="Group By">
                     <filter string="Expenses" name="analytic_accounts"
@@ -78,7 +102,7 @@
     <record id="vendor_payments_action" model="ir.actions.act_window">
         <field name="name">Payable</field>
         <field name="res_model">vendor.payment.method</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,form,graph,pivot</field>
         <field name="search_view_id" ref="view_vendor_payment_method_filter"/>
         <field name="context">{'search_default_project': 1}</field>
     </record>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates>
+    <t t-name="saara_spaces_models.CustomDashboard">
+        <div class="o_container">
+            <center>
+                <h1 style="margin: 20px;">Dashboard</h1>
+            </center>
+            <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 30px;">
+                <!-- Pie Chart -->
+                <div style="flex: 1 1 45%; max-width: 500px;">
+                    <h3 style="text-align: center;">Agency-wise Expenses</h3>
+                    <canvas id="agencyPieChart" width="400" height="400"></canvas>
+                </div>
+                <!-- Line Chart -->
+                <div style="flex: 1 1 45%; max-width: 500px;">
+                    <h3 style="text-align: center;">Cash Flow</h3>
+                    <canvas id="cashFlowChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

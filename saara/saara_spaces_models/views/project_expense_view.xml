@@ -45,32 +45,52 @@
         <field name="name">project.expenses.view.tree</field>
         <field name="model">project.expenses</field>
         <field name="arch" type="xml">
-            <tree string="Customer" >
+            <tree string="Customer">
                 <field name="name"/>
                 <field name="expense_date"/>
-                 <field name="project_id"/>
+                <field name="project_id"/>
                 <field name="paid_by_employee_id"/>
                 <field name="payment_type"/>
                 <field name="currency_id" column_invisible="True"/>
-                <field name="total_amount"  sum="Total Expenses Amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="total_amount" sum="Total Expenses Amount" widget="monetary"
+                       options="{'currency_field': 'currency_id'}"/>
             </tree>
         </field>
     </record>
-
+    <record id="project_expenses_view_graph" model="ir.ui.view">
+        <field name="name">project.expenses.view.graph</field>
+        <field name="model">project.expenses</field>
+        <field name="arch" type="xml">
+            <graph string="Expense Analysis" type="bar">
+                <field name="expense_date" type="row"/>
+                <field name="project_id" type="col"/>
+                <field name="total_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record id="project_expenses_view_pivot" model="ir.ui.view">
+        <field name="name">project.expenses.view.pivot</field>
+        <field name="model">project.expenses</field>
+        <field name="arch" type="xml">
+            <pivot string="Expense Pivot">
+                <field name="project_id" type="row"/>
+                <field name="paid_by_employee_id" type="col"/>
+                <field name="total_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
     <record id="project_expenses_action" model="ir.actions.act_window">
         <field name="name">Expenses</field>
         <field name="res_model">project.expenses</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,form,graph,pivot</field>
     </record>
 
-<!--    <menuitem id="project_expenses_root" sequence="40"-->
-<!--              name="Accounts"/>-->
+    <!--    <menuitem id="project_expenses_root" sequence="40"-->
+    <!--              name="Accounts"/>-->
 
     <menuitem id="project_expenses_menu" parent="customer_payment_root" sequence="70"
               name="Expenses" action="project_expenses_action"
     />
 
-   
 
-     
 </odoo>

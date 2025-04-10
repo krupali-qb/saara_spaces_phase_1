@@ -5,15 +5,12 @@
 
             <t t-call="web.internal_layout">
                 <div class="page">
-
                     <div style="text-align: center; ">
                         <t t-if="company_logo">
                             <img t-att-src="'data:image/png;base64,' + company_logo" style="
     max-height: 55pt;
     max-width: 90%;" alt="Company Logo"/>
                         </t>
-
-
                     </div>
                     <div>
                         <h2 class="text-center">
@@ -33,21 +30,24 @@
                                     </td>
                                     <td style="padding: 5px; font-size: 20px;">
                                         <strong>Total Paid:</strong>
+                                        <t t-esc="currency_id"/>
                                         <t t-esc="total_expense_sum"/>
                                     </td>
                                     <td style="padding: 5px;font-size: 20px;">
                                         <strong>Total Remaining:</strong>
-
+                                        <t t-esc="currency_id"/>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="padding: 5px;font-size: 20px;">
                                         <strong>Total Cash:
+                                            <t t-esc="currency_id"/>
                                             <t t-esc="total_cash_payment"/>
                                         </strong>
                                     </td>
                                     <td style="padding: 5px;font-size: 20px;">
                                         <strong>Total Bank:</strong>
+                                        <t t-esc="currency_id"/>
                                         <t t-esc="total_bank_payment"/>
                                     </td>
 
@@ -85,9 +85,10 @@
                                                 <t t-esc="expense['payment_type']"/>  <!-- Total Cost -->
                                             </td>
                                             <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="expense['currency_id']"/>
                                                 <t t-esc="expense['total_amount_expense']"/>  <!-- Paid Amount -->
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
+                                            <td style="border: 1px solid #000; padding: 8px; color:#ff9900;">
                                                 <t t-esc="expense['type']"/>  <!-- Pending Amount -->
                                             </td>
                                             <td style="border: 1px solid #000; padding: 8px;">
@@ -108,16 +109,15 @@
                                                 <t t-esc="vendor['payment_type']"/>  <!-- Agency Name -->
                                             </td>
                                             <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="vendor['currency_id']"/>
                                                 <t t-esc="vendor['total_amount_vendor']"/>  <!-- Agency Name -->
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
+                                            <td style="border: 1px solid #000; padding: 8px;color:#006600;">
                                                 <t t-esc="vendor['type']"/>  <!-- Agency Name -->
                                             </td>
                                             <td style="border: 1px solid #000; padding: 8px;">
                                                 <t t-esc="vendor['payment_date']"/>  <!-- Agency Name -->
                                             </td>
-
-
                                         </tr>
                                     </t>
                                 </t>

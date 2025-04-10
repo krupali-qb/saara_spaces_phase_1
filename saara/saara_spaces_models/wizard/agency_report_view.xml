@@ -28,7 +28,7 @@
         <field name="type">ir.actions.act_window</field>
     </record>
 
-     <menuitem id="work_agency_reports_menus_new" parent="saara_spaces_models.reports_roots" sequence="95"
+     <menuitem id="work_agency_reports_menus_new" parent="saara_spaces_models.reports_roots" sequence="85"
               name="Agency Report" action="action_agency_report_wizard_new"
     />
 

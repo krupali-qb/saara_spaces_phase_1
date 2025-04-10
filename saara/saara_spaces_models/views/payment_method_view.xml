@@ -48,10 +48,33 @@
         </field>
     </record>
 
+    <record id="payment_method_view_graph" model="ir.ui.view">
+        <field name="name">payment.method.view.graph</field>
+        <field name="model">payment.method</field>
+        <field name="arch" type="xml">
+            <graph string="Customer Payment Analysis" type="bar">
+                <field name="payment_date" type="row"/>
+                <field name="form_customer_id" type="col"/>
+                <field name="customer_payment" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="payment_method_view_pivot" model="ir.ui.view">
+        <field name="name">payment.method.view.pivot</field>
+        <field name="model">payment.method</field>
+        <field name="arch" type="xml">
+            <pivot string="Customer Payment Pivot">
+                <field name="interior_project_id" type="row"/>
+                <field name="form_customer_id" type="col"/>
+                <field name="customer_payment" type="measure"/>
+            </pivot>
+        </field>
+    </record>
     <record id="customer_payments_action" model="ir.actions.act_window">
         <field name="name">Received</field>
         <field name="res_model">payment.method</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,form,graph,pivot</field>
     </record>
 
     <menuitem id="customer_payment_root" name="Accounts" sequence="40"/>

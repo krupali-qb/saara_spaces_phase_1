@@ -139,3 +139,4 @@ class InteriorProject(models.Model):
     def _compute_total_expenses_amount(self):
         for record in self:
             record.total_expenses_amount = sum(expenses.total_amount for expenses in record.expenses_ids)
+

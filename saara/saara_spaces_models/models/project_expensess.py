@@ -88,3 +88,22 @@ class ProjectExpenses(models.Model):
                     vendor_payment.unlink()
 
         return super(ProjectExpenses, self).unlink()
+
+    @api.model
+    def get_expense_chart_data(self):
+        records = self.read_group(
+            domain=[],
+            fields=['total_amount:sum'],
+            groupby=['agency_category'],
+            lazy=False,
+        )
+        result = []
+        for rec in records:
+            category_name = self.env['agency.category'].browse(rec['agency_category'][0]).name if rec[
+                'agency_category'] else 'Unknown'
+            result.append({
+                'label': category_name,
+                'value': rec['total_amount'],
+            })
+        print("result================", result)
+        return result

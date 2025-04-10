@@ -33,7 +33,18 @@
         <field name="tag">reports_tag</field>
     </record>
 
-    <menuitem id="reports_roots"  name="Reports"/>
+    <record id="account_dashboard_action" model="ir.actions.client">
+        <field name="name">Account Dashboard</field>
+        <field name="tag">dashboard_tag</field>
+    </record>
+
+    <menuitem id="dashboard_roots" name="Dashboard"/>
+
+    <menuitem name="Dashboard" id="account_dashboard"
+              sequence="10" action="account_dashboard_action"
+              parent="dashboard_roots"/>
+    
+    <menuitem id="reports_roots" name="Reports"/>
 
     <menuitem name="Reports" id="project_reports" parent="reports_roots"
               sequence="0" action="reports_action"/>
@@ -42,7 +53,6 @@
               name="Projects Report" action="action_report_wizard_new"
     />
 
-   
 
 </odoo>
 

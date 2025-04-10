@@ -31,6 +31,7 @@ class AgencyWizard(models.TransientModel):
             raise UserError('Start date cannot be later than end date.')
 
         company_logo = self.env.company.logo
+        currency_id = self.env.company.currency_id.symbol
 
         if self.agency_ids:
             # Example: Generate a report based on the date range
@@ -40,6 +41,7 @@ class AgencyWizard(models.TransientModel):
                 'agency_ids': self.agency_ids.name,
                 'end_date': self.end_date,
                 'company_logo': company_logo,
+                'currency_id': currency_id,
                 'data': generated_data['report_data'],  # The actual report data returned
                 'total_expense_sum': generated_data['total_expense_sum'] + generated_data['total_vendor_sum'],
                 # Sum of total_amount_expense
@@ -57,10 +59,12 @@ class AgencyWizard(models.TransientModel):
                 'start_date': self.start_date,
                 'end_date': self.end_date,
                 'company_logo': company_logo,
+                'currency_id': currency_id,
                 'data': generated_data['report_data'],  # The actual report data returned
 
             }
             # Return the report data (or print it, save it as PDF, etc.)
+            print("data===========0", report_data)
             return self.env.ref('saara_spaces_models.agency_report_action_template').report_action(self,
                                                                                                    data=report_data)
 
@@ -107,6 +111,7 @@ class AgencyWizard(models.TransientModel):
                     'pending': expense.project_id.balance_receivable,
                     'total_amount': expense.project_id.total_paid,
                     'total_amount_expense': expense.total_amount,
+                    'currency_id': expense.currency_id.symbol,
                 })
                 report_data_new.append(project_data)
             for vendor in vendor_projects:
@@ -125,7 +130,7 @@ class AgencyWizard(models.TransientModel):
                         'agency_category': payment_line.agency_category.name,
                         'payment_type': vendor.name,
                         'payment_date': vendor.payment_date,
-
+                        'currency_id': vendor.currency_id.symbol,
                         'project_id': payment_line.project_id.name,
                         'total_cost': payment_line.project_id.cost_price,
                         'paid_amount': payment_line.project_id.total_paid,
@@ -181,6 +186,7 @@ class AgencyWizard(models.TransientModel):
                             'pending': expense.project_id.balance_receivable,
                             'total_amount': expense.project_id.total_paid,
                             'total_amount_expense': expense.total_amount,
+                            'currency_id': expense.currency_id.symbol,
                         })
                     project_data['total_paid'] += expense_amount
 
@@ -199,6 +205,7 @@ class AgencyWizard(models.TransientModel):
                                 'paid_amount': payment_line.project_id.total_paid,
                                 'pending': payment_line.project_id.balance_receivable,
                                 'total_amount_vendor': payment_line.vendor_payment,
+                                'currency_id': payment_line.currency_id.symbol,
                             })
                             project_data['total_vendor'] += vendor_amount
                 # Append project data to the report list only if it contains expenses or vendor data
