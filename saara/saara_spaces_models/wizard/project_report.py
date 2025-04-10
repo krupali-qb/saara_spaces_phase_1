@@ -42,7 +42,6 @@ class ProjectWizard(models.TransientModel):
         }
 
         # Return the report data (or print it, save it as PDF, etc.)
-        print("vvvcfffffffffffffffffffffffffff",report_data)
         return self.env.ref('saara_spaces_models.project_report_action_template').report_action(self, data=report_data)
 
     def _generate_data(self, start_date, end_date):

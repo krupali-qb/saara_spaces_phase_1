@@ -8,7 +8,7 @@
     'company': 'quantumbot',
     'maintainer': 'quantumbot',
     'website': "https://quantumbot.in/",
-    'depends': ['web', 'base', 'mail','base_import','website'],
+    'depends': ['web', 'base', 'mail', 'base_import', 'website'],
     'data': [
         'security/security_template.xml',
         'security/ir.model.access.csv',
@@ -29,8 +29,8 @@
         'wizard/work_category_view.xml',
         'wizard/agency_report_template.xml',
         'wizard/agency_report_view.xml',
+        'wizard/agency_report_template_new.xml',
 
-        
     ],
     'assets': {
         'web.assets_backend': [

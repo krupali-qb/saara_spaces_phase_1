@@ -19,8 +19,6 @@ class ProjectWorkCategoryWizard(models.TransientModel):
     start_date = fields.Date(string='Start Date', required=True, default=_default_start_date)
     end_date = fields.Date(string='End Date', required=True, default=_default_end_date)
 
-    # project_id = fields.Many2one('project.interior', string="Projects")
-
     @api.model
     def default_get(self, fields):
         res = super(ProjectWorkCategoryWizard, self).default_get(fields)
@@ -51,7 +49,6 @@ class ProjectWorkCategoryWizard(models.TransientModel):
         }
 
         # Return the report data (or print it, save it as PDF, etc.)
-        print(">>>>>>>>>>>>>>>>>>", report_data)
         return self.env.ref('saara_spaces_models.work_category_report_action_template').report_action(self,
                                                                                                       data=report_data)
     def _generate_data(self, start_date, end_date):
@@ -70,9 +67,6 @@ class ProjectWorkCategoryWizard(models.TransientModel):
             ('expense_date', '>=', start_date),
             ('expense_date', '<=', end_date),
         ])
-        print("---------vendor_records-------------", vendor_records)
-        print("----------expense_records------------", expense_records)
-        print("----------customer_records------------", customer_records)
 
         report_data_new = []
         total_expense_sum = 0  # Initialize the sum for total_amount_expense
