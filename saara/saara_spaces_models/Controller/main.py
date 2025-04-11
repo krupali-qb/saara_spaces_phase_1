@@ -39,5 +39,61 @@ class ExpenseChartController(http.Controller):
             'credits': [credit_by_year[year] for year in all_years],
             'debits': [debit_by_year[year] for year in all_years],
         }
-        print("====================>>>>>>",data)
+        print("====================>>>>>>", data)
         return data
+
+    @http.route('/project/cost/chart/data', type='json', auth='user')
+    def project_cost_chart_data(self):
+        records = request.env['project.interior'].search([])
+        result = []
+
+        for rec in records:
+            result.append({
+                'name': rec.name,
+                'revenue': rec.customer_amount,
+                'expense': rec.total_paid,
+            })
+        print("==============", result)
+        return result
+
+    @http.route('/agency/payment/count/chart/data', type='json', auth='user')
+    def get_agency_expense_and_payment_data(self):
+        vendor_data = defaultdict(lambda: {
+            'name': '',
+            'total_expense': 0.0,
+            'total_payment': 0.0,
+            'projects': set(),
+        })
+
+        # Fetch Vendor Payments
+        payment_records = request.env['vendor.payment.method'].search([])
+        for rec in payment_records:
+            vendor_id = rec.vendor_id.id
+            vendor_data[vendor_id]['name'] = rec.vendor_id.name
+            vendor_data[vendor_id]['total_payment'] += rec.vendor_payment
+            if rec.interior_project_id:
+                vendor_data[vendor_id]['projects'].add(rec.interior_project_id.name)
+
+        # Fetch Expenses
+        expense_records = request.env['project.expenses'].search([])
+        for exp in expense_records:
+            vendor_id = exp.agency_id.id
+            if vendor_id:  # only if linked to a vendor
+                vendor_data[vendor_id]['name'] = exp.agency_id.name
+                vendor_data[vendor_id]['total_expense'] += exp.total_amount
+                if exp.project_id:
+                    vendor_data[vendor_id]['projects'].add(exp.project_id.name)
+
+        # Format Result
+        result = []
+        for data in vendor_data.values():
+            if data['name']:
+                result.append({
+                    'name': data['name'],
+                    'projects': ', '.join(data['projects']),
+                    'total_expense': data['total_expense'],
+                    'total_payment': data['total_payment'],
+                })
+
+        print("===== Combined Vendor Expense & Payment Data =====", result)
+        return result

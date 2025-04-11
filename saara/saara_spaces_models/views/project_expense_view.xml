@@ -85,9 +85,6 @@
         <field name="view_mode">tree,form,graph,pivot</field>
     </record>
 
-    <!--    <menuitem id="project_expenses_root" sequence="40"-->
-    <!--              name="Accounts"/>-->
-
     <menuitem id="project_expenses_menu" parent="customer_payment_root" sequence="70"
               name="Expenses" action="project_expenses_action"
     />

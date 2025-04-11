@@ -43,7 +43,7 @@
     <menuitem name="Dashboard" id="account_dashboard"
               sequence="10" action="account_dashboard_action"
               parent="dashboard_roots"/>
-    
+
     <menuitem id="reports_roots" name="Reports"/>
 
     <menuitem name="Reports" id="project_reports" parent="reports_roots"

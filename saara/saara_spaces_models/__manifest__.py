@@ -36,6 +36,7 @@
         'web.assets_backend': [
             # 'saara_spaces_models/static/src/**/*.xml',
             "https://cdn.jsdelivr.net/npm/chart.js",
+            "https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js",
             'saara_spaces_models/static/src/view/custom_dashboard.xml',
             'saara_spaces_models/static/src/view/reports_custom.xml',
             'saara_spaces_models/static/src/js/reports_screen.js',

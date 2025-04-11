@@ -1,6 +1,7 @@
-from pkg_resources import require
 
 from odoo import fields, models, api
+from datetime import date
+from dateutil.relativedelta import relativedelta
 
 
 class ProjectExpenses(models.Model):
@@ -91,8 +92,15 @@ class ProjectExpenses(models.Model):
 
     @api.model
     def get_expense_chart_data(self):
+        today = date.today()
+        start_of_month = today.replace(day=1)
+        end_of_month = (start_of_month + relativedelta(months=1)) - relativedelta(days=1)
+
         records = self.read_group(
-            domain=[],
+            domain=[
+                ('expense_date', '>=', start_of_month),
+                ('expense_date', '<=', end_of_month),
+            ],
             fields=['total_amount:sum'],
             groupby=['agency_category'],
             lazy=False,
@@ -105,5 +113,5 @@ class ProjectExpenses(models.Model):
                 'label': category_name,
                 'value': rec['total_amount'],
             })
-        print("result================", result)
+        print("data=============",result)
         return result
