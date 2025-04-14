@@ -39,7 +39,6 @@ class ExpenseChartController(http.Controller):
             'credits': [credit_by_year[year] for year in all_years],
             'debits': [debit_by_year[year] for year in all_years],
         }
-        print("====================>>>>>>", data)
         return data
 
     @http.route('/project/cost/chart/data', type='json', auth='user')
@@ -53,7 +52,6 @@ class ExpenseChartController(http.Controller):
                 'revenue': rec.customer_amount,
                 'expense': rec.total_paid,
             })
-        print("==============", result)
         return result
 
     @http.route('/agency/payment/count/chart/data', type='json', auth='user')
@@ -94,6 +92,4 @@ class ExpenseChartController(http.Controller):
                     'total_expense': data['total_expense'],
                     'total_payment': data['total_payment'],
                 })
-
-        print("===== Combined Vendor Expense & Payment Data =====", result)
         return result

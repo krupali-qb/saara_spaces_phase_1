@@ -113,5 +113,4 @@ class ProjectExpenses(models.Model):
                 'label': category_name,
                 'value': rec['total_amount'],
             })
-        print("data=============",result)
         return result

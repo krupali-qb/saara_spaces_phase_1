@@ -13,7 +13,6 @@ class CustomDashboard extends Component {
             this.loadAgencyPaymentCountChart();
         });
     }
-
     async loadChartData() {
         const ctx = document.getElementById("agencyPieChart")?.getContext("2d");
         if (!ctx) return;
@@ -250,9 +249,6 @@ class CustomDashboard extends Component {
         console.error("Failed to load agency chart data", error);
     }
 }
-
-
-
 }
 CustomDashboard.template = "saara_spaces_models.CustomDashboard";
 actionRegistry.add("dashboard_tag", CustomDashboard);

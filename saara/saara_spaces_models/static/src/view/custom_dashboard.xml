@@ -9,23 +9,23 @@
                 <!-- Pie Chart -->
                 <div style="flex: 1 1 45%; max-width: 500px;">
                     <h3 style="text-align: center;">Agency-wise Expenses</h3>
-                    <canvas id="agencyPieChart" width="100%" height="200px;"></canvas>
+                    <canvas id="agencyPieChart" width="100%" height="200px;"/>
                 </div>
                 <!-- Line Chart -->
                 <div style="flex: 1 1 45%; max-width: 500px;">
                     <h3 style="text-align: center;">Cash Flow</h3>
-                    <canvas id="cashFlowChart" style="width: 100%; height: 200px;"></canvas>
+                    <canvas id="cashFlowChart" style="width: 100%; height: 200px;"/>
                 </div>
             </div>
             <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 30px; margin-top: 40px;">
                 <!-- Pie Chart -->
                 <div style="flex: 1 1 45%; max-width: 500px;">
                     <h3 style="text-align: center;">Project-wise Revenue vs Expense</h3>
-                    <canvas id="revenueVsExpenseChart" style="width: 100%; height: 200px;"></canvas>
+                    <canvas id="revenueVsExpenseChart" style="width: 100%; height: 200px;"/>
                 </div>
                 <div style="flex: 1 1 45%; max-width: 500px;">
                     <h3 style="text-align: center;">Agency Wise Total</h3>
-                    <canvas id="agencyPaymentCountChart" style="width: 100%; height: 200px;"></canvas>
+                    <canvas id="agencyPaymentCountChart" style="width: 100%; height: 200px;"/>
                 </div>
             </div>
         </div>
