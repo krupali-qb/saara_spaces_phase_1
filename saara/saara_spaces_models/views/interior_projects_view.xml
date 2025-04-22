@@ -8,9 +8,9 @@
                 <header>
                     <button name="action_lock" string="Quote Lock" type="object"
                             invisible="status in ('inprogress','quote_lock','completed')"/>
-                    <button name="action_confirm" string="Confirm" type="object"
+                    <button name="action_confirm" string="In Progress" type="object"
                             invisible="status in ('inprogress', 'completed', 'new')"/>
-                    <button name="action_done" string="Done" type="object"
+                    <button name="action_done" string="Completed" type="object"
                             invisible="status in ('completed', 'quote_lock', 'new')"/>
                     <button name="action_cancel" string="Cancel" type="object"
                             invisible="status in ('inprogress', 'new', 'quote_lock')"/>
@@ -58,11 +58,12 @@
                             <field name="company_id" invisible="1"
                                    readonly="status in ['quote_lock','inprogress', 'completed', 'new']"/>
                             <field name="poc_name" placeholder="Name"/>
-<!--                            <field name="new_contact_field" placeholder="+91 "/>-->
+                            <!--                            <field name="new_contact_field" placeholder="+91 "/>-->
                             <field name="contact_information" placeholder="+91 xxxxx xxxxx"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="cost_price" widget="monetary" options="{'currency_field': 'currency_id'}"
                                    readonly="status in ['quote_lock','inprogress','completed']"/>
+                            <field name="buffer"/>
                         </group>
                     </group>
                     <notebook>
@@ -134,6 +135,31 @@
                                     <group>
                                         <field name="total_expenses_amount" widget="monetary"
                                                options="{'currency_field': 'currency_id'}"/>
+                                    </group>
+                                </div>
+                            </div>
+                        </page>
+                        <page string="Quotation">
+                            <field name="quotation_ids" readonly="status in ['quote_lock','inprogress','completed']">
+                                <tree editable="bottom">
+                                    <field name="agency_category"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="amount" widget="monetary"
+                                           options="{'currency_field': 'currency_id'}"/>
+                                    <field name="buffer"/>
+                                    <field name="ctc" widget="monetary"
+                                           options="{'currency_field': 'currency_id'}"/>
+                                    <field name="vendor_id"/>
+                                </tree>
+                            </field>
+                            <div class="d-flex justify-content-end">
+                                <div class="">
+                                    <group>
+                                        <field name="total_amount" widget="monetary"
+                                               options="{'currency_field': 'currency_id'}"/>
+                                        <field name="total_ctc" widget="monetary"
+                                               options="{'currency_field': 'currency_id'}"/>
+                                        <field name="buffer_avg"/>
                                     </group>
                                 </div>
                             </div>

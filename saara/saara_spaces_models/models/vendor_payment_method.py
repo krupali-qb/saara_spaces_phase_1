@@ -29,6 +29,8 @@ class VendorPaymentMethod(models.Model):
     total_payment = fields.Float(string="Total Payment", compute="_compute_total_payment", store=True)
     expense_id = fields.Many2one('project.expenses', string='Expenses')
 
+
+
     @api.constrains('project_form_id')
     def _check_project_form_id(self):
         for record in self:
@@ -55,7 +57,9 @@ class VendorPaymentMethod(models.Model):
                 'vendor_payment': project.vendor_payment,
             })
         if payment_record.interior_project_id:
+            print("demo----------",payment_record.interior_project_id)
             if payment_record.expenses == False:
+                print("==============if--")
                 payment_record.project_form_id = [(0, 0, {
                     'project_id': payment_record.interior_project_id.id,
                     'agency_category': payment_record.agency_category.id,

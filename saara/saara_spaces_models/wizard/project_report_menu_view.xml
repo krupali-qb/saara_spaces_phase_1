@@ -16,8 +16,7 @@
             <field name="name">Monthly Account Report</field>
             <field name="model">work.category.report</field>
             <field name="report_type">qweb-pdf</field>  <!-- Specify report type: qweb-pdf, qweb-html, etc. -->
-            <field name="report_name">saara_spaces_models.work_category_report_project_template
-            </field> <!-- Report QWeb Template -->
+            <field name="report_name">saara_spaces_models.work_category_report_project_template</field> <!-- Report QWeb Template -->
             <field name="report_file">saara_spaces_models.work_category_report_project_template</field>
             <field name="print_report_name">'Project Reports - ' + object.end_date</field>
             <field name="binding_model_id" ref="model_work_category_report"/>
