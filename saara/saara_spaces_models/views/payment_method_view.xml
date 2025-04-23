@@ -7,6 +7,7 @@
             <form string="Payment Methods">
                 <sheet>
                     <group>
+                        <field name="sale_invoice"/>
                         <field name="name"/>
                         <field name="interior_project_id"/>
                         <field name="form_customer_id"/>

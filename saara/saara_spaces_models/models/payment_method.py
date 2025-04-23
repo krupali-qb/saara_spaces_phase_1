@@ -15,6 +15,7 @@ class PaymentMethod(models.Model):
         default=lambda self: self.env.user.company_id.currency_id.id)
     customer_payment = fields.Float(string='Payment*',required=True, size=25)
     company_id = fields.Many2one('res.company', string='Company', index=True, default=lambda self: self.env.company)
+    sale_invoice = fields.Char(string="Sales Invoice*", size=25)
 
 
     @api.depends('name')

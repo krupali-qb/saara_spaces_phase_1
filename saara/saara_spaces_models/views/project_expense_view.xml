@@ -12,6 +12,7 @@
                         </span>
                         <field name="name" placeholder="Title / Description"/>
                         <group>
+                            <field name="remark" placeholder="Remark"/>
                             <field name="category_id" options="{'no_create': True}"/>
                             <field name="project_id"/>
                             <field name="is_person"/>

@@ -28,6 +28,7 @@ class VendorPaymentMethod(models.Model):
                                       copy=True, auto_join=True, required=True)
     total_payment = fields.Float(string="Total Payment", compute="_compute_total_payment", store=True)
     expense_id = fields.Many2one('project.expenses', string='Expenses')
+    invoice_number = fields.Char(string='Invoice Number*',size=25)
 
 
 

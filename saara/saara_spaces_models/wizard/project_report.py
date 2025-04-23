@@ -76,6 +76,7 @@ class ProjectWizard(models.TransientModel):
                 'payment_date': payment.payment_date,
                 'vendor_payment': payment.vendor_payment,
                 'currency_id': payment.currency_id.symbol,
+                'invoice_number': payment.invoice_number
             })
 
             # Loop through customer payments (payments_ids)
@@ -85,7 +86,8 @@ class ProjectWizard(models.TransientModel):
                 'payment_date': payment.payment_date,
                 'customer_payment': payment.customer_payment,
                 'name': payment.name,
-                'currency_id': payment.currency_id.symbol
+                'currency_id': payment.currency_id.symbol,
+                'sale_invoice': payment.sale_invoice
             })
 
         # Loop through expenses (expenses_ids)
@@ -99,7 +101,8 @@ class ProjectWizard(models.TransientModel):
                 'work_catg': expense.agency_category.name,
                 'payment_type': expense.payment_type,
                 'currency_id': expense.currency_id.symbol,
-                'person_name': expense.person_name
+                'person_name': expense.person_name,
+                'remark': expense.remark
             })
 
             report_data_new.append(project_data)

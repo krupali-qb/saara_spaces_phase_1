@@ -31,6 +31,7 @@ class ProjectExpenses(models.Model):
     company_id = fields.Many2one('res.company', string='Account', default=lambda self: self.env.company)
     notes = fields.Html(string='Notes')
     agency_category = fields.Many2one('agency.category', string="Work Category*", required=True)
+    remark = fields.Char(string="Remark", size=25)
 
     @api.onchange('name', 'person_name')
     def _onchange_fields(self):

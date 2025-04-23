@@ -9,6 +9,7 @@
                     <group>
                         <field name="expense_id" invisible="1"/>
                         <field name="name"/>
+                        <field name="invoice_number" placeholder="Invoice Number"/>
                         <field name="vendor_id"/>
                         <field name="agency_category" options="{'no_create': True}" invisible="1"/>
                         <!-- <field name="interior_project_id"/>-->

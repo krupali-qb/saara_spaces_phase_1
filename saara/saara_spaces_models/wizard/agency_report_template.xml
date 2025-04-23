@@ -2,7 +2,7 @@
 <odoo>
     <template id="agency_report_project_template">
         <t t-call="web.html_container">
-            <t t-call="web.internal_layout">
+<!--            <t t-call="web.internal_layout">-->
                 <div class="page">
                     <!-- Header with Company Logo -->
                     <div style="text-align: center;">
@@ -99,12 +99,13 @@
                                 <table class="table table-bordered" style="width: 100%; border-collapse: collapse;">
                                     <thead>
                                         <tr>
-                                            <th style="border: 1px solid #000; padding: 8px;">Agency Category</th>
-                                            <th style="border: 1px solid #000; padding: 8px;">Project Name</th>
-                                            <th style="border: 1px solid #000; padding: 8px;">Payment Type</th>
-                                            <th style="border: 1px solid #000; padding: 8px;">Amount Paid</th>
-                                            <th style="border: 1px solid #000; padding: 8px;">Type</th>
                                             <th style="border: 1px solid #000; padding: 8px;">Date</th>
+                                            <th style="border: 1px solid #000; padding: 8px;">Project Name</th>
+                                            <th style="border: 1px solid #000; padding: 8px;">Agency Category</th>
+                                            <th style="border: 1px solid #000; padding: 8px;">Invoice</th>
+                                            <th style="border: 1px solid #000; padding: 8px;">Payment Type</th>
+                                            <th style="border: 1px solid #000; padding: 8px;">Type</th>
+                                            <th style="border: 1px solid #000; padding: 8px;">Amount Paid</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -112,23 +113,26 @@
                                         <t t-foreach="project['expenses_ids']" t-as="expense">
                                             <tr>
                                                 <td style="border: 1px solid #000; padding: 8px;">
-                                                    <t t-esc="expense['agency_category']"/>
+                                                    <t t-esc="expense['expense_date']"/>
                                                 </td>
                                                 <td style="border: 1px solid #000; padding: 8px;">
                                                     <t t-esc="expense['project_id']"/>
                                                 </td>
                                                 <td style="border: 1px solid #000; padding: 8px;">
-                                                    <t t-esc="expense['payment_type']"/>
+                                                    <t t-esc="expense['agency_category']"/>
                                                 </td>
                                                 <td style="border: 1px solid #000; padding: 8px;">
-                                                    <t t-esc="expense['currency_id']"/>
-                                                    <t t-esc="expense['total_amount_expense']"/>
+                                                    <t t-esc="expense['remark']"/>
+                                                </td>
+                                                <td style="border: 1px solid #000; padding: 8px;">
+                                                    <t t-esc="expense['payment_type']"/>
                                                 </td>
                                                 <td style="border: 1px solid #000; padding: 8px; color:#ff9900;">
                                                     <t t-esc="expense['type']"/>
                                                 </td>
                                                 <td style="border: 1px solid #000; padding: 8px;">
-                                                    <t t-esc="expense['expense_date']"/>
+                                                    <t t-esc="expense['currency_id']"/>
+                                                    <t t-esc="expense['total_amount_expense']"/>
                                                 </td>
                                             </tr>
                                         </t>
@@ -137,23 +141,26 @@
                                         <t t-foreach="project['vendor_ids']" t-as="vendor">
                                             <tr>
                                                 <td style="border: 1px solid #000; padding: 8px;">
-                                                    <t t-esc="vendor['agency_category']"/>
+                                                    <t t-esc="vendor['payment_date']"/>
                                                 </td>
-                                                <td style="border: 1px solid #000; padding: 8px;">
+                                                 <td style="border: 1px solid #000; padding: 8px;">
                                                     <t t-esc="vendor['project_id']"/>
                                                 </td>
                                                 <td style="border: 1px solid #000; padding: 8px;">
-                                                    <t t-esc="vendor['payment_type']"/>
+                                                    <t t-esc="vendor['agency_category']"/>
                                                 </td>
                                                 <td style="border: 1px solid #000; padding: 8px;">
-                                                    <t t-esc="expense['currency_id']"/>
-                                                    <t t-esc="vendor['total_amount_vendor']"/>
+                                                    <t t-esc="vendor['invoice_number']"/>
+                                                </td>
+                                                <td style="border: 1px solid #000; padding: 8px;">
+                                                    <t t-esc="vendor['payment_type']"/>
                                                 </td>
                                                 <td style="border: 1px solid #000; padding: 8px;color:#006600;">
                                                     <t t-esc="vendor['type']"/>
                                                 </td>
                                                 <td style="border: 1px solid #000; padding: 8px;">
-                                                    <t t-esc="vendor['payment_date']"/>
+                                                    <t t-esc="expense['currency_id']"/>
+                                                    <t t-esc="vendor['total_amount_vendor']"/>
                                                 </td>
                                             </tr>
                                         </t>
@@ -169,6 +176,6 @@
                     </t>
                 </div>
             </t>
-        </t>
+<!--        </t>-->
     </template>
 </odoo>

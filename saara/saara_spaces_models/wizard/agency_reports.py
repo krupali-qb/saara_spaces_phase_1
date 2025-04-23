@@ -64,7 +64,6 @@ class AgencyWizard(models.TransientModel):
 
             }
             # Return the report data (or print it, save it as PDF, etc.)
-            print("data===========0", report_data)
             return self.env.ref('saara_spaces_models.agency_report_action_template').report_action(self,
                                                                                                    data=report_data)
 
@@ -83,7 +82,9 @@ class AgencyWizard(models.TransientModel):
                 ('payment_date', '<=', end_date),
                 ('vendor_id', '=', agency_id.id),
                 ('expenses', '=', False),
+                ('interior_project_id', '=', False)
             ])
+            print("vendor_projects==================",vendor_projects)
             report_data_new = []
             total_expense_sum = 0  # Initialize the sum for total_amount_expense
             total_vendor_sum = 0
@@ -112,6 +113,7 @@ class AgencyWizard(models.TransientModel):
                     'total_amount': expense.project_id.total_paid,
                     'total_amount_expense': expense.total_amount,
                     'currency_id': expense.currency_id.symbol,
+                    'remark': expense.remark
                 })
                 report_data_new.append(project_data)
             for vendor in vendor_projects:
@@ -136,7 +138,7 @@ class AgencyWizard(models.TransientModel):
                         'paid_amount': payment_line.project_id.total_paid,
                         'pending': payment_line.project_id.balance_receivable,
                         'total_amount_vendor': payment_line.vendor_payment,
-
+                        'invoice_number': vendor.invoice_number
                     })
                     report_data_new.append(project_datav)
 
@@ -161,8 +163,9 @@ class AgencyWizard(models.TransientModel):
                 ('payment_date', '>=', start_date),
                 ('payment_date', '<=', end_date),
                 ('expenses', '=', False),
+                ('interior_project_id', '=', False)
             ])
-
+            print("vendor_projects_all----------------",vendor_projects_all)
             for agency in agency_ids:
                 project_data = {
                     'agency_ids': agency.name,
@@ -187,6 +190,7 @@ class AgencyWizard(models.TransientModel):
                             'total_amount': expense.project_id.total_paid,
                             'total_amount_expense': expense.total_amount,
                             'currency_id': expense.currency_id.symbol,
+                            'remark': expense.remark
                         })
                     project_data['total_paid'] += expense_amount
 
@@ -206,6 +210,7 @@ class AgencyWizard(models.TransientModel):
                                 'pending': payment_line.project_id.balance_receivable,
                                 'total_amount_vendor': payment_line.vendor_payment,
                                 'currency_id': payment_line.currency_id.symbol,
+                                'invoice_number': vendor.invoice_number
                             })
                             project_data['total_vendor'] += vendor_amount
                 # Append project data to the report list only if it contains expenses or vendor data
