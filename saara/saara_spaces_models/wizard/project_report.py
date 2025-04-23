@@ -19,7 +19,7 @@ class ProjectWizard(models.TransientModel):
 
     start_date = fields.Date(string='Start Date', required=True, default=_default_start_date)
     end_date = fields.Date(string='End Date', required=True, default=_default_end_date)
-    project_id = fields.Many2one('project.interior', string="Projects")
+    project_id = fields.Many2many('project.interior', string="Projects")
 
     @api.model
     def default_get(self, fields):

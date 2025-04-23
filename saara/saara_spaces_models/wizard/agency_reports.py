@@ -18,7 +18,7 @@ class AgencyWizard(models.TransientModel):
 
     start_date = fields.Date(string='Start Date', required=True, default=_default_start_date)
     end_date = fields.Date(string='End Date', required=True, default=_default_end_date)
-    agency_ids = fields.Many2one('res.agency', string="Agency")
+    agency_ids = fields.Many2many('res.agency', string="Agency")
 
     @api.model
     def default_get(self, fields):
@@ -26,46 +26,56 @@ class AgencyWizard(models.TransientModel):
         return res
 
     def agency_generate_report(self):
-        # Ensure the start date is not after the end date
         if self.start_date > self.end_date:
             raise UserError('Start date cannot be later than end date.')
 
         company_logo = self.env.company.logo
         currency_id = self.env.company.currency_id.symbol
+        report_data_list = []
 
         if self.agency_ids:
-            # Example: Generate a report based on the date range
-            generated_data = self._generate_data(self.start_date, self.end_date, self.agency_ids)
-            report_data = {
-                'start_date': self.start_date,
-                'agency_ids': self.agency_ids.name,
-                'end_date': self.end_date,
-                'company_logo': company_logo,
+            for agency in self.agency_ids:
+                generated_data = self._generate_data(self.start_date, self.end_date, agency)
+
+                agency_data = {
+                'agency_ids': agency.name,
                 'currency_id': currency_id,
-                'data': generated_data['report_data'],  # The actual report data returned
-                'total_expense_sum': generated_data['total_expense_sum'] + generated_data['total_vendor_sum'],
-                # Sum of total_amount_expense
+                'expenses_ids': [],
+                'vendor_ids': [],
+                'total_paid': generated_data['total_expense_sum'] + generated_data['total_vendor_sum'],
                 'total_cash_payment': generated_data['total_cash_payment'],
                 'total_bank_payment': generated_data['total_bank_payment'],
-
             }
 
-            # Return the report data (or print it, save it as PDF, etc.)
-            return self.env.ref('saara_spaces_models.agency_report_action_template_new').report_action(self,
-                                                                                                       data=report_data)
-        else:
-            generated_data = self._generate_data(self.start_date, self.end_date, self.agency_ids)
+                for record in generated_data['report_data']:
+                    if 'expenses_ids' in record:
+                        agency_data['expenses_ids'].extend(record['expenses_ids'])
+                    if 'vendor_ids' in record:
+                        agency_data['vendor_ids'].extend(record['vendor_ids'])
+
+                report_data_list.append(agency_data)
+
             report_data = {
-                'start_date': self.start_date,
-                'end_date': self.end_date,
-                'company_logo': company_logo,
-                'currency_id': currency_id,
-                'data': generated_data['report_data'],  # The actual report data returned
+            'start_date': self.start_date,
+            'end_date': self.end_date,
+            'company_logo': company_logo,
+            'currency_id': currency_id,
+            'data': report_data_list,
+        }
 
-            }
-            # Return the report data (or print it, save it as PDF, etc.)
-            return self.env.ref('saara_spaces_models.agency_report_action_template').report_action(self,
-                                                                                                   data=report_data)
+            return self.env.ref('saara_spaces_models.agency_report_action_template_new').report_action(self, data=report_data)
+
+        else:
+        # If no agency selected, show all (fallback)
+            generated_data = self._generate_data(self.start_date, self.end_date, None)
+            report_data = {
+            'start_date': self.start_date,
+            'end_date': self.end_date,
+            'company_logo': company_logo,
+            'currency_id': currency_id,
+            'data': generated_data['report_data'],
+        }
+            return self.env.ref('saara_spaces_models.agency_report_action_template').report_action(self, data=report_data)
 
     def _generate_data(self, start_date, end_date, agency_id):
         # Fetch the records from the project.interior model
@@ -84,7 +94,6 @@ class AgencyWizard(models.TransientModel):
                 ('expenses', '=', False),
                 ('interior_project_id', '=', False)
             ])
-            print("vendor_projects==================",vendor_projects)
             report_data_new = []
             total_expense_sum = 0  # Initialize the sum for total_amount_expense
             total_vendor_sum = 0
@@ -139,6 +148,7 @@ class AgencyWizard(models.TransientModel):
                         'pending': payment_line.project_id.balance_receivable,
                         'total_amount_vendor': payment_line.vendor_payment,
                         'invoice_number': vendor.invoice_number
+
                     })
                     report_data_new.append(project_datav)
 
@@ -165,7 +175,7 @@ class AgencyWizard(models.TransientModel):
                 ('expenses', '=', False),
                 ('interior_project_id', '=', False)
             ])
-            print("vendor_projects_all----------------",vendor_projects_all)
+
             for agency in agency_ids:
                 project_data = {
                     'agency_ids': agency.name,
