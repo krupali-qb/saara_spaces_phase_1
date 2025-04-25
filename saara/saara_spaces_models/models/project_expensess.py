@@ -98,10 +98,6 @@ class ProjectExpenses(models.Model):
         end_of_month = (start_of_month + relativedelta(months=1)) - relativedelta(days=1)
 
         records = self.read_group(
-            domain=[
-                ('expense_date', '>=', start_of_month),
-                ('expense_date', '<=', end_of_month),
-            ],
             fields=['total_amount:sum'],
             groupby=['agency_category'],
             lazy=False,

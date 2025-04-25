@@ -8,6 +8,7 @@ class ExpenseChartController(http.Controller):
     @http.route('/project/expenses/chart/data', type='json', auth='user')
     def get_expense_data(self):
         data = request.env['project.expenses'].get_expense_chart_data()
+        print("-----------------",data)
         return data
 
     @http.route('/cash/flow/chart/data', type='json', auth='user')

@@ -153,18 +153,11 @@ $one__info: #454555 !important;
 .o_column_sortable{
     width: 100% !important;
     }
-// .o_list_renderer .o_list_table thead .o_list_number_th{
-//     text-align: center !important;
-//     }
-// .text-truncate {
-//     text-align: center !important;
-//     }
 
-// .o_list_renderer .o_list_table tbody > tr > td:not(.o_list_record_selector).o_list_number {
-//     text-align: start !important;
-//     }
+th[data-name="amount"] span {text-align:left !important}
+td[name="amount"] {text-align:left !important}
 
-.align-middle{
-    width:25% !important;
-    }
+th[data-name="ctc"] span {text-align:left !important}
+td[name="ctc"] {text-align:left !important}
 
+th[data-name="buffer"] {width:160px !important}

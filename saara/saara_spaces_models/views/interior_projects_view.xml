@@ -22,6 +22,9 @@
                             <field string="Project Total Cost (₹)" name="cost_price" widget="statinfo"/>
                         </button>
                         <button class="oe_stat_button" invisible="status in ('new','quote_lock')">
+                            <field string="Total CTC (₹)" name="total_ctc" widget="statinfo"/>
+                        </button>
+                        <button class="oe_stat_button" invisible="status in ('new','quote_lock')">
                             <field string="Received till date (₹)" name="customer_amount" widget="statinfo"/>
                         </button>
                         <button class="oe_stat_button" invisible="status in ('new','quote_lock')">
@@ -31,7 +34,7 @@
                             <field string="Paid (₹)" name="total_paid" widget="statinfo"/>
                         </button>
                         <button class="oe_stat_button" invisible="status in ('new','quote_lock')">
-                            <field string="CTC (₹)" name="cost_to_company" widget="statinfo"/>
+                            <field string="Pending CTC (₹)" name="pending_ctc" widget="statinfo"/>
                         </button>
                     </div>
                     <group>
@@ -145,22 +148,52 @@
                                     <field name="agency_category"/>
                                     <field name="currency_id" column_invisible="True"/>
                                     <field name="amount" widget="monetary"
-                                           options="{'currency_field': 'currency_id'}"/>
+                                           options="{'currency_field': 'currency_id'}" class="align-left"/>
                                     <field name="buffer"/>
                                     <field name="ctc" widget="monetary"
                                            options="{'currency_field': 'currency_id'}"/>
                                     <field name="vendor_id"/>
                                 </tree>
                             </field>
-                            <div class="d-flex justify-content-end">
+                            <div class="">
                                 <div class="">
-                                    <group>
-                                        <field name="total_amount" widget="monetary"
-                                               options="{'currency_field': 'currency_id'}"/>
-                                        <field name="total_ctc" widget="monetary"
-                                               options="{'currency_field': 'currency_id'}"/>
-                                        <field name="buffer_avg"/>
-                                    </group>
+                                    <table class="table table-borderless"
+                                           style="width: 100%; border-collapse: collapse;">
+                                        <tbody>
+                                            <tr>
+                                                <td style="width: 20%;padding: unset;"/>
+                                                <td class="text-start"
+                                                    style="width: 20%; padding: unset; padding-left: 45px;">
+                                                    <b>
+                                                        <span title="Total Amount">
+                                                            <field name="total_amount" widget="monetary"
+                                                                   options="{'currency_field': 'currency_id'}"
+                                                            />
+                                                        </span>
+                                                    </b>
+                                                </td>
+                                                <td class="text-center"
+                                                    style="width: 20%;padding: unset; padding-left:65px;">
+                                                    <b>
+                                                        <span title="Buffer Average">
+                                                            <field name="buffer_avg"/>
+                                                        </span>
+                                                    </b>
+                                                </td>
+                                                <td class="text-center"
+                                                    style="width: 20%;padding: unset;padding-right: 70px;">
+                                                    <b>
+                                                        <span title="Total CTC">
+                                                            <field name="total_ctc" widget="monetary"
+                                                                   options="{'currency_field': 'currency_id'}"
+                                                            />
+                                                        </span>
+                                                    </b>
+                                                </td>
+                                                <td style="width: 20%;padding: unset;padding-right: 35px;"/>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </page>

@@ -31,13 +31,9 @@ class ProjectQuotation(models.Model):
         for record in self:
             record.buffer = record.interior_project_id.buffer if record.interior_project_id else ''
 
-    @api.depends('interior_project_id', 'buffer')
+    @api.depends('amount', 'buffer')
     def _compute_ctc_payment(self):
         for record in self:
-            # Example logic (you can adjust this as per your real computation)
-            if record.interior_project_id:
-                base_ctc = float(record.interior_project_id.cost_to_company or 0.0)
-                buffer_percent = float(record.buffer or 0.0)
-                record.ctc = str(base_ctc + (base_ctc * buffer_percent / 100))
-            else:
-                record.ctc = ''
+            buffer_percent = float(record.buffer or 0.0)
+            record.ctc =  record.amount * buffer_percent / 100
+

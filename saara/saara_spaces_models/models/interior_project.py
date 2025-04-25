@@ -60,11 +60,12 @@ class InteriorProject(models.Model):
                                       copy=True, auto_join=True)
     buffer = fields.Integer(string="Buffer (%)")
     quotation_ids = fields.One2many(comodel_name='res.quotation',
-                                      inverse_name='interior_project_id',
-                                      copy=True, auto_join=True)
+                                    inverse_name='interior_project_id',
+                                    copy=True, auto_join=True)
     total_amount = fields.Monetary(string="Total Amount:", compute='_compute_qut_total_amount')
-    total_ctc = fields.Monetary(string="Total CTC:" ,compute='_compute_total_ctc')
-    buffer_avg = fields.Monetary(string="Average:", compute='_compute_buffer_avg')
+    total_ctc = fields.Monetary(string="Total CTC:", compute='_compute_total_ctc')
+    buffer_avg = fields.Char(string="Average:", compute='_compute_buffer_avg', store=True)
+    pending_ctc = fields.Monetary(string='Pending CTC', compute='_compute_pending_ctc')
 
     @api.onchange('name', 'city', 'street', 'street2', 'poc_name')
     def _onchange_fields(self):
@@ -118,9 +119,12 @@ class InteriorProject(models.Model):
         })
 
     @api.depends('cost_price', 'buffer')
-    def _compute_cost_to_company(self):
+    def _compute_pending_ctc(self):
         for record in self:
-            record.cost_to_company = record.cost_price * (record.buffer/100)
+            if record.total_ctc == 0.0:
+                record.pending_ctc = 0.0
+            else:
+                record.pending_ctc = record.total_ctc - record.total_paid
 
     @api.depends('quotation_ids.ctc')
     def _compute_total_ctc(self):
@@ -139,14 +143,12 @@ class InteriorProject(models.Model):
                     count += 1
                 except ValueError:
                     continue
-            record.buffer_avg = (total / count) if count > 0 else 0.0
-
+            record.buffer_avg = f"{(total / count):.2f}%" if count > 0 else "0.00%"
 
     @api.depends('quotation_ids.amount')
     def _compute_qut_total_amount(self):
         for record in self:
             record.total_amount = sum(payment.amount for payment in record.quotation_ids)
-
 
     @api.depends('agency_amount', 'total_expenses_amount')
     def _compute_total_paid(self):
@@ -172,4 +174,3 @@ class InteriorProject(models.Model):
     def _compute_total_expenses_amount(self):
         for record in self:
             record.total_expenses_amount = sum(expenses.total_amount for expenses in record.expenses_ids)
-

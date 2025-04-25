@@ -17,7 +17,7 @@
         <!-- ✅ START Loop per agency -->
         <t t-foreach="data" t-as="record">
             <!-- ✅ Summary per agency -->
-            <div style="margin-bottom: 30px; page-break-after: always;">
+            <div style="margin-bottom: 30px;">
                 <table class="table table-borderless" style="width: 100%;">
                     <tbody>
                         <tr>
