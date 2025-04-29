@@ -1,34 +1,52 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates>
     <t t-name="saara_spaces_models.CustomDashboard">
-        <div class="o_container" style="max-height: 100vh; overflow-y: auto; padding: 20px;">
-            <center>
-                <h1 style="margin: 20px;">Dashboard</h1>
-            </center>
-            <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 30px;">
-                <!-- Pie Chart -->
-                <div style="flex: 1 1 45%; max-width: 500px;">
-                    <h3 style="text-align: center;">Agency-wise Expenses</h3>
-                    <canvas id="agencyPieChart" style="width: 100%; height: 200px;"></canvas>
+        <div class="o_container" style="padding: 30px; background-color: #f9f9f9; font-family: sans-serif;overflow-y: auto; max-height: 100vh;">
+            <!-- Header -->
+            <!-- Chart Layout -->
+            <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+                <!-- Estimated Sales Chart Box -->
+                <div style="flex: 1 1 35%; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 1px 5px rgba(0,0,0,0.1);">
+                    <h3 style="margin-bottom: 20px;">Agency-wise Expenses</h3>
+                    <div style="width: 100%; height: 410px; background: #e3f2fd; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #2196f3;">
+                        <div style="flex: 1 1 45%; max-width: 500px;">
+                            <canvas id="agencyPieChart"/>
+                        </div>
+                    </div>
                 </div>
-                <!-- Line Chart -->
-                <div style="flex: 1 1 45%; max-width: 500px;">
-                    <h3 style="text-align: center;">Cash Flow</h3>
-                    <canvas id="cashFlowChart" style="width: 100%; height: 200px;"></canvas>
+
+                <!-- Status Chart Box -->
+                <div style="flex: 1 1 35%; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 1px 5px rgba(0,0,0,0.1);">
+                    <h3 style="margin-bottom: 20px;">Cash Flow</h3>
+                    <div style="width: 100%; height: 410px; background: #e3f2fd; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #2196f3;">
+                        <div style="flex: 1 1 45%; max-width: 500px;">
+                            <canvas id="cashFlowChart"/>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 30px; margin-top: 40px;">
-                <!-- Project-wise Revenue vs Expense -->
-                <div style="flex: 1 1 45%; max-width: 500px;">
-                    <h3 style="text-align: center;">Project-wise Revenue vs Expense</h3>
-                    <canvas id="revenueVsExpenseChart" style="width: 100%; height: 200px;"></canvas>
+            <div style="display: flex; gap: 30px; flex-wrap: wrap;padding-top: inherit;">
+                <!-- Estimated Sales Chart Box -->
+                <div style="flex: 1 1 35%; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 1px 5px rgba(0,0,0,0.1);">
+                    <h3 style="margin-bottom: 20px;">Project-wise Revenue vs Expense</h3>
+                    <div style="width: 100%; height: 410px; background: #e3f2fd; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #2196f3;">
+                        <div style="flex: 1 1 45%; max-width: 500px;">
+                            <canvas id="revenueVsExpenseChart"/>
+                        </div>
+                    </div>
                 </div>
-                <!-- Agency Wise Total -->
-                <div style="flex: 1 1 45%; max-width: 500px;">
-                    <h3 style="text-align: center;">Agency Wise Total</h3>
-                    <canvas id="agencyPaymentCountChart" style="width: 100%; height: 200px;"></canvas>
+
+                <!-- Status Chart Box -->
+                <div style="flex: 1 1 35%; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 1px 5px rgba(0,0,0,0.1);">
+                    <h3 style="margin-bottom: 20px;">Agency Wise Total</h3>
+                    <div style="width: 100%; height: 410px; background: #e3f2fd; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #2196f3;">
+                        <div style="flex: 1 1 45%; max-width: 500px;">
+                            <canvas id="agencyPaymentCountChart"/>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </t>
 </templates>
+

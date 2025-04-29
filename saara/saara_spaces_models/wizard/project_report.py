@@ -61,6 +61,7 @@ class ProjectWizard(models.TransientModel):
                 'currency_id': project.currency_id.symbol,
                 'customer_amount': project.customer_amount,
                 'cost_price': project.cost_price,
+                'total_ctc': project.total_ctc,
                 'customer_id' : project.customer_id.name,
             'vendor_payments': [],
             'customer_payments': [],

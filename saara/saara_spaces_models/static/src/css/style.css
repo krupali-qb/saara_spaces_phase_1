@@ -1,0 +1,14 @@
+.progress-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: conic-gradient(#00c896 25%, #e6e6e6 0%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  font-weight: bold;
+}
+.progress-circle.orange {
+  background: conic-gradient(#f4b400 75%, #e6e6e6 0%);
+}

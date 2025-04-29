@@ -1,10 +1,41 @@
-<?xml version="1.0" encoding="UTF-8" ?>
 <templates>
     <t t-name="saara_spaces_models.CustomReports">
-        <div class="o_container">
-            <center>
-                <h1 style="margin: 20px;">Reports</h1>
-            </center>
+        <div class="o_container" style="padding: 2rem;">
+            <div class="row">
+                <div class="col-sm-4 text-center">
+                    <button t-on-click="MonthlyAccountReport"
+                            class="btn px-0 o-hidden-ios text-nowrap">
+                        <div class="card shadow" style="cursor: pointer;">
+                            <div class="card-body text-center">
+                                Monthly Account Report
+                            </div>
+
+                        </div>
+                    </button>
+                </div>
+                <div class="col-sm-4 text-center">
+                    <button t-on-click="ProjectReports"
+                            class="btn px-0 o-hidden-ios text-nowrap">
+                        <div class="card shadow" style="cursor: pointer;">
+                            <div class="card-body text-center">
+                                Project Reports
+                            </div>
+
+                        </div>
+                    </button>
+                </div>
+                <div class="col-sm-4 text-center">
+                    <button t-on-click="AgencyReports"
+                            class="btn px-0 o-hidden-ios text-nowrap">
+                        <div class="card shadow" style="cursor: pointer;">
+                            <div class="card-body text-center">
+                                Agency Reports
+                            </div>
+
+                        </div>
+                    </button>
+                </div>
+            </div>
         </div>
     </t>
 </templates>

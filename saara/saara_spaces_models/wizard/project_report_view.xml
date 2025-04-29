@@ -49,9 +49,9 @@
     <menuitem name="Reports" id="project_reports" parent="reports_roots"
               sequence="0" action="reports_action"/>
 
-    <menuitem id="project_reports_menus_new" parent="saara_spaces_models.reports_roots" sequence="75"
-              name="Projects Report" action="action_report_wizard_new"
-    />
+<!--    <menuitem id="project_reports_menus_new" parent="saara_spaces_models.reports_roots" sequence="75"-->
+<!--              name="Projects Report" action="action_report_wizard_new"-->
+<!--    />-->
 
 
 </odoo>

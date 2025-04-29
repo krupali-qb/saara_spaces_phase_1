@@ -55,7 +55,7 @@
                                         <td style="padding: 5px;font-size: 20px;">
                                             <strong>CTC:</strong>
                                             <t t-esc="project['currency_id']"/>
-                                            <!--                                        <t t-esc="project['project_ctc']"/>-->
+                                            <t t-esc="project['total_ctc']"/>
                                         </td>
                                     </tr>
                                 </tbody>

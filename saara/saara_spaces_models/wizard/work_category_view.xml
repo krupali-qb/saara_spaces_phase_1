@@ -28,9 +28,9 @@
         <field name="type">ir.actions.act_window</field>
     </record>
 
-    <menuitem id="work_category_reports_menus_new" parent="saara_spaces_models.reports_roots" sequence="95"
-              name="Month Account report" action="action_work_category_report_wizard_new"
-    />
+<!--    <menuitem id="work_category_reports_menus_new" parent="saara_spaces_models.reports_roots" sequence="95"-->
+<!--              name="Month Account report" action="action_work_category_report_wizard_new"-->
+<!--    />-->
 
 </odoo>
 

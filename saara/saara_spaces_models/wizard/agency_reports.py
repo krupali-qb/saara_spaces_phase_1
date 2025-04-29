@@ -103,6 +103,7 @@ class AgencyWizard(models.TransientModel):
             for expense in projects:
                 project_data = {
                     'expenses_ids': [],
+                    # 'total_remaining': expense.
                 }
                 total_expense_sum += expense.total_amount
                 if expense.payment_type == 'cash':

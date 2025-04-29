@@ -35,5 +35,5 @@ class ProjectQuotation(models.Model):
     def _compute_ctc_payment(self):
         for record in self:
             buffer_percent = float(record.buffer or 0.0)
-            record.ctc =  record.amount * buffer_percent / 100
+            record.ctc = record.amount - (record.amount * buffer_percent / 100)
 
