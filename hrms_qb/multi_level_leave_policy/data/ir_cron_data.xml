@@ -1,0 +1,39 @@
+<odoo>
+    <record id="ir_cron_auto_approve_leaves" model="ir.cron">
+        <field name="name">Auto Approve Pending Leaves</field>
+        <field name="model_id" ref="hr_holidays.model_hr_leave"/>
+        <field name="state">code</field>
+        <field name="code">model.auto_approve_pending_leaves()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="ir_cron_reset_emergency" model="ir.cron">
+        <field name="name">Reset Emergency Leaves Quarterly</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="state">code</field>
+        <field name="code">model.reset_emergency_leaves()</field>
+        <field name="interval_number">90</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+    </record>
+    
+   
+
+        <!-- CTO Group -->
+        <record id="group_cto" model="res.groups">
+            <field name="name">CTO</field>
+            <field name="category_id" ref="base.module_category_human_resources"/>
+        </record>
+
+        <!-- HR Group -->
+        <record id="group_hr" model="res.groups">
+            <field name="name">HR Officer (Custom)</field>
+            <field name="category_id" ref="base.module_category_human_resources"/>
+        </record>
+
+
+</odoo>

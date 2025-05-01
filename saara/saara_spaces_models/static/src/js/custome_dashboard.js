@@ -184,6 +184,7 @@ class CustomDashboard extends Component {
                         beginAtZero: true,
                         ticks: {
                             callback: function(value) {
+                                console.log('value------------',value)
                                 return value / 1000 + "K";
                             }
                         }
@@ -255,6 +256,7 @@ class CustomDashboard extends Component {
                         beginAtZero: true,
                         ticks: {
                             callback: function(value) {
+                                console.log('<<<<<<<<<<',value)
                                 return value >= 1000 ? value / 1000 + 'K' : value;
                             }
                         }

@@ -1,0 +1,30 @@
+<odoo>
+    <record id="leave_type_casual" model="hr.leave.type">
+        <field name="name">Casual Leave</field>
+        <field name="requires_allocation">False</field>
+    </record>
+    <record id="leave_type_sick" model="hr.leave.type">
+        <field name="name">Sick Leave</field>
+        <field name="requires_allocation">False</field>
+    </record>
+    <record id="leave_type_emergency" model="hr.leave.type">
+        <field name="name">Emergency Leave</field>
+        <field name="requires_allocation">False</field>
+    </record>
+    <record id="leave_type_seven_hour" model="hr.leave.type">
+        <field name="name">7-Hour Policy Leave</field>
+        <field name="requires_allocation">False</field>
+    </record>
+    <record id="leave_type_maternity" model="hr.leave.type">
+        <field name="name">Maternity Leave</field>
+        <field name="requires_allocation">False</field>
+    </record>
+    <record id="leave_type_paternity" model="hr.leave.type">
+        <field name="name">Paternity Leave</field>
+        <field name="requires_allocation">False</field>
+    </record>
+    <record id="leave_type_wfh" model="hr.leave.type">
+        <field name="name">Work From Home Leave</field>
+        <field name="requires_allocation">False</field>
+    </record>
+</odoo>

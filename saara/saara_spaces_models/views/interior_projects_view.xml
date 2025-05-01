@@ -24,16 +24,16 @@
                         <button class="oe_stat_button" invisible="status in ('new','quote_lock')">
                             <field string="Total CTC (₹)" name="total_ctc" widget="statinfo"/>
                         </button>
-                        <button class="oe_stat_button" invisible="status in ('new','quote_lock')">
+                        <button invisible="status in ('new','quote_lock')">
                             <field string="Received till date (₹)" name="customer_amount" widget="statinfo"/>
                         </button>
-                        <button class="oe_stat_button" invisible="status in ('new','quote_lock')">
+                        <button invisible="status in ('new','quote_lock')">
                             <field string="Balance Receivable (₹)" name="balance_receivable" widget="statinfo"/>
                         </button>
-                        <button class="oe_stat_button" invisible="status in ('new','quote_lock')">
+                        <button invisible="status in ('new','quote_lock')">
                             <field string="Paid (₹)" name="total_paid" widget="statinfo"/>
                         </button>
-                        <button class="oe_stat_button" invisible="status in ('new','quote_lock')">
+                        <button invisible="status in ('new','quote_lock')">
                             <field string="Pending CTC (₹)" name="pending_ctc" widget="statinfo"/>
                         </button>
                     </div>

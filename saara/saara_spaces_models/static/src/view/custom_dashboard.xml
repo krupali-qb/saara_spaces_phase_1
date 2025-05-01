@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates>
     <t t-name="saara_spaces_models.CustomDashboard">
-        <div class="o_container" style="padding: 30px; background-color: #f9f9f9; font-family: sans-serif;overflow-y: auto; max-height: 100vh;">
+        <div class="o_container"
+             style="padding: 30px; background-color: #f9f9f9; font-family: sans-serif;overflow-y: auto; max-height: 100vh;">
             <!-- Header -->
+            <center>
+                <h1 style="margin: 20px;">Dashboard</h1>
+            </center>
             <!-- Chart Layout -->
             <div style="display: flex; gap: 30px; flex-wrap: wrap;">
                 <!-- Estimated Sales Chart Box -->

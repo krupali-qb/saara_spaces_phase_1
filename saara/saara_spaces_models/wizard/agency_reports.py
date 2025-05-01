@@ -38,14 +38,16 @@ class AgencyWizard(models.TransientModel):
                 generated_data = self._generate_data(self.start_date, self.end_date, agency)
 
                 agency_data = {
-                'agency_ids': agency.name,
-                'currency_id': currency_id,
-                'expenses_ids': [],
-                'vendor_ids': [],
-                'total_paid': generated_data['total_expense_sum'] + generated_data['total_vendor_sum'],
-                'total_cash_payment': generated_data['total_cash_payment'],
-                'total_bank_payment': generated_data['total_bank_payment'],
-            }
+                    'agency_ids': agency.name,
+                    'currency_id': currency_id,
+                    'expenses_ids': [],
+                    'vendor_ids': [],
+                    'total_paid': generated_data['total_expense_sum'] + generated_data['total_vendor_sum'],
+                    'total_cash_payment': generated_data['total_cash_payment'],
+                    'total_bank_payment': generated_data['total_bank_payment'],
+                    'total_CTC': generated_data['total_CTC'],
+                    'total_remaining': generated_data['total_CTC'] - (generated_data['total_expense_sum'] + generated_data['total_vendor_sum'])
+                }
 
                 for record in generated_data['report_data']:
                     if 'expenses_ids' in record:
@@ -56,26 +58,28 @@ class AgencyWizard(models.TransientModel):
                 report_data_list.append(agency_data)
 
             report_data = {
-            'start_date': self.start_date,
-            'end_date': self.end_date,
-            'company_logo': company_logo,
-            'currency_id': currency_id,
-            'data': report_data_list,
-        }
+                'start_date': self.start_date,
+                'end_date': self.end_date,
+                'company_logo': company_logo,
+                'currency_id': currency_id,
+                'data': report_data_list,
+            }
 
-            return self.env.ref('saara_spaces_models.agency_report_action_template_new').report_action(self, data=report_data)
+            return self.env.ref('saara_spaces_models.agency_report_action_template_new').report_action(self,
+                                                                                                       data=report_data)
 
         else:
-        # If no agency selected, show all (fallback)
+            # If no agency selected, show all (fallback)
             generated_data = self._generate_data(self.start_date, self.end_date, None)
             report_data = {
-            'start_date': self.start_date,
-            'end_date': self.end_date,
-            'company_logo': company_logo,
-            'currency_id': currency_id,
-            'data': generated_data['report_data'],
-        }
-            return self.env.ref('saara_spaces_models.agency_report_action_template').report_action(self, data=report_data)
+                'start_date': self.start_date,
+                'end_date': self.end_date,
+                'company_logo': company_logo,
+                'currency_id': currency_id,
+                'data': generated_data['report_data'],
+            }
+            return self.env.ref('saara_spaces_models.agency_report_action_template').report_action(self,
+                                                                                                   data=report_data)
 
     def _generate_data(self, start_date, end_date, agency_id):
         # Fetch the records from the project.interior model
@@ -86,7 +90,12 @@ class AgencyWizard(models.TransientModel):
                 ('expense_date', '<=', end_date),
                 ('agency_id', '=', agency_id.id),
             ])
-
+            quotation_ids = self.env['res.quotation'].search([
+                ('create_date', '>=', start_date),
+                ('create_date', '<=', end_date),
+                ('vendor_id', '=', agency_id.id),
+            ])
+            print("1111111111111111111111", quotation_ids)
             vendor_projects = self.env['vendor.payment.method'].search([
                 ('payment_date', '>=', start_date),
                 ('payment_date', '<=', end_date),
@@ -99,6 +108,7 @@ class AgencyWizard(models.TransientModel):
             total_vendor_sum = 0
             total_cash_payment = 0  # Initialize the sum for cash payments
             total_bank_payment = 0
+            total_CTC = 0
 
             for expense in projects:
                 project_data = {
@@ -123,7 +133,8 @@ class AgencyWizard(models.TransientModel):
                     'total_amount': expense.project_id.total_paid,
                     'total_amount_expense': expense.total_amount,
                     'currency_id': expense.currency_id.symbol,
-                    'remark': expense.remark
+                    'remark': expense.remark,
+
                 })
                 report_data_new.append(project_data)
             for vendor in vendor_projects:
@@ -152,13 +163,15 @@ class AgencyWizard(models.TransientModel):
 
                     })
                     report_data_new.append(project_datav)
-
+            for quotation in quotation_ids:
+                total_CTC += quotation.ctc
             return {
                 'report_data': report_data_new,
                 'total_expense_sum': total_expense_sum,
                 'total_vendor_sum': total_vendor_sum,
                 'total_cash_payment': total_cash_payment,
                 'total_bank_payment': total_bank_payment,
+                'total_CTC': total_CTC
             }
 
         if not agency_id:
@@ -169,7 +182,10 @@ class AgencyWizard(models.TransientModel):
                 ('expense_date', '>=', start_date),
                 ('expense_date', '<=', end_date),
             ])
-
+            quotation_ids = self.env['res.quotation'].search([
+                ('create_date', '>=', start_date),
+                ('create_date', '<=', end_date),
+            ])
             vendor_projects_all = self.env['vendor.payment.method'].search([
                 ('payment_date', '>=', start_date),
                 ('payment_date', '<=', end_date),
@@ -184,7 +200,13 @@ class AgencyWizard(models.TransientModel):
                     'vendor_ids': [],
                     'total_paid': 0,
                     'total_vendor': 0,
+                    'total_ctc':0,
                 }
+                for quotation in quotation_ids:
+                    if quotation.vendor_id == agency:
+                        quotation_total_ctc = quotation.ctc
+                        project_data['total_ctc'] += quotation_total_ctc
+
                 for expense in projects_all:
                     if expense.agency_id == agency:
                         expense_amount = expense.total_amount
@@ -203,7 +225,7 @@ class AgencyWizard(models.TransientModel):
                             'currency_id': expense.currency_id.symbol,
                             'remark': expense.remark
                         })
-                    project_data['total_paid'] += expense_amount
+                        project_data['total_paid'] += expense_amount
 
                 for vendor in vendor_projects_all:
                     for payment_line in vendor.project_form_id:
@@ -227,7 +249,7 @@ class AgencyWizard(models.TransientModel):
                 # Append project data to the report list only if it contains expenses or vendor data
                 if project_data['expenses_ids'] or project_data['vendor_ids']:
                     report_data_all.append(project_data)
+            print("=======================",report_data_all)
             return {
                 'report_data': report_data_all,
-
             }

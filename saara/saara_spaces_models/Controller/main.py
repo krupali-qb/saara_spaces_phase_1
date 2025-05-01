@@ -51,7 +51,7 @@ class ExpenseChartController(http.Controller):
             result.append({
                 'name': rec.name,
                 'revenue': rec.customer_amount,
-                'expense': rec.total_paid,
+                'expense': rec.total_expenses_amount,
             })
         return result
 

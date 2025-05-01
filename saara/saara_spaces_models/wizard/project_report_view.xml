@@ -44,14 +44,11 @@
               sequence="10" action="account_dashboard_action"
               parent="dashboard_roots"/>
 
-    <menuitem id="reports_roots" name="Reports"/>
+    <menuitem id="reports_roots" name="Reports" sequence="0" action="reports_action"/>
 
-    <menuitem name="Reports" id="project_reports" parent="reports_roots"
-              sequence="0" action="reports_action"/>
-
-<!--    <menuitem id="project_reports_menus_new" parent="saara_spaces_models.reports_roots" sequence="75"-->
-<!--              name="Projects Report" action="action_report_wizard_new"-->
-<!--    />-->
+    <menuitem id="project_reports_menus_new" parent="saara_spaces_models.reports_roots" sequence="85"
+              name="Projects Report" action="action_report_wizard_new"
+    />
 
 
 </odoo>
