@@ -20,8 +20,6 @@
         <field name="numbercall">-1</field>
         <field name="active">True</field>
     </record>
-    
-   
 
         <!-- CTO Group -->
         <record id="group_cto" model="res.groups">

@@ -2,147 +2,149 @@
 <odoo>
     <template id="agency_report_project_template_new">
         <t t-call="web.html_container">
-            <div class="page">
-                <div style="text-align: left;">
-                    <t t-if="company_logo">
-                        <img t-att-src="'data:image/png;base64,' + company_logo"
-                             style="max-height: 55pt; max-width: 90%;" alt="Company Logo"/>
-                    </t>
-                </div>
-                <div>
-                    <h2 class="text-center">
-                        <b>Agency Reports</b>
-                    </h2>
-                </div>
-
-                <!-- ✅ START Loop per agency -->
-                <t t-foreach="data" t-as="record">
-                    <!-- ✅ Summary per agency -->
-                    <div style="margin-bottom: 30px;">
-                        <table class="table table-borderless" style="width: 100%;">
-                            <tbody>
-                                <tr>
-                                    <td style="padding: 5px;font-size:20px;">
-                                        <strong>
-                                            Start Date:
-                                            <t t-esc="start_date"/>
-                                        </strong>
-                                    </td>
-                                    <td style="padding: 5px;font-size:20px;"/>
-                                    <td style="padding: 5px; font-size: 20px;">
-                                        <strong>End Date:
-                                            <t t-esc="end_date"/>
-                                        </strong>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 5px;font-size:20px;">
-                                        <strong>Agency Name:
-                                            <t t-esc="record['agency_ids']"/>
-                                        </strong>
-                                    </td>
-                                    <td style="padding: 5px;font-size: 20px;">
-                                        <strong>Total CTC:</strong>
-                                        <t t-esc="currency_id"/>
-                                        <t t-esc="record['total_CTC']"/>
-                                    </td>
-                                    <td style="padding: 5px;font-size: 20px;">
-                                        <strong>Total Remaining:</strong>
-                                        <t t-esc="currency_id"/>
-                                        <t t-esc="record['total_remaining']"/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 5px;font-size: 20px;">
-                                        <strong>Total Paid:</strong>
-                                        <t t-esc="currency_id"/>
-                                        <t t-esc="record['total_paid']"/>
-                                    </td>
-                                    <td style="padding: 5px;font-size: 20px;">
-                                        <strong>Total Cash:</strong>
-                                        <t t-esc="currency_id"/>
-                                        <t t-esc="record['total_cash_payment']"/>
-                                    </td>
-                                    <td style="padding: 5px;font-size: 20px;">
-                                        <strong>Total Bank:</strong>
-                                        <t t-esc="currency_id"/>
-                                        <t t-esc="record['total_bank_payment']"/>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+            <t t-call="web.internal_layout">
+                <div class="page">
+                    <div style="text-align: left;">
+                        <t t-if="company_logo">
+                            <img t-att-src="'data:image/png;base64,' + company_logo"
+                                 style="max-height: 55pt; max-width: 90%;" alt="Company Logo"/>
+                        </t>
+                    </div>
+                    <div>
+                        <h2 class="text-center">
+                            <b>Agency Reports</b>
+                        </h2>
                     </div>
 
-                    <!-- ✅ Table of expenses/vendors -->
-                    <table class="table table-bordered" style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr>
-                                <th style="border: 1px solid #000; padding: 8px;">Date</th>
-                                <th style="border: 1px solid #000; padding: 8px;">Project Name</th>
-                                <th style="border: 1px solid #000; padding: 8px;">Agency Category</th>
-                                <th style="border: 1px solid #000; padding: 8px;">Invoice</th>
-                                <th style="border: 1px solid #000; padding: 8px;">Payment Type</th>
-                                <th style="border: 1px solid #000; padding: 8px;">Type</th>
-                                <th style="border: 1px solid #000; padding: 8px;">Amount Paid</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <t t-foreach="record.get('expenses_ids', [])" t-as="expense">
+                    <!-- ✅ START Loop per agency -->
+                    <t t-foreach="data" t-as="record">
+                        <!-- ✅ Summary per agency -->
+                        <div style="margin-bottom: 30px;">
+                            <table class="table table-borderless" style="width: 100%;">
+                                <tbody>
+                                    <tr>
+                                        <td style="padding: 5px;font-size:20px;">
+                                            <strong>
+                                                Start Date:
+                                                <t t-esc="start_date"/>
+                                            </strong>
+                                        </td>
+                                        <td style="padding: 5px;font-size:20px;"/>
+                                        <td style="padding: 5px; font-size: 20px;">
+                                            <strong>End Date:
+                                                <t t-esc="end_date"/>
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px;font-size:20px;">
+                                            <strong>Agency Name:
+                                                <t t-esc="record['agency_ids']"/>
+                                            </strong>
+                                        </td>
+                                        <td style="padding: 5px;font-size: 20px;">
+                                            <strong>Total CTC:</strong>
+                                            <t t-esc="currency_id"/>
+                                            <t t-esc="record['total_CTC']"/>
+                                        </td>
+                                        <td style="padding: 5px;font-size: 20px;">
+                                            <strong>Total Remaining:</strong>
+                                            <t t-esc="currency_id"/>
+                                            <t t-esc="record['total_remaining']"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px;font-size: 20px;">
+                                            <strong>Total Paid:</strong>
+                                            <t t-esc="currency_id"/>
+                                            <t t-esc="record['total_paid']"/>
+                                        </td>
+                                        <td style="padding: 5px;font-size: 20px;">
+                                            <strong>Total Cash:</strong>
+                                            <t t-esc="currency_id"/>
+                                            <t t-esc="record['total_cash_payment']"/>
+                                        </td>
+                                        <td style="padding: 5px;font-size: 20px;">
+                                            <strong>Total Bank:</strong>
+                                            <t t-esc="currency_id"/>
+                                            <t t-esc="record['total_bank_payment']"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- ✅ Table of expenses/vendors -->
+                        <table class="table table-bordered" style="width: 100%; border-collapse: collapse;">
+                            <thead>
                                 <tr>
-                                    <td style="border: 1px solid #000; padding: 8px;">
-                                        <t t-esc="expense['expense_date']"/>
-                                    </td>
-                                    <td style="border: 1px solid #000; padding: 8px;">
-                                        <t t-esc="expense['project_id']"/>
-                                    </td>
-                                    <td style="border: 1px solid #000; padding: 8px;">
-                                        <t t-esc="expense['agency_category']"/>
-                                    </td>
-                                    <td style="border: 1px solid #000; padding: 8px;">
-                                        <t t-esc="expense['remark']"/>
-                                    </td>
-                                    <td style="border: 1px solid #000; padding: 8px;">
-                                        <t t-esc="expense['payment_type']"/>
-                                    </td>
-                                    <td style="border: 1px solid #000; padding: 8px; color:#ff9900;">
-                                        <t t-esc="expense['type']"/>
-                                    </td>
-                                    <td style="border: 1px solid #000; padding: 8px;">
-                                        <t t-esc="expense['currency_id']"/>
-                                        <t t-esc="expense['total_amount_expense']"/>
-                                    </td>
+                                    <th style="border: 1px solid #000; padding: 8px;">Date</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Project Name</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Agency Category</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Invoice</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Payment Type</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Type</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Amount Paid</th>
                                 </tr>
-                            </t>
-                            <t t-foreach="record.get('vendor_ids', [])" t-as="vendor">
-                                <tr>
-                                    <td style="border: 1px solid #000; padding: 8px;">
-                                        <t t-esc="vendor['payment_date']"/>
-                                    </td>
-                                    <td style="border: 1px solid #000; padding: 8px;">
-                                        <t t-esc="vendor['project_id']"/>
-                                    </td>
-                                    <td style="border: 1px solid #000; padding: 8px;">
-                                        <t t-esc="vendor['agency_category']"/>
-                                    </td>
-                                    <td style="border: 1px solid #000; padding: 8px;">
-                                        <t t-esc="vendor['invoice_number']"/>
-                                    </td>
-                                    <td style="border: 1px solid #000; padding: 8px;">
-                                        <t t-esc="vendor['payment_type']"/>
-                                    </td>
-                                    <td style="border: 1px solid #000; padding: 8px; color:#006600;">
-                                        <t t-esc="vendor['type']"/>
-                                    </td>
-                                    <td style="border: 1px solid #000; padding: 8px;">
-                                        <t t-esc="vendor['currency_id']"/>
-                                        <t t-esc="vendor['total_amount_vendor']"/>
-                                    </td>
-                                </tr>
-                            </t>
-                        </tbody>
-                    </table>
-                </t> <!-- End of each agency block -->
-            </div>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="record.get('expenses_ids', [])" t-as="expense">
+                                    <tr>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="expense['expense_date']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="expense['project_id']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="expense['agency_category']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="expense['remark']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="expense['payment_type']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px; color:#ff9900;">
+                                            <t t-esc="expense['type']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="expense['currency_id']"/>
+                                            <t t-esc="expense['total_amount_expense']"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <t t-foreach="record.get('vendor_ids', [])" t-as="vendor">
+                                    <tr>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="vendor['payment_date']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="vendor['project_id']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="vendor['agency_category']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="vendor['invoice_number']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="vendor['payment_type']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px; color:#006600;">
+                                            <t t-esc="vendor['type']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="vendor['currency_id']"/>
+                                            <t t-esc="vendor['total_amount_vendor']"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </t> <!-- End of each agency block -->
+                </div>
+            </t>
         </t>
     </template>
 </odoo>
