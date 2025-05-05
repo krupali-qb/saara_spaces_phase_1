@@ -3,10 +3,7 @@
     'version': '1.1',
     'category': 'Human Resources',
     'summary': 'Leave Types and Approval Policy Management',
-    'author': 'quantumbot',
-    'company': 'quantumbot',
-    'maintainer': 'quantumbot',
-    'website': "https://quantumbot.in/",
+    'author': 'Custom',
     'depends': ['hr_holidays', 'hr',],
     'data': [
         #'security/ir.model.access.csv',

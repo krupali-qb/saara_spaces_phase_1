@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_reports_view_form" model="ir.ui.view">
+        <field name="name">res.reports.view.form</field>
+        <field name="model">res.reports</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <field name="name"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <menuitem id="reports_roots" name="Reports"/>
+    <menuitem id="reports_menu" name="Reports" sequence="0" parent="saara_spaces_models.reports_roots" action="work_category_report_action_template"/>
+</odoo>
