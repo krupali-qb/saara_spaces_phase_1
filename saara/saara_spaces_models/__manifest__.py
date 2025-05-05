@@ -12,6 +12,8 @@
     'data': [
         'security/security_template.xml',
         'security/ir.model.access.csv',
+        'reports/res_reports_action.xml',
+        'reports/work_category_report_template.xml',
         'views/interior_projects_view.xml',
         'views/payment_method_view.xml',
         'views/vendor_payment_method_view.xml',

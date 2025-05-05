@@ -14,5 +14,5 @@
 
 
     <menuitem id="reports_roots" name="Reports"/>
-    <menuitem id="reports_menu" name="Reports" sequence="0" parent="saara_spaces_models.reports_roots" action="work_category_report_action_template"/>
+    <menuitem id="reports_menu" name="Reports" sequence="0" parent="saara_spaces_models.reports_roots" action="action_monthly_account_report_server"/>
 </odoo>
