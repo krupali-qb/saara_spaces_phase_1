@@ -1,6 +1,6 @@
 {
     'name': 'Multi Level Leave Policy',
-    'version': '1.1',
+    'version': '1.2',
     'category': 'Human Resources',
     'summary': 'Leave Types and Approval Policy Management',
     'author': 'Custom',
@@ -9,7 +9,7 @@
         #'security/ir.model.access.csv',
         #'data/leave_types.xml',
         'data/ir_cron_data.xml',
-        #'views/hr_leave_views.xml',
+        'views/hr_leave_views.xml',
     ],
     'installable': True,
     'application': False,

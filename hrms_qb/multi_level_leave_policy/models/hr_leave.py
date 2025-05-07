@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 import logging
 _logger = logging.getLogger(__name__)
 
+
 class HrLeave(models.Model):
     _inherit = 'hr.leave'
 
@@ -16,8 +17,7 @@ class HrLeave(models.Model):
 
     is_emergency = fields.Boolean(string='Emergency Leave', default=False)
     medical_report = fields.Binary(string='Medical Report', attachment=True)
-    
-   
+
 
     @api.model
     def create(self, values):
@@ -50,7 +50,6 @@ class HrLeave(models.Model):
                 ('request_date_from', '>=', quarter_start),
                 ('request_date_from', '<=', quarter_end),
                 ('state', 'not in', ['cancel', 'refuse'])])
-
             if existing_emergency_leaves > 3:
                 raise ValidationError("An employee is allowed a maximum of 3 Emergency Leaves per quarter.")
                 
@@ -79,14 +78,13 @@ class HrLeave(models.Model):
         
     def _send_creation_notification(self, leave):
         """Send a notification message when the leave is created"""
-        
         # Get the Reporting Manager (Employee's Manager)
         reporting_manager = leave.employee_id.parent_id.user_id
         # Get the CTO from the CTO group
         cto_group = self.env.ref('multi_level_leave_policy.group_cto')
         cto = self.env['res.users'].search([('groups_id', 'in', cto_group.ids)], limit=1)
         # Get HR users from the HR group
-        hr_group = self.env.ref('hr.group_hr_user')
+        hr_group = self.env.ref('multi_level_leave_policy.group_hr')
         hr_users = self.env['res.users'].search([('groups_id', 'in', hr_group.ids)],limit=1)
 
         # Create a list of all the partners (employee, reporting manager, CTO, HR)
@@ -96,7 +94,6 @@ class HrLeave(models.Model):
             cto.partner_id.id,
             hr_users.partner_id.id,  # Reporting Manager
         ]
-       
         # Post a message to all relevant users (employee, reporting manager, CTO, HR)
         leave.message_post(
             body=f"A new leave request has been created for {leave.employee_id.name}. "
@@ -145,11 +142,11 @@ class HrLeave(models.Model):
         reporting_manager = leave.employee_id.parent_id.user_id
 
         # Get the CTO user based on the user group (you can replace 'your_module.group_cto' with the actual group)
-        cto_group = self.env.ref('your_module.group_cto')
+        cto_group = self.env.ref('multi_level_leave_policy.group_cto')
         cto = self.env['res.users'].search([('groups_id', 'in', cto_group.ids)], limit=1)
 
         # Get HR user(s) from the HR group
-        hr_group = self.env.ref('hr.group_hr_user')
+        hr_group = self.env.ref('multi_level_leave_policy.group_hr')
         hr = self.env['res.users'].search([('groups_id', 'in', hr_group.ids)], limit=1)
 
         return [reporting_manager, cto, hr]

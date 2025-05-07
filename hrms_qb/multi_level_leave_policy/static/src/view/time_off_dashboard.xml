@@ -1,0 +1,12 @@
+<templates xml:space="preserve">
+    <t t-extend="hr_holidays.TimeOffDashboard">
+        <t t-jquery="div.o_timeoff_dashboard" t-operation="append">
+            <!-- Your custom HTML or new section here -->
+            <div class="o_lwp_count_section" t-if="state.lwpCount">
+                <div class="alert alert-info text-center">
+                    <t t-esc="state.lwpCount"/> days of Leave Without Pay (LWP) have been taken.
+                </div>
+            </div>
+        </t>
+    </t>
+</templates>

@@ -44,7 +44,7 @@
             # 'saara_spaces_models/static/src/view/reports_custom.xml',
             # 'saara_spaces_models/static/src/js/reports_screen.js',
             'saara_spaces_models/static/src/js/custome_dashboard.js',
-            # 'saara_spaces_models/static/src/css/style.css',
+            'saara_spaces_models/static/src/css/style.css',
         ],
     },
 
