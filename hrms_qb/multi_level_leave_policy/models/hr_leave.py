@@ -50,8 +50,8 @@ class HrLeave(models.Model):
                 ('request_date_from', '>=', quarter_start),
                 ('request_date_from', '<=', quarter_end),
                 ('state', 'not in', ['cancel', 'refuse'])])
-            if existing_emergency_leaves > 3:
-                raise ValidationError("An employee is allowed a maximum of 3 Emergency Leaves per quarter.")
+            if existing_emergency_leaves > 1:
+                raise ValidationError("An employee is allowed a 1 Emergency Leaves per quarter.")
                 
         # 7-Hour Policy Leave – Max 2 times per month, must be manually approved
         if leave.holiday_status_id.name == '7-Hour Policy Leave':
@@ -69,7 +69,7 @@ class HrLeave(models.Model):
 
             if leave_count > 2:
                 raise ValidationError("An employee may avail the 7-Hour Policy leave only twice per month.")
-            
+
         if leave.holiday_status_id.name in ['Casual Leave', 'Sick Leave', 'Emergency Leave']:
             self._auto_approve_leave(leave)
         self._send_creation_notification(leave)

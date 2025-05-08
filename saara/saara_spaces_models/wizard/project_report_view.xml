@@ -38,10 +38,10 @@
         <field name="tag">dashboard_tag</field>
     </record>
 
-    <menuitem id="dashboard_roots" name="Dashboard"/>
+    <menuitem id="dashboard_roots" name="Dashboard" sequence="0"/>
 
     <menuitem name="Dashboard" id="account_dashboard"
-              sequence="10" action="account_dashboard_action"
+              action="account_dashboard_action"
               parent="dashboard_roots"/>
 
     <!--    <menuitem id="reports_roots" name="Reports" sequence="0" action="reports_action"/>-->

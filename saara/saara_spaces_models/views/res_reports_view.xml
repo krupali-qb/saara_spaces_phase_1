@@ -13,6 +13,14 @@
     </record>
 
 
-    <menuitem id="reports_roots" name="Reports"/>
+    <menuitem id="reports_roots" name="Reports" sequence="20"/>
     <menuitem id="reports_menu" name="Reports" sequence="0" parent="saara_spaces_models.reports_roots" action="action_monthly_account_report_server"/>
+
+    <menuitem name="Discuss"
+        id="mail.menu_root_discuss"
+        action="mail.action_discuss"
+        web_icon="mail,static/description/icon.png"
+        groups="base.group_user"
+        sequence="25"
+    />
 </odoo>
