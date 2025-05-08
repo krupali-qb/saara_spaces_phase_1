@@ -180,6 +180,12 @@ class CustomDashboard extends Component {
                 },
                 indexAxis: 'x',  // ✅ horizontal bars
                 scales: {
+                    x:{
+                    title: {
+							display: true,
+							text: 'Projects' // Name of x-axis
+						},
+                    },
                     y: {
                         beginAtZero: true,
                         ticks: {
@@ -252,6 +258,12 @@ class CustomDashboard extends Component {
                     }
                 },
                 scales: {
+                    x:{
+                        title: {
+                                display: true,
+                                text: 'Agency' // Name of x-axis
+                            },
+                    },
                     y: {
                         beginAtZero: true,
                         ticks: {

@@ -28,11 +28,6 @@
         <field name="type">ir.actions.act_window</field>
     </record>
 
-    <!--    <record id="reports_action" model="ir.actions.client">-->
-    <!--        <field name="name">Reports</field>-->
-    <!--        <field name="tag">reports_tag</field>-->
-    <!--    </record>-->
-
     <record id="account_dashboard_action" model="ir.actions.client">
         <field name="name">Account Dashboard</field>
         <field name="tag">dashboard_tag</field>
@@ -43,8 +38,6 @@
     <menuitem name="Dashboard" id="account_dashboard"
               action="account_dashboard_action"
               parent="dashboard_roots"/>
-
-    <!--    <menuitem id="reports_roots" name="Reports" sequence="0" action="reports_action"/>-->
 
     <menuitem id="project_reports_menus_new" parent="saara_spaces_models.reports_roots" sequence="85"
               name="Projects Report" action="action_report_wizard_new"
