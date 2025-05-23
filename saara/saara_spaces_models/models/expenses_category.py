@@ -23,3 +23,8 @@ class AgencyCategory(models.Model):
     def _onchange_name(self):
         if self.name:
             self.name = self.name.title()
+
+
+
+
+   

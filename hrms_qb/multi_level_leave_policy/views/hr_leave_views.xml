@@ -5,7 +5,6 @@
         <field name="model">res.users</field>
         <field name="inherit_id" ref="base.view_users_form"/>
         <field name="arch" type="xml">
-
             <!-- Insert after a known field, such as 'login' -->
             <xpath expr="//field[@name='login']" position="after">
                 <group>
@@ -15,7 +14,6 @@
 
         </field>
     </record>
-
     <record id="custom_hr_leave_view_form_inherit" model="ir.ui.view">
         <field name="name">hr.leave.view.form.inherit.reject.button</field>
         <field name="model">hr.leave</field>
@@ -24,7 +22,40 @@
             <xpath expr="//button[@name='action_refuse']" position="attributes">
                 <attribute name="string">Reject</attribute>
             </xpath>
+            <xpath expr="//field[@name='holiday_status_id']" position="after">
+    <field name="to_be_continue_cl" invisible="1"/>
+</xpath>
+            <xpath expr="//button[@name='action_refuse']" position="after">
+                <button name="open_same_day_leave_wizard"
+                        type="object"
+                        string="Confirm Same-Day Leave"
+                        invisible="holiday_status_id != 7"
+                        class="btn-primary"/>
+            </xpath>
+            <xpath expr="//button[@name='action_refuse']" position="after">
+                <button name="action_submit_leave_with_check"
+                        type="object"
+                        string="Submit with Policy Check"
+                        invisible="holiday_status_id != 9"
+                        class="btn-primary"/>
+            </xpath>
         </field>
     </record>
+
+    <record id="view_hr_employee_form_inherit" model="ir.ui.view">
+        <field name="name">res.employee.form.inherit</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <!-- Insert after a known field, such as 'login' -->
+            <xpath expr="//field[@name='job_id']" position="after">
+                <field name="project_manager_id"/>
+            </xpath>
+            <xpath expr="//field[@name='parent_id']" position="attributes">
+                 <attribute name="string">Team Lead</attribute>
+            </xpath>
+        </field>
+</record>
 </odoo>
+
 

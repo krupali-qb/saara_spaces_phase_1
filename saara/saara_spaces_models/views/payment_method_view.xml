@@ -25,6 +25,7 @@
         <field name="model">payment.method</field>
         <field name="arch" type="xml">
             <tree string="Payment Methods">
+                <field name="sale_invoice"/>
                 <field name="name"/>
                 <field name="interior_project_id"/>
                 <field name="customer_id"/>
@@ -42,6 +43,7 @@
         <field name="arch" type="xml">
             <search>
                 <field name="interior_project_id"/>
+                <field name="sale_invoice"/>
                 <field name="payment_date"/>
                 <separator/>
                 <filter string="Date" name="payment_date" date="payment_date"/>

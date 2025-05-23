@@ -1,2 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_hr_leave_policy,access_hr_leave_policy,model_hr_leave,,1,1,1,0
+access_same_day_leave_wizard_user,same_day_leave_wizard_user,model_same_day_leave_wizard,base.group_user,1,1,1,0
+access_force_casual_leave_wizard,access_force_casual_leave_wizard,model_force_casual_leave_wizard,base.group_user,1,1,1,0

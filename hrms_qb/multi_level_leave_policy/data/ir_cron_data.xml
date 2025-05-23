@@ -46,6 +46,11 @@
             <field name="name">HR Officer (Custom)</field>
             <field name="category_id" ref="base.module_category_human_resources"/>
         </record>
+        
+        <record id="group_pm" model="res.groups">
+            <field name="name">Project Manager</field>
+            <field name="category_id" ref="base.module_category_human_resources"/>
+        </record>
 
 
 </odoo>

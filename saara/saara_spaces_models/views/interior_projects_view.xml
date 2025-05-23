@@ -75,6 +75,7 @@
                             <field name="agency_payment_id" widget="section_and_note_one2many"
                                    readonly="status in ['completed']">
                                 <tree editable="bottom">
+                                    <field name="invoice_number"/>
                                     <field name="name"/>
                                     <field name="vendor_id"/>
                                     <field name="agency_category" options="{'no_create': True}"
@@ -98,6 +99,7 @@
                         >
                             <field name="payments_ids" readonly="status in ['completed']">
                                 <tree editable="bottom">
+                                    <field name="sale_invoice"/>
                                     <field name="name"/>
                                     <field name="customer_id"/>
                                     <field name="payment_date"/>
@@ -119,6 +121,7 @@
                         >
                             <field name="expenses_ids" readonly="status in ['completed']">
                                 <tree editable="bottom">
+                                    <field name="remark"/>
                                     <field name="name"/>
                                     <field name="category_id" options="{'no_create': True}"/>
                                     <field name="agency_id"/>
@@ -145,6 +148,7 @@
                         <page string="Quotation">
                             <field name="quotation_ids" readonly="status in ['quote_lock','inprogress','completed']">
                                 <tree editable="bottom">
+
                                     <field name="agency_category"/>
                                     <field name="currency_id" column_invisible="True"/>
                                     <field name="amount" widget="monetary"

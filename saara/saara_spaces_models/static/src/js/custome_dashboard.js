@@ -18,8 +18,6 @@ class CustomDashboard extends Component {
     if (!ctx) return;
     try {
         const chartData = await jsonrpc('/project/expenses/chart/data', {});  // 🟢 calling controller
-        console.log("=================", chartData);
-
         const labels = chartData.map(item => item.label);
         const data = chartData.map(item => item.value);
         const colors = this.generateRandomColors(labels.length);
@@ -66,7 +64,6 @@ class CustomDashboard extends Component {
     const colors = [];
     for (let i = 0; i < count; i++) {
         const color = `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`;
-        console.log("color==============",color)
         colors.push(color);
     }
     return colors;
@@ -190,7 +187,6 @@ class CustomDashboard extends Component {
                         beginAtZero: true,
                         ticks: {
                             callback: function(value) {
-                                console.log('value------------',value)
                                 return value / 1000 + "K";
                             }
                         }
@@ -268,7 +264,6 @@ class CustomDashboard extends Component {
                         beginAtZero: true,
                         ticks: {
                             callback: function(value) {
-                                console.log('<<<<<<<<<<',value)
                                 return value >= 1000 ? value / 1000 + 'K' : value;
                             }
                         }

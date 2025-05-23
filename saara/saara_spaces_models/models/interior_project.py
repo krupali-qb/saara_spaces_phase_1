@@ -67,6 +67,33 @@ class InteriorProject(models.Model):
     buffer_avg = fields.Char(string="Average:", compute='_compute_buffer_avg', store=True)
     pending_ctc = fields.Monetary(string='Pending CTC', compute='_compute_pending_ctc')
 
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)', 'The name must be unique!')
+    ]
+
+    def write(self, vals):
+        res = super().write(vals)
+
+        if 'agency_payment_id' in vals:
+            for cmd in vals['agency_payment_id']:
+                if isinstance(cmd, (list, tuple)) and cmd[0] == 1:
+                    vendor_method_id = cmd[1]  # vendor.payment.method ID
+                    line_vals = cmd[2] if len(cmd) > 2 else {}
+                    
+                    if 'vendor_payment' in line_vals:
+                        updated_vendor_payment = line_vals['vendor_payment']
+                        print("✅ Found vendor_payment in write:", updated_vendor_payment)
+
+                        # Fetch the related vendor.payment.method record
+                        vendor_method = self.env['vendor.payment.method'].browse(vendor_method_id)
+
+                        # Update all related vendor.payment.method.line records
+                        for line in vendor_method.project_form_id:
+                            print(f"➡️ Updating line {line.id} with vendor_payment {updated_vendor_payment}")
+                            line.write({'vendor_payment': updated_vendor_payment})
+
+        return res
+
     @api.onchange('name', 'city', 'street', 'street2', 'poc_name')
     def _onchange_fields(self):
         for field in ['name', 'city', 'street', 'street2', 'poc_name']:

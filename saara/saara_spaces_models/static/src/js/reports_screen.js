@@ -25,3 +25,8 @@ class CustomReports extends Component {
 CustomReports.template = "saara_spaces_models.CustomReports";
 
 registry.category("actions").add("reports_tag", CustomReports);
+
+
+
+
+

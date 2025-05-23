@@ -52,6 +52,7 @@
                 <field name="project_id"/>
                 <field name="paid_by_employee_id"/>
                 <field name="payment_type"/>
+                <field name="remark" placeholder="Remark"/>
                 <field name="currency_id" column_invisible="True"/>
                 <field name="total_amount" sum="Total Expenses Amount" widget="monetary"
                        options="{'currency_field': 'currency_id'}"/>

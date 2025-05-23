@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+
+<record id="view_same_day_leave_wizard_form" model="ir.ui.view">
+        <field name="name">same.day.leave.wizard.form</field>
+        <field name="model">same.day.leave.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Confirm Same-Day Leave">
+                
+                        You're applying for a <strong>7-Hour Policy Leave</strong> on the same day.
+                        This is only allowed <strong>twice per year</strong>.
+                        Do you want to continue?
+                   
+                <footer>
+                    <button name="action_confirm" string="Yes, Confirm" type="object" class="btn-primary"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_same_day_leave_wizard" model="ir.actions.act_window">
+        <field name="name">Same-Day Leave Confirmation</field>
+        <field name="res_model">same.day.leave.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_same_day_leave_wizard_form"/>
+        <field name="target">new</field>
+    </record>
+    
+    
+    
+    
+    
+    
+    <record id="view_force_casual_leave_wizard_form" model="ir.ui.view">
+    <field name="name">force.casual.leave.wizard.form</field>
+    <field name="model">force.casual.leave.wizard</field>
+    <field name="arch" type="xml">
+        <form string="Force Casual Leave Confirmation">
+           
+                This leave violates the notice policy (7 or 15 days)
+                Do you want to forcefully proceed? This is limited to 2 times per year.
+            
+            <footer>
+                <button name="confirm_forceful_leave" type="object" string="Confirm Forceful Leave" class="btn-primary"/>
+                <button string="Cancel" special="cancel" class="btn-secondary"/>
+            </footer>
+        </form>
+    </field>
+</record>
+   
+    
+    
+</odoo>
+

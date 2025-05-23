@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Kanban View -->
+    <record id="view_employee_lwp_dashboard_kanban" model="ir.ui.view">
+        <field name="name">employee.lwp.dashboard.kanban</field>
+        <field name="model">employee.lwp.dashboard</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_dashboard">
+                <field name="lwp_count"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="o_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_primary_left">
+                                <div class="o_kanban_title">
+                                    <strong>LWP Leaves</strong>
+                                </div>
+                                <div class="o_kanban_counter o_primary">
+                                    <t t-esc="record.lwp_count.value"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_employee_lwp_dashboard" model="ir.actions.act_window">
+        <field name="name">LWP Dashboard</field>
+        <field name="res_model">employee.lwp.dashboard</field>
+        <field name="view_mode">kanban</field>
+        <field name="target">current</field>
+        <field name="context">{'default_name': 'LWP Dashboard'}</field>
+    </record>
+    
+     <record id="action_lwp_dashboard" model="ir.actions.client">
+        <field name="name">LWP Dashboard</field>
+        <field name="tag">employee_lwp_dashboard.lwp_action</field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_hr_dashboard_root" name="Dashboard" sequence="100"/>
+    <menuitem id="menu_hr_dashboard_lwp" name="LWP Dashboard"
+              parent="menu_hr_dashboard_root"
+              action="action_lwp_dashboard"/>
+</odoo>
+

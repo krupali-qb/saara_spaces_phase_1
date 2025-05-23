@@ -48,6 +48,14 @@ class HrEmployee(models.Model):
     _inherit = 'hr.employee'
 
     @api.model
+    def get_users_in_pm_group(self):
+        group_pm = self.env.ref('multi_level_leave_policy.group_pm')
+        return self.env['res.users'].search([('groups_id', 'in', group_pm.id)])
+
+    project_manager_id = fields.Many2one('res.users', string="Project Manager",
+                                         domain=lambda self: [('id', 'in', self.get_users_in_pm_group().ids)])
+
+    @api.model
     def create(self, vals):
         employee = super(HrEmployee, self).create(vals)
         user = employee.user_id
@@ -59,7 +67,6 @@ class HrEmployee(models.Model):
             if leave_type:
                 start_date = date(date.today().year, 1, 1)
                 end_date = date(start_date.year, 12, 31)
-
                 # Create leave allocation
                 self.env['hr.leave.allocation'].create({
                     'name': 'Sick Leave Allocation',
@@ -71,18 +78,16 @@ class HrEmployee(models.Model):
                     'date_to': end_date,
                 })
         else:
-            leave_type = self.env['hr.leave.type'].search([('name', '=', 'Casual Leave')], limit=1)
-            if leave_type:
-                start_date = date(date.today().year, 1, 1)
-                end_date = date(start_date.year, 12, 31)
-
-                # Create leave allocation
+            leave_types = self.env['hr.leave.type'].search([('name', 'in', ['Casual Leave', 'Sick Time Off'])])
+            start_date = date(date.today().year, 1, 1)
+            end_date = date(start_date.year, 12, 31)
+            for leave in leave_types:
                 self.env['hr.leave.allocation'].create({
-                    'name': 'Sick Leave Allocation',
+                    'name': f'{leave.name} Allocation',
                     'employee_id': employee.id,
-                    'holiday_status_id': leave_type.id,
+                    'holiday_status_id': leave.id,
                     'number_of_days': 8,
-                    'state': 'confirm',  # automatically approve
+                    'state': 'confirm',
                     'date_from': start_date,
                     'date_to': end_date,
                 })

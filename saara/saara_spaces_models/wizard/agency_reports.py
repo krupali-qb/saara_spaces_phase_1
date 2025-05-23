@@ -1,6 +1,7 @@
 from odoo import models, fields, api
 from odoo.exceptions import UserError
 from datetime import date
+from collections import defaultdict
 
 
 class AgencyWizard(models.TransientModel):
@@ -36,25 +37,51 @@ class AgencyWizard(models.TransientModel):
         if self.agency_ids:
             for agency in self.agency_ids:
                 generated_data = self._generate_data(self.start_date, self.end_date, agency)
+                grouped_by_project = self._group_by_project(generated_data['report_data'])
 
                 agency_data = {
                     'agency_ids': agency.name,
                     'currency_id': currency_id,
-                    'expenses_ids': [],
-                    'vendor_ids': [],
-                    'total_paid': generated_data['total_expense_sum'] + generated_data['total_vendor_sum'],
+                    'project_groups': grouped_by_project,  # <-- grouped result here
+                    'TOTAL_paid': generated_data['total_expense_sum'] + generated_data['total_vendor_sum'],
                     'total_cash_payment': generated_data['total_cash_payment'],
                     'total_bank_payment': generated_data['total_bank_payment'],
-                    'total_CTC': generated_data['total_CTC'],
-                    'total_remaining': generated_data['total_CTC'] - (generated_data['total_expense_sum'] + generated_data['total_vendor_sum'])
+                    'TOTAL_CTC': generated_data['TOTAL_CTC'],
+                    'TOTAL_remaining': generated_data['TOTAL_CTC'] - (
+                            generated_data['total_expense_sum'] + generated_data['total_vendor_sum'])
                 }
+                report_data_list.append(agency_data)
+            report_data = {
+                'start_date': self.start_date,
+                'end_date': self.end_date,
+                'company_logo': company_logo,
+                'currency_id': currency_id,
+                'data': report_data_list,
+            }
+            print("=============", report_data)
+            return self.env.ref('saara_spaces_models.agency_report_action_template_new').report_action(self,
+                                                                                                       data=report_data)
+        else:
+            # Show report for all agencies if no specific agency is selected
+            report_data_list = []
+            all_agencies = self.env['res.agency'].search([])
 
-                for record in generated_data['report_data']:
-                    if 'expenses_ids' in record:
-                        agency_data['expenses_ids'].extend(record['expenses_ids'])
-                    if 'vendor_ids' in record:
-                        agency_data['vendor_ids'].extend(record['vendor_ids'])
+            for agency in all_agencies:
+                generated_data = self._generate_data(self.start_date, self.end_date, agency)
+                grouped_by_project = self._group_by_project(generated_data['report_data'])
 
+                agency_data = {
+                    'agency_ids': agency.name,
+                    'currency_id': currency_id,
+                    'project_groups': grouped_by_project,
+                    'TOTAL_paid': generated_data['total_expense_sum'] + generated_data['total_vendor_sum'],
+                    'total_cash_payment': generated_data['total_cash_payment'],
+                    'total_bank_payment': generated_data['total_bank_payment'],
+                    'TOTAL_CTC': generated_data['TOTAL_CTC'],
+                    'TOTAL_remaining': generated_data['TOTAL_CTC'] - (
+                            generated_data['total_expense_sum'] + generated_data['total_vendor_sum']
+                    ),
+                }
                 report_data_list.append(agency_data)
 
             report_data = {
@@ -67,19 +94,6 @@ class AgencyWizard(models.TransientModel):
 
             return self.env.ref('saara_spaces_models.agency_report_action_template_new').report_action(self,
                                                                                                        data=report_data)
-
-        else:
-            # If no agency selected, show all (fallback)
-            generated_data = self._generate_data(self.start_date, self.end_date, None)
-            report_data = {
-                'start_date': self.start_date,
-                'end_date': self.end_date,
-                'company_logo': company_logo,
-                'currency_id': currency_id,
-                'data': generated_data['report_data'],
-            }
-            return self.env.ref('saara_spaces_models.agency_report_action_template').report_action(self,
-                                                                                                   data=report_data)
 
     def _generate_data(self, start_date, end_date, agency_id):
         # Fetch the records from the project.interior model
@@ -95,25 +109,22 @@ class AgencyWizard(models.TransientModel):
                 ('create_date', '<=', end_date),
                 ('vendor_id', '=', agency_id.id),
             ])
-            print("1111111111111111111111", quotation_ids)
             vendor_projects = self.env['vendor.payment.method'].search([
                 ('payment_date', '>=', start_date),
                 ('payment_date', '<=', end_date),
                 ('vendor_id', '=', agency_id.id),
                 ('expenses', '=', False),
-                ('interior_project_id', '=', False)
+                ('interior_project_id', '!=', False)
             ])
             report_data_new = []
             total_expense_sum = 0  # Initialize the sum for total_amount_expense
             total_vendor_sum = 0
             total_cash_payment = 0  # Initialize the sum for cash payments
             total_bank_payment = 0
-            total_CTC = 0
-
+            TOTAL_CTC = 0
             for expense in projects:
                 project_data = {
                     'expenses_ids': [],
-                    # 'total_remaining': expense.
                 }
                 total_expense_sum += expense.total_amount
                 if expense.payment_type == 'cash':
@@ -164,19 +175,19 @@ class AgencyWizard(models.TransientModel):
                     })
                     report_data_new.append(project_datav)
             for quotation in quotation_ids:
-                total_CTC += quotation.ctc
+                print("quotation=============aaaaaa", quotation.ctc)
+                TOTAL_CTC += quotation.ctc
             return {
                 'report_data': report_data_new,
                 'total_expense_sum': total_expense_sum,
                 'total_vendor_sum': total_vendor_sum,
                 'total_cash_payment': total_cash_payment,
                 'total_bank_payment': total_bank_payment,
-                'total_CTC': total_CTC
+                'TOTAL_CTC': TOTAL_CTC
             }
 
         if not agency_id:
             report_data_all = []
-
             agency_ids = self.env['res.agency'].search([])
             projects_all = self.env['project.expenses'].search([
                 ('expense_date', '>=', start_date),
@@ -190,7 +201,7 @@ class AgencyWizard(models.TransientModel):
                 ('payment_date', '>=', start_date),
                 ('payment_date', '<=', end_date),
                 ('expenses', '=', False),
-                ('interior_project_id', '=', False)
+                ('interior_project_id', '!=', False)
             ])
 
             for agency in agency_ids:
@@ -200,12 +211,12 @@ class AgencyWizard(models.TransientModel):
                     'vendor_ids': [],
                     'total_paid': 0,
                     'total_vendor': 0,
-                    'total_ctc':0,
+                    'TOTAL_CTC': 0,
                 }
                 for quotation in quotation_ids:
                     if quotation.vendor_id == agency:
                         quotation_total_ctc = quotation.ctc
-                        project_data['total_ctc'] += quotation_total_ctc
+                        project_data['TOTAL_CTC'] += quotation_total_ctc
 
                 for expense in projects_all:
                     if expense.agency_id == agency:
@@ -249,7 +260,47 @@ class AgencyWizard(models.TransientModel):
                 # Append project data to the report list only if it contains expenses or vendor data
                 if project_data['expenses_ids'] or project_data['vendor_ids']:
                     report_data_all.append(project_data)
-            print("=======================",report_data_all)
+
             return {
                 'report_data': report_data_all,
             }
+        return None
+
+    def _group_by_project(self, report_data):
+        """
+        Groups expenses and vendors by project and fetches project totals from `project.interior`.
+        """
+        grouped = defaultdict(lambda: {
+            'expenses_ids': [],
+            'vendor_ids': [],
+            'total_ctc': 0.0,
+            'total_paid': 0.0,
+            'total_remaining': 0.0,
+            'currency_id': '',
+        })
+
+        for entry in report_data:
+            # Handle expenses
+            for exp in entry.get('expenses_ids', []):
+                project_name = exp.get('project_id') or 'No Project'
+                grouped[project_name]['expenses_ids'].append(exp)
+                grouped[project_name]['currency_id'] = exp.get('currency_id', '')
+
+            # Handle vendors
+            for ven in entry.get('vendor_ids', []):
+                project_name = ven.get('project_id') or 'No Project'
+                grouped[project_name]['vendor_ids'].append(ven)
+                grouped[project_name]['currency_id'] = ven.get('currency_id', '')
+
+        # Fetch project model data once per project
+        result = []
+        for project_name, data in grouped.items():
+            # Get the actual project.interior record by name
+            project = self.env['project.interior'].search([('name', '=', project_name)], limit=1)
+            data['project_id'] = project_name
+            data['total_ctc'] = project.total_ctc if project else 0.0
+            data['total_paid'] = project.total_paid if project else 0.0
+            data['total_remaining'] = data['total_ctc'] - data['total_paid'] if project else 0.0
+            result.append(data)
+
+        return result

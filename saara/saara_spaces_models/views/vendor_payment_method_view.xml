@@ -9,17 +9,20 @@
                     <group>
                         <field name="expense_id" invisible="1"/>
                         <field name="name"/>
+                        <field name="line_editable" invisible="1"/>
                         <field name="invoice_number" placeholder="Invoice Number"/>
                         <field name="vendor_id"/>
                         <field name="agency_category" options="{'no_create': True}" invisible="1"/>
-                        <!-- <field name="interior_project_id"/>-->
+                        <!--                         <field name="interior_project_id"/>-->
                         <field name="payment_date"/>
                         <field name="currency_id" invisible="1"/>
                         <field name="total_payment" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                     </group>
                     <notebook>
                         <page string="Projects">
-                            <field name="project_form_id">
+                            <field name="project_form_id"
+                                   readonly="0"
+                                   modifiers="{'readonly': [['line_editable','=', True]]}">
                                 <tree editable="bottom">
                                     <field name="project_id"/>
                                     <field name="agency_category" options="{'no_create': True}"/>
@@ -43,6 +46,7 @@
         <field name="model">vendor.payment.method</field>
         <field name="arch" type="xml">
             <tree string="Vendor Payment Methods" decoration-muted="interior_project_id, '=', False">
+                <field name="invoice_number"/>
                 <field name="name"/>
                 <field name="interior_project_id"/>
                 <field name="vendor_id"/>
@@ -85,6 +89,7 @@
         <field name="arch" type="xml">
             <search>
                 <field name="interior_project_id"/>
+                <field name="invoice_number"/>
                 <field name="payment_date"/>
                 <separator/>
                 <filter string="Date" name="payment_date" date="payment_date"/>

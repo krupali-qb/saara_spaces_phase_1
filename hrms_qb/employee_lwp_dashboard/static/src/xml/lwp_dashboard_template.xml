@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="employee_lwp_dashboard.LwpDashboard">
+        <div class="o_lwp_dashboard" style="padding: 2em; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #4B3F72; flex-direction: column; color: #FFF;">
+
+            <!-- User / HR Title -->
+            <h2 style="font-size: 2.2rem; font-weight: bold; margin-bottom: 1.5em; text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);">
+                <t t-esc="state.user_name"/>
+            </h2>
+
+            <t t-if="state.is_hr">
+                <!-- HR: Show list of all employees with LWP -->
+                <div style="max-width: 600px; width: 100%; background: linear-gradient(135deg, #4B3F72, #22223B); padding: 1rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);">
+                    <h5 style="font-weight: 600; margin-bottom: 1rem; color: #58C8A3;">Employees Leave Without Pay (LWP)</h5>
+                    <table style="width: 100%; border-collapse: collapse; color: #FFF;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #58C8A3;">
+                                <th style="text-align: left; padding: 8px;">Employee Name</th>
+                                <th style="text-align: right; padding: 8px;">LWP Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="state.employees_lwp" t-as="emp" t-key="emp.employee_name">
+                                <tr style="border-bottom: 1px solid #444;">
+                                    <td style="padding: 8px;"><t t-esc="emp.employee_name"/></td>
+                                    <td style="padding: 8px; text-align: right; font-weight: bold; color: #1F8A70;"><t t-esc="emp.lwp_count"/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+
+            <t t-if="!state.is_hr">
+                <!-- Normal user: Show single card -->
+                <div class="card shadow-lg border-0 rounded-lg" style="max-width: 400px; width: 100%; background: linear-gradient(135deg, #4B3F72, #22223B); transition: transform 0.3s ease; color: #f4f6f9;">
+                    <div class="card-body p-4 text-center">
+                        <h5 class="card-title" style="font-size: 1.7rem; font-weight: 600; color: #000;">
+                            Leave Without Pay (LWP)
+                        </h5>
+                        <div class="card-text mt-4">
+                            <h2 class="lwp-counter" style="font-size: 3.5rem; font-weight: bold; color: #1F8A70; text-shadow: 0 0 10px rgba(31, 138, 112, 0.7);">
+                                <t t-esc="state.lwp_count"/>
+                            </h2>
+                            <p class="lwp-description" style="font-size: 1.2rem; color: #000; padding: 8px; border-radius: 5px;">
+                                Total LWP Leaves Taken
+                            </p>
+                        </div>
+                        <div class="card-footer mt-4" style="background-color: transparent; border: none;">
+                            <a href="/web#action=hr_holidays.hr_leave_action_my" class="btn btn-light btn-block" style="font-size: 1rem; font-weight: 600; padding: 10px 20px; border-radius: 25px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); background-color: #58C8A3; color: #fff; transition: background-color 0.3s ease, color 0.3s ease;">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </t>
+
+        </div>
+
+        <style>
+            .card:hover {
+                transform: scale(1.05);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            }
+            .card-text h2 {
+                font-size: 3.5rem;
+                transition: transform 0.3s ease;
+            }
+            .card-text h2:hover {
+                transform: scale(1.1);
+                color: #58C8A3;
+                text-shadow: 0 0 15px rgba(88, 200, 163, 0.8);
+            }
+            .btn-light {
+                transition: background-color 0.3s ease, color 0.3s ease;
+            }
+            .btn-light:hover {
+                background-color: #1F8A70;
+                color: #fff;
+            }
+            table th, table td {
+                border: none;
+            }
+        </style>
+    </t>
+</templates>
