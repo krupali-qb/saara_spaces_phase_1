@@ -41,7 +41,7 @@
             "https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js",
             'saara_spaces_models/static/src/view/custom_dashboard.xml',
             # 'saara_spaces_models/static/src/view/reports_custom.xml',
-             'saara_spaces_models/static/src/js/reports_screen2.js',
+             'saara_spaces_models/static/src/js/vendor_payment_form.js',
             'saara_spaces_models/static/src/js/custome_dashboard.js',
             'saara_spaces_models/static/src/css/style.css',
         ],

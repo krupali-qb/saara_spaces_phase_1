@@ -1,4 +1,3 @@
-
 from odoo import fields, models, api
 from datetime import date
 from dateutil.relativedelta import relativedelta
@@ -32,10 +31,12 @@ class ProjectExpenses(models.Model):
     notes = fields.Html(string='Notes')
     agency_category = fields.Many2one('agency.category', string="Work Category*", required=True)
     remark = fields.Char(string="Remark", size=25)
+    vendor_payment_id = fields.Many2one('vendor.payment.method', string="Vendor Payment")
+    is_vendor_payments = fields.Boolean(default=True)
 
     @api.onchange('name', 'person_name')
     def _onchange_fields(self):
-        for field in ['name','person_name']:
+        for field in ['name', 'person_name']:
             value = getattr(self, field)
             if value:
                 setattr(self, field, value.title())
@@ -44,22 +45,25 @@ class ProjectExpenses(models.Model):
     def create(self, vals):
         """Override create method to generate project expense after vendor payment."""
         expenses = super(ProjectExpenses, self).create(vals)
-        vendor_payment = self.env['vendor.payment.method'].create({
-            'expense_id': expenses.id,
-            'interior_project_id': expenses.project_id.id,
-            'name': expenses.payment_type,  # Use payment_type (cash/bank)
-            'vendor_id': expenses.agency_id.id,
-            'payment_date': expenses.expense_date,
-            'expenses': True
-        })
+        print("=======================vendor_payment_id>>>>>>>>>>>>>>>>>>", vals)
+        if vals.get('is_vendor_payments') == True:
+            vendor_payment = self.env['vendor.payment.method'].create({
+                'expense_id': expenses.id,
+                'interior_project_id': expenses.project_id.id,
+                'name': expenses.payment_type,  # Use payment_type (cash/bank)
+                'vendor_id': expenses.agency_id.id,
+                'payment_date': expenses.expense_date,
+                'expenses': True
+            })
         # Create records in the One2many project_form_id field
-        vendor_payment.write({
-            'project_form_id': [(0, 0, {
-                'project_id': expenses.project_id.id,
-                'agency_category': expenses.agency_category.id,
-                'vendor_payment': expenses.total_amount,
-            })]
-        })
+
+        # vendor_payment.write({
+        #     'project_form_id': [(0, 0, {
+        #         'project_id': expenses.project_id.id,
+        #         'agency_category': expenses.agency_category.id,
+        #         'vendor_payment': expenses.total_amount,
+        #     })]
+        # })
         return expenses
 
     def write(self, vals):
@@ -80,8 +84,9 @@ class ProjectExpenses(models.Model):
         for record in self:
             # Find related vendor payment records
             vendor_payment_records = self.env['vendor.payment.method'].search([
-            ('expense_id.id', '=', record.id),
+                ('expense_id.id', '=', record.id),
             ])
+            print("===============",vendor_payment_records)
             if vendor_payment_records:
                 for vendor_payment in vendor_payment_records:
                     # Delete the project_form_id entries first to avoid constraint violations

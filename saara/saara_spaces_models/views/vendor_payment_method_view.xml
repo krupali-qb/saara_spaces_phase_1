@@ -9,7 +9,7 @@
                     <group>
                         <field name="expense_id" invisible="1"/>
                         <field name="name"/>
-                        <field name="line_editable" invisible="1"/>
+                        <!--                        <field name="re_write" invisible="1"/>-->
                         <field name="invoice_number" placeholder="Invoice Number"/>
                         <field name="vendor_id"/>
                         <field name="agency_category" options="{'no_create': True}" invisible="1"/>
@@ -20,9 +20,7 @@
                     </group>
                     <notebook>
                         <page string="Projects">
-                            <field name="project_form_id"
-                                   readonly="0"
-                                   modifiers="{'readonly': [['line_editable','=', True]]}">
+                            <field name="project_form_id">
                                 <tree editable="bottom">
                                     <field name="project_id"/>
                                     <field name="agency_category" options="{'no_create': True}"/>
@@ -48,11 +46,12 @@
             <tree string="Vendor Payment Methods" decoration-muted="interior_project_id, '=', False">
                 <field name="invoice_number"/>
                 <field name="name"/>
-                <field name="interior_project_id"/>
+                <field name="interior_project_id" invisible="0"/>
                 <field name="vendor_id"/>
                 <field name="payment_date"/>
                 <field name="currency_id" column_invisible="True"/>
                 <field name="expenses"/>
+<!--                <field name="re_write" invisible="0"/>-->
                 <field name="total_payment" widget="monetary" options="{'currency_field': 'currency_id'}"
                        sum="Debit Amount"/>
             </tree>
@@ -96,10 +95,11 @@
                 <separator/>
                 <!--                <filter string="Expenses" name="analytic_accounts"-->
                 <!--                        domain="[('expenses','=', True)]"/>-->
-                <filter string="Project" name="project" domain="[('interior_project_id', '!=', False)]"/>
+                <filter string="Project" name="project"
+                        domain="[('interior_project_id', '=', False),('expenses', '=', False)]"/>
                 <group expand="1" string="Group By">
-                    <filter string="Expenses" name="analytic_accounts"
-                            domain="[('expenses','=', True)]"/>
+                    <filter string="Expenses" name="expenses_no_rewrite"
+                            domain="[('expenses', '=', True), ('re_write', '=', False)]"/>
                 </group>
             </search>
         </field>

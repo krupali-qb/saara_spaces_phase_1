@@ -133,6 +133,7 @@
                                     <field name="expense_date"/>
                                     <field name="total_amount" widget="monetary"
                                            options="{'currency_field': 'currency_id'}"/>
+                                    <field name="is_vendor_payments" column_invisible="True"/>
                                     <field name="currency_id" column_invisible="True"/>
                                 </tree>
                             </field>
