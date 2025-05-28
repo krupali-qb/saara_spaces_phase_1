@@ -45,7 +45,6 @@ class ProjectExpenses(models.Model):
     def create(self, vals):
         """Override create method to generate project expense after vendor payment."""
         expenses = super(ProjectExpenses, self).create(vals)
-        print("=======================vendor_payment_id>>>>>>>>>>>>>>>>>>", vals)
         if vals.get('is_vendor_payments') == True:
             vendor_payment = self.env['vendor.payment.method'].create({
                 'expense_id': expenses.id,
@@ -55,8 +54,6 @@ class ProjectExpenses(models.Model):
                 'payment_date': expenses.expense_date,
                 'expenses': True
             })
-        # Create records in the One2many project_form_id field
-
         # vendor_payment.write({
         #     'project_form_id': [(0, 0, {
         #         'project_id': expenses.project_id.id,
@@ -69,15 +66,16 @@ class ProjectExpenses(models.Model):
     def write(self, vals):
         res = super(ProjectExpenses, self).write(vals)
         for record in self:
-            # Search for related vendor payment records
             vendor_payment_records = self.env['vendor.payment.method'].search([
                 ('expense_id.id', '=', record.id),
             ])
-            if vendor_payment_records:
-                for project_form in vendor_payment_records.mapped('project_form_id'):
-                    project_form.write({
-                        'vendor_payment': record.total_amount,
-                    })
+            for line in vendor_payment_records.project_form_id:
+                print("]]]]]]]]]]]]]]]]]]]]]]]]>>>>>>>>>>>>>>",line)
+
+                # for project_form in vendor_payment_records.mapped('project_form_id'):
+                #     project_form.write({
+                #         'vendor_payment': record.total_amount,
+                #     })
         return res
 
     def unlink(self):
@@ -86,12 +84,8 @@ class ProjectExpenses(models.Model):
             vendor_payment_records = self.env['vendor.payment.method'].search([
                 ('expense_id.id', '=', record.id),
             ])
-            print("===============",vendor_payment_records)
             if vendor_payment_records:
                 for vendor_payment in vendor_payment_records:
-                    # Delete the project_form_id entries first to avoid constraint violations
-                    vendor_payment.project_form_id.unlink()
-                    # Delete the vendor payment record itself
                     vendor_payment.unlink()
 
         return super(ProjectExpenses, self).unlink()

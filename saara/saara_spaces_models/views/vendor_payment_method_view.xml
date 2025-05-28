@@ -51,7 +51,7 @@
                 <field name="payment_date"/>
                 <field name="currency_id" column_invisible="True"/>
                 <field name="expenses"/>
-<!--                <field name="re_write" invisible="0"/>-->
+<!--                <field name="re_write" column_invisible="0"/>-->
                 <field name="total_payment" widget="monetary" options="{'currency_field': 'currency_id'}"
                        sum="Debit Amount"/>
             </tree>

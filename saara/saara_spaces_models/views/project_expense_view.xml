@@ -16,7 +16,7 @@
                             <field name="category_id" options="{'no_create': True}"/>
                             <field name="project_id"/>
                             <field name="is_person"/>
-                            <field name="is_vendor_payments" invisible="0"/>
+                            <field name="is_vendor_payments" invisible="1"/>
                             <field name="person_name" invisible="is_person == False" placeholder="Name"/>
                             <field name="agency_id"/>
                             <field name="agency_category" options="{'no_create': True}"/>

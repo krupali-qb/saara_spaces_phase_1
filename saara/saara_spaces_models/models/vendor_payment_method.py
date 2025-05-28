@@ -17,8 +17,7 @@ class VendorPaymentMethod(models.Model):
     ], string='Payment Method*', required=True)
 
     interior_project_id = fields.Many2one(
-        'project.interior', string='Interior Project*',
-        store=True
+        'project.interior', string='Interior Project*', store=True
     )
     vendor_id = fields.Many2one('res.agency', string="Agency*", tracking=True)
     agency_category = fields.Many2one('agency.category', string="Work Category")
@@ -43,6 +42,9 @@ class VendorPaymentMethod(models.Model):
     re_write = fields.Boolean(default=False)
     exclude_from_total = fields.Boolean(string='Exclude from Total', default=False)
 
+    # 🔁 NEW: Link back to the line (only for re_write=True)
+    linked_line_id = fields.Many2one('vendor.payment.method.line', string="Linked Original Line")
+
     @api.constrains('project_form_id')
     def _check_project_form_id(self):
         for record in self:
@@ -52,8 +54,6 @@ class VendorPaymentMethod(models.Model):
     @api.depends('project_form_id.vendor_payment')
     def _compute_total_payment(self):
         for record in self:
-            # if len(record.project_form_id) > 1:
-            #     continue
             record.total_payment = sum(record.project_form_id.mapped('vendor_payment'))
 
     @api.model
@@ -62,7 +62,7 @@ class VendorPaymentMethod(models.Model):
         projects = payment_record.project_form_id
 
         for project in projects:
-            self.env['vendor.payment.method'].create({
+            split_payment = self.env['vendor.payment.method'].create({
                 'name': payment_record.name,
                 'vendor_id': payment_record.vendor_id.id,
                 'interior_project_id': project.project_id.id,
@@ -70,10 +70,11 @@ class VendorPaymentMethod(models.Model):
                 'payment_date': payment_record.payment_date,
                 'vendor_payment': project.vendor_payment,
                 're_write': True,
+                'linked_line_id': project.id,  # NEW: link to the line
             })
+            project.cloned_vendor_payment_id = split_payment.id  # NEW: link line to split
 
         if payment_record.interior_project_id and not payment_record.expenses:
-            print("============if")
             payment_record.project_form_id = [(0, 0, {
                 'project_id': payment_record.interior_project_id.id,
                 'agency_category': payment_record.agency_category.id,
@@ -81,7 +82,6 @@ class VendorPaymentMethod(models.Model):
             })]
         elif payment_record.interior_project_id and payment_record.expenses:
             if not payment_record.agency_category:
-                print("payment_record.agency_category== False")
                 payment_record.project_form_id = [(0, 0, {
                     'project_id': payment_record.expense_id.project_id.id,
                     'agency_category': payment_record.expense_id.agency_category.id,
@@ -97,7 +97,6 @@ class VendorPaymentMethod(models.Model):
 
     def write(self, vals):
         for recoed in self:
-            print("=======self.expense_id", recoed.expense_id)
             if recoed.expense_id:
                 if vals.get('project_form_id'):
                     commands = vals['project_form_id']
@@ -105,7 +104,7 @@ class VendorPaymentMethod(models.Model):
                         if isinstance(cmd, list) and cmd[0] == 0:
                             line_data = cmd[2]
                             if isinstance(line_data, dict):
-                                new_vpm =  self.env['vendor.payment.method'].create({
+                                new_vpm = self.env['vendor.payment.method'].create({
                                     'name': self.name,
                                     'vendor_id': self.vendor_id.id,
                                     'interior_project_id': line_data.get('project_id'),
@@ -115,7 +114,6 @@ class VendorPaymentMethod(models.Model):
                                     're_write': True,
                                     'expenses': True
                                 })
-                                print("=============new_vpm=",new_vpm)
                                 self.env['project.expenses'].create({
                                     'name': self.expense_id.name,
                                     'project_id': line_data.get('project_id'),
@@ -126,9 +124,7 @@ class VendorPaymentMethod(models.Model):
                                     'agency_id': self.vendor_id.id,
                                     'paid_by_employee_id': self.expense_id.paid_by_employee_id.id,
                                     'payment_type': self.expense_id.payment_type,
-                                    # 'vendor_payment_id': new_vpm.id
                                 })
-
             else:
                 if vals.get('project_form_id'):
                     commands = vals['project_form_id']
@@ -136,7 +132,7 @@ class VendorPaymentMethod(models.Model):
                         if isinstance(cmd, list) and cmd[0] == 0:
                             line_data = cmd[2]
                             if isinstance(line_data, dict):
-                                self.env['vendor.payment.method'].create({
+                                new_vpm = self.env['vendor.payment.method'].create({
                                     'name': self.name,
                                     'vendor_id': self.vendor_id.id,
                                     'interior_project_id': line_data.get('project_id'),
@@ -145,8 +141,34 @@ class VendorPaymentMethod(models.Model):
                                     'vendor_payment': line_data.get('vendor_payment'),
                                     're_write': True,
                                 })
-        res = super(VendorPaymentMethod, self).write(vals)
-        return res
+
+        # 🔁 Sync back to line if this is a split
+        for record in self:
+            if 'project_form_id' in vals:
+                for cmd in vals['project_form_id']:
+                    if isinstance(cmd, list) and cmd[0] == 1:  # [1, ID, values] = update line
+                        line_id = cmd[1]
+                        line_vals = cmd[2]
+                        if 'vendor_payment' in line_vals:
+                            line = self.env['vendor.payment.method.line'].browse(line_id)
+                            print("==================", line)
+                            # Now find matching project.expenses
+                            expenses = self.env['project.expenses'].search([
+                                ('project_id', '=', line.project_id.id),
+                                ('agency_category', '=', line.agency_category.id),
+                                ('expense_date', '=', record.payment_date),
+                                ('agency_id', '=', record.vendor_id.id)
+                            ])
+                            print("===========expense=-------------", expenses)
+                            for exp in expenses:
+                                exp.write({'total_amount': line_vals['vendor_payment']})
+        for record in self:
+            if record.re_write and 'vendor_payment' in vals and record.linked_line_id:
+                record.linked_line_id.with_context(skip_project_update=True).write({
+                    'vendor_payment': vals['vendor_payment']
+                })
+
+        return super(VendorPaymentMethod, self).write(vals)
 
 
 class VendorPaymentMethodLine(models.Model):
@@ -162,43 +184,41 @@ class VendorPaymentMethodLine(models.Model):
     )
     exclude_from_total = fields.Boolean(string='Exclude from Total', default=False)
 
+    # 🔁 Link to cloned vendor.payment.method
+    cloned_vendor_payment_id = fields.Many2one('vendor.payment.method', string="Cloned Vendor Payment")
+
     def write(self, vals):
         if self.env.context.get('skip_project_update'):
             return super().write(vals)
 
         res = super().write(vals)
         for record in self:
-            projects = self.env['project.interior'].search([
-                ('agency_payment_id.id', '=', record.agency_id.id)
-            ])
-            for project in projects.agency_payment_id:
-                if project == record.agency_id:
-                    project.with_context(skip_project_update=True).write({
-                        'vendor_payment': record.vendor_payment
-                    })
-
-            expenses = self.env['project.expenses'].search([
-                ('id', '=', record.agency_id.expense_id.id),
-            ])
-            for expense in expenses:
-                expense.with_context(skip_project_update=True).write({
-                    'total_amount': record.vendor_payment
+            if 'vendor_payment' in vals and record.cloned_vendor_payment_id:
+                record.cloned_vendor_payment_id.with_context(skip_project_update=True).write({
+                    'vendor_payment': vals['vendor_payment']
                 })
+
+                expenses = self.env['project.expenses'].search([
+                    ('id', '=', record.agency_id.expense_id.id),
+                ])
+                for expense in expenses:
+                    expense.with_context(skip_project_update=True).write({
+                        'total_amount': vals['vendor_payment']
+                    })
 
         return res
 
     def unlink(self):
         for record in self:
-            # Find related vendor.payment.method records with re_write=True
-            related_vendor_payments = self.env['vendor.payment.method'].search([
-                ('re_write', '=', True),
-                ('interior_project_id', '=', record.project_id.id),
+            if record.cloned_vendor_payment_id:
+                record.cloned_vendor_payment_id.unlink()
+            related_expenses = self.env['project.expenses'].search([
+                ('project_id', '=', record.project_id.id),
                 ('agency_category', '=', record.agency_category.id),
-                ('vendor_payment', '=', record.vendor_payment),
-                ('vendor_id', '=', record.agency_id.vendor_id.id),
-                ('payment_date', '=', record.agency_id.payment_date),
+                ('total_amount', '=', record.vendor_payment),
+                ('agency_id', '=', record.agency_id.vendor_id.id),
+                ('expense_date', '=', record.agency_id.payment_date),
             ])
-            if related_vendor_payments:
-                print("======related_vendor_payments========", related_vendor_payments)
-                related_vendor_payments.unlink()
+            if related_expenses:
+                related_expenses.unlink()
         return super(VendorPaymentMethodLine, self).unlink()
