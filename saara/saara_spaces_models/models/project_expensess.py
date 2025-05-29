@@ -33,6 +33,7 @@ class ProjectExpenses(models.Model):
     remark = fields.Char(string="Remark", size=25)
     vendor_payment_id = fields.Many2one('vendor.payment.method', string="Vendor Payment")
     is_vendor_payments = fields.Boolean(default=True)
+    uniqe_id = fields.Char(string='uniqe_id Total',)
 
     @api.onchange('name', 'person_name')
     def _onchange_fields(self):
@@ -54,6 +55,11 @@ class ProjectExpenses(models.Model):
                 'payment_date': expenses.expense_date,
                 'expenses': True
             })
+            line = vendor_payment.project_form_id[:1]
+            
+            line_method = self.env['vendor.payment.method.line'].search([("id","=",line.id)])
+            print("vvvvvvvvvvvvvvvvvvvvvvvvvvvv",line_method.vendor_payment,line_method.uniqe_id)
+            line_method.uniqe_id = expenses.id
         # vendor_payment.write({
         #     'project_form_id': [(0, 0, {
         #         'project_id': expenses.project_id.id,
@@ -69,13 +75,23 @@ class ProjectExpenses(models.Model):
             vendor_payment_records = self.env['vendor.payment.method'].search([
                 ('expense_id.id', '=', record.id),
             ])
-            for line in vendor_payment_records.project_form_id:
-                print("]]]]]]]]]]]]]]]]]]]]]]]]>>>>>>>>>>>>>>",line)
-
-                # for project_form in vendor_payment_records.mapped('project_form_id'):
-                #     project_form.write({
-                #         'vendor_payment': record.total_amount,
-                #     })
+            if record.uniqe_id:
+                uniqe = record.uniqe_id
+                if uniqe and "-" in uniqe:
+                    prefix, number = uniqe.split("-")
+                try:
+                    uniqe = f"{prefix}-{int(number) + 1:05d}"
+                except ValueError:
+                    pass
+                vendor_payment_recordss = self.env['vendor.payment.method.line'].search([
+                ('uniqe_id', '=', uniqe),
+            ])
+                vendor_payment_recordss.vendor_payment = record.total_amount
+            else:
+                vendor_payment_recordssv = self.env['vendor.payment.method.line'].search([
+                ('uniqe_id', '=', record.id),
+            ])
+                vendor_payment_recordssv.vendor_payment = record.total_amount
         return res
 
     def unlink(self):

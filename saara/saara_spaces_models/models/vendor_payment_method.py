@@ -1,4 +1,4 @@
-from odoo import fields, models, api, exceptions
+from odoo import fields, models, api, exceptions, _
 
 
 class VendorPaymentMethod(models.Model):
@@ -96,72 +96,105 @@ class VendorPaymentMethod(models.Model):
         return payment_record
 
     def write(self, vals):
-        for recoed in self:
-            if recoed.expense_id:
-                if vals.get('project_form_id'):
-                    commands = vals['project_form_id']
-                    for cmd in commands:
-                        if isinstance(cmd, list) and cmd[0] == 0:
-                            line_data = cmd[2]
-                            if isinstance(line_data, dict):
-                                new_vpm = self.env['vendor.payment.method'].create({
-                                    'name': self.name,
-                                    'vendor_id': self.vendor_id.id,
-                                    'interior_project_id': line_data.get('project_id'),
-                                    'agency_category': line_data.get('agency_category'),
-                                    'payment_date': self.payment_date,
-                                    'vendor_payment': line_data.get('vendor_payment'),
-                                    're_write': True,
-                                    'expenses': True
-                                })
-                                self.env['project.expenses'].create({
-                                    'name': self.expense_id.name,
+        for record in self:
+            if 'project_form_id' in vals:
+                commands = vals['project_form_id']
+                new_commands = []
+
+                for cmd in commands:
+                    if isinstance(cmd, list) and cmd[0] == 0:  # create new line
+                        line_data = cmd[2]
+                        unique_id = line_data.get('uniqe_id') or self.env['ir.sequence'].next_by_code(
+                            'vendor.payment.method.line')
+                        if isinstance(line_data, dict):
+                            if record.expense_id:
+                                new_expense_id = self.env['project.expenses'].create({
+                                    'name': record.expense_id.name,
                                     'project_id': line_data.get('project_id'),
                                     'agency_category': line_data.get('agency_category'),
                                     'total_amount': line_data.get('vendor_payment'),
-                                    'category_id': self.expense_id.category_id.id,
-                                    'expense_date': self.payment_date,
-                                    'agency_id': self.vendor_id.id,
-                                    'paid_by_employee_id': self.expense_id.paid_by_employee_id.id,
-                                    'payment_type': self.expense_id.payment_type,
+                                    'category_id': record.expense_id.category_id.id,
+                                    'expense_date': record.payment_date,
+                                    'agency_id': record.vendor_id.id,
+                                    'paid_by_employee_id': record.expense_id.paid_by_employee_id.id,
+                                    'payment_type': record.expense_id.payment_type,
+                                    'uniqe_id': unique_id,
                                 })
-            else:
-                if vals.get('project_form_id'):
-                    commands = vals['project_form_id']
-                    for cmd in commands:
-                        if isinstance(cmd, list) and cmd[0] == 0:
-                            line_data = cmd[2]
-                            if isinstance(line_data, dict):
+
+                                unique_id = self.env['ir.sequence'].next_by_code('vendor.payment.method.line') or _(
+                                    'New')
                                 new_vpm = self.env['vendor.payment.method'].create({
-                                    'name': self.name,
-                                    'vendor_id': self.vendor_id.id,
+                                    'name': record.name,
+                                    'vendor_id': record.vendor_id.id,
                                     'interior_project_id': line_data.get('project_id'),
                                     'agency_category': line_data.get('agency_category'),
-                                    'payment_date': self.payment_date,
+                                    'payment_date': record.payment_date,
+                                    'vendor_payment': line_data.get('vendor_payment'),
+                                    're_write': True,
+                                    'expenses': True,
+                                    'expense_id': new_expense_id.id,
+                                })
+                                line_data['agency_id'] = new_vpm.id
+                                line_data['uniqe_id'] = unique_id
+                                new_vpm.project_form_id.uniqe_id = line_data['uniqe_id']
+
+                            else:
+                                new_vpm = self.env['vendor.payment.method'].create({
+                                    'name': record.name,
+                                    'vendor_id': record.vendor_id.id,
+                                    'interior_project_id': line_data.get('project_id'),
+                                    'agency_category': line_data.get('agency_category'),
+                                    'payment_date': record.payment_date,
                                     'vendor_payment': line_data.get('vendor_payment'),
                                     're_write': True,
                                 })
+                                new_vpm.project_form_id.uniqe_id = vals.get("uniqe_id")
 
-        # 🔁 Sync back to line if this is a split
+                            # 💡 Inject the new vendor_payment_id into the line data
+                            line_data['agency_id'] = new_vpm.id
+                            new_commands.append([0, 0, line_data])
+                        else:
+                            new_commands.append(cmd)
+                    else:
+                        new_commands.append(cmd)
+                vals['project_form_id'] = new_commands
+
+        # Continue with update logic (e.g., update project.expenses from line updates)
         for record in self:
             if 'project_form_id' in vals:
                 for cmd in vals['project_form_id']:
-                    if isinstance(cmd, list) and cmd[0] == 1:  # [1, ID, values] = update line
+                    if isinstance(cmd, list) and cmd[0] == 1:
                         line_id = cmd[1]
                         line_vals = cmd[2]
                         if 'vendor_payment' in line_vals:
                             line = self.env['vendor.payment.method.line'].browse(line_id)
-                            print("==================", line)
-                            # Now find matching project.expenses
-                            expenses = self.env['project.expenses'].search([
-                                ('project_id', '=', line.project_id.id),
-                                ('agency_category', '=', line.agency_category.id),
-                                ('expense_date', '=', record.payment_date),
-                                ('agency_id', '=', record.vendor_id.id)
-                            ])
-                            print("===========expense=-------------", expenses)
-                            for exp in expenses:
-                                exp.write({'total_amount': line_vals['vendor_payment']})
+                            if line.uniqe_id:
+                                uniqe = line.uniqe_id
+                                if uniqe and "-" in uniqe and uniqe.upper().startswith("V"):
+                                    try:
+                                        prefix, number = uniqe.split("-")
+                                        uniqe = f"{prefix}-{int(number) - 1:05d}"
+                                    except ValueError:
+                                        pass
+                                    expenses = self.env['project.expenses'].search([
+                                        ('project_id', '=', line.project_id.id),
+                                        ('agency_category', '=', line.agency_category.id),
+                                        ('expense_date', '=', record.payment_date),
+                                        ('agency_id', '=', record.vendor_id.id),
+                                        ('uniqe_id', '=', uniqe)
+                                    ])
+                                    expenses.write({'total_amount': line_vals['vendor_payment']})
+                                else:
+                                    expensesv = self.env['project.expenses'].search([
+                                        ('project_id', '=', line.project_id.id),
+                                        ('agency_category', '=', line.agency_category.id),
+                                        ('expense_date', '=', record.payment_date),
+                                        ('agency_id', '=', record.vendor_id.id),
+                                        ('id', '=', line.uniqe_id)
+                                    ])
+                                    expensesv.write({'total_amount': line_vals['vendor_payment']})
+
+        # Sync vendor_payment back if necessary
         for record in self:
             if record.re_write and 'vendor_payment' in vals and record.linked_line_id:
                 record.linked_line_id.with_context(skip_project_update=True).write({
@@ -182,7 +215,14 @@ class VendorPaymentMethodLine(models.Model):
         'res.currency', string="Currency",
         default=lambda self: self.env.user.company_id.currency_id.id
     )
+    # vendor_payment_id = fields.Many2one('vendor.payment.method', string="Vendor Payment")
+    expense_id = fields.Many2one('project.expenses', string='Expenses')
     exclude_from_total = fields.Boolean(string='Exclude from Total', default=False)
+
+    def _get_default_unique_id(self):
+        return self.env['ir.sequence'].next_by_code('vendor.payment.method.line') or _('New')
+
+    uniqe_id = fields.Char(string='Unique ID', readonly=True, copy=False, index=True, )
 
     # 🔁 Link to cloned vendor.payment.method
     cloned_vendor_payment_id = fields.Many2one('vendor.payment.method', string="Cloned Vendor Payment")

@@ -12,6 +12,7 @@
     'data': [
         'security/security_template.xml',
         'security/ir.model.access.csv',
+        'data/ir_cron_data.xml',
         'views/interior_projects_view.xml',
         'views/payment_method_view.xml',
         'views/vendor_payment_method_view.xml',
