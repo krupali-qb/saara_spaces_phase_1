@@ -237,7 +237,6 @@ class VendorPaymentMethodLine(models.Model):
                 record.cloned_vendor_payment_id.with_context(skip_project_update=True).write({
                     'vendor_payment': vals['vendor_payment']
                 })
-
                 expenses = self.env['project.expenses'].search([
                     ('id', '=', record.agency_id.expense_id.id),
                 ])
@@ -250,8 +249,16 @@ class VendorPaymentMethodLine(models.Model):
 
     def unlink(self):
         for record in self:
-            if record.cloned_vendor_payment_id:
-                record.cloned_vendor_payment_id.unlink()
+            related_vendor_payments = self.env['vendor.payment.method'].search([
+                ('re_write', '=', True),
+                ('interior_project_id', '=', record.project_id.id),
+                ('agency_category', '=', record.agency_category.id),
+                ('vendor_payment', '=', record.vendor_payment),
+                ('vendor_id', '=', record.agency_id.vendor_id.id),
+                ('payment_date', '=', record.agency_id.payment_date),
+            ])
+            if related_vendor_payments:
+                related_vendor_payments.unlink()
             related_expenses = self.env['project.expenses'].search([
                 ('project_id', '=', record.project_id.id),
                 ('agency_category', '=', record.agency_category.id),

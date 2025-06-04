@@ -23,7 +23,7 @@
                             <field name="project_form_id">
                                 <tree editable="bottom">
                                     <field name="project_id"/>
-                                     <field name="uniqe_id" column_invisible="True"/>
+                                     <field name="uniqe_id"/>
                                     <field name="agency_category" options="{'no_create': True}"/>
                                     <field name="vendor_payment" widget="monetary"
                                            options="{'currency_field': 'currency_id'}"/>
