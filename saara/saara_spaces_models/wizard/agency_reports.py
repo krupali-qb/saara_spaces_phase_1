@@ -58,7 +58,6 @@ class AgencyWizard(models.TransientModel):
                 'currency_id': currency_id,
                 'data': report_data_list,
             }
-            print("=============", report_data)
             return self.env.ref('saara_spaces_models.agency_report_action_template_new').report_action(self,
                                                                                                        data=report_data)
         else:
@@ -175,7 +174,6 @@ class AgencyWizard(models.TransientModel):
                     })
                     report_data_new.append(project_datav)
             for quotation in quotation_ids:
-                print("quotation=============aaaaaa", quotation.ctc)
                 TOTAL_CTC += quotation.ctc
             return {
                 'report_data': report_data_new,

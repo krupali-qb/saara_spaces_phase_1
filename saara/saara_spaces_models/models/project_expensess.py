@@ -58,15 +58,8 @@ class ProjectExpenses(models.Model):
             line = vendor_payment.project_form_id[:1]
             
             line_method = self.env['vendor.payment.method.line'].search([("id","=",line.id)])
-            print("vvvvvvvvvvvvvvvvvvvvvvvvvvvv",line_method.vendor_payment,line_method.uniqe_id)
             line_method.uniqe_id = expenses.id
-        # vendor_payment.write({
-        #     'project_form_id': [(0, 0, {
-        #         'project_id': expenses.project_id.id,
-        #         'agency_category': expenses.agency_category.id,
-        #         'vendor_payment': expenses.total_amount,
-        #     })]
-        # })
+
         return expenses
 
     def write(self, vals):

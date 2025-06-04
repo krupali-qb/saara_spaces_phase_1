@@ -82,14 +82,12 @@ class InteriorProject(models.Model):
                     
                     if 'vendor_payment' in line_vals:
                         updated_vendor_payment = line_vals['vendor_payment']
-                        print("✅ Found vendor_payment in write:", updated_vendor_payment)
 
                         # Fetch the related vendor.payment.method record
                         vendor_method = self.env['vendor.payment.method'].browse(vendor_method_id)
 
                         # Update all related vendor.payment.method.line records
                         for line in vendor_method.project_form_id:
-                            print(f"➡️ Updating line {line.id} with vendor_payment {updated_vendor_payment}")
                             line.write({'vendor_payment': updated_vendor_payment})
 
         return res

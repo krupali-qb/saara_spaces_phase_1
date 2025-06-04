@@ -26,7 +26,6 @@ class ProjectWorkCategoryWizard(models.TransientModel):
 
     def work_category_generate_report(self):
         # Ensure the start date is not after the end date
-        print("-----------------work")
         if self.start_date > self.end_date:
             raise UserError('Start date cannot be later than end date.')
 
