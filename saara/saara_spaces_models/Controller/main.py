@@ -5,6 +5,8 @@ import json
 import base64
 import jwt
 from werkzeug.exceptions import Unauthorized
+from odoo.addons.website_sale.controllers.main import QueryURL
+from odoo.addons.portal.controllers.portal import pager as portal_pager
 
 
 class ExpenseChartController(http.Controller):
@@ -112,8 +114,7 @@ class ExpenseChartController(http.Controller):
         image_1998 = post.get('image_1998')
         tag_id = post.get('tag_id')
         state = request.env['res.country.state'].sudo().search([('id', '=', state_id)])
-        content = image_1998.read()
-        base64e = base64.b64encode(content)
+
         customer_name = request.env['res.customer'].sudo().search([('name', '=', name)])
         if customer_name:
             return json.dumps({
@@ -121,7 +122,22 @@ class ExpenseChartController(http.Controller):
                 "status_code": 409,
                 "message": "The name must be unique"
             })
-        else:
+        elif not image_1998:
+            customer_id = request.env['res.customer'].sudo().create({
+                'name': name,
+                'street': street,
+                'street2': street2 if street2 else False,
+                'city': city,
+                'state_id': state.id,
+                'zip': zip,
+                'phone': phone if phone else False,
+                'mobile': mobile,
+                'email': email if email else False,
+                'tag_id': tag_id if tag_id else False,
+            })
+        elif image_1998:
+            content = image_1998.read()
+            base64e = base64.b64encode(content)
             customer_id = request.env['res.customer'].sudo().create({
                 'name': name,
                 'street': street,
@@ -161,8 +177,7 @@ class ExpenseChartController(http.Controller):
         image_1998 = post.get('image_1998')
         tag_id = post.get('tag_id')
         state = request.env['res.country.state'].sudo().search([('id', '=', state_id)])
-        content = image_1998.read()
-        base64e = base64.b64encode(content)
+
         agency_name = request.env['res.agency'].sudo().search([('name', '=', name)])
         if agency_name:
             return json.dumps({
@@ -171,30 +186,57 @@ class ExpenseChartController(http.Controller):
                 "message": "The name must be unique"
             })
         else:
-            agency_id = request.env['res.agency'].sudo().create({
-                'name': name,
-                'street': street,
-                'street2': street2 if street2 else False,
-                'city': city,
-                'state_id': state.id,
-                'zip': zip,
-                'phone': phone if phone else False,
-                'mobile': mobile,
-                'poc_name': poc_name,
-                'gst_required': gst_required,
-                'gst_no': gst_no,
-                'email': email if email else False,
-                'image_1998': base64e if base64e else False,
-                'tag_id': tag_id if tag_id else 'agency',
-            })
-        return json.dumps({
-            "data": {
-                'id': agency_id.id
-            },
-            "success": True,
-            "status_code": 200,
-            "message": "Success Create Agency"
-        })
+            if image_1998:
+                content = image_1998.read()
+                base64e = base64.b64encode(content)
+                agency_id = request.env['res.agency'].sudo().create({
+                    'name': name,
+                    'street': street,
+                    'street2': street2 if street2 else False,
+                    'city': city,
+                    'state_id': state.id,
+                    'zip': zip,
+                    'phone': phone if phone else False,
+                    'mobile': mobile,
+                    'poc_name': poc_name,
+                    'gst_required': gst_required,
+                    'gst_no': gst_no,
+                    'email': email if email else False,
+                    'image_1998': base64e if base64e else False,
+                    'tag_id': tag_id if tag_id else 'agency',
+                })
+                return json.dumps({
+                    "data": {
+                        'id': agency_id.id
+                    },
+                    "success": True,
+                    "status_code": 200,
+                    "message": "Success Create Agency"
+                })
+            else:
+                agency_id = request.env['res.agency'].sudo().create({
+                    'name': name,
+                    'street': street,
+                    'street2': street2 if street2 else False,
+                    'city': city,
+                    'state_id': state.id,
+                    'zip': zip,
+                    'phone': phone if phone else False,
+                    'mobile': mobile,
+                    'poc_name': poc_name,
+                    'gst_required': gst_required,
+                    'gst_no': gst_no,
+                    'email': email if email else False,
+                    'tag_id': tag_id if tag_id else 'agency',
+                })
+                return json.dumps({
+                    "data": {
+                        'id': agency_id.id
+                    },
+                    "success": True,
+                    "status_code": 200,
+                    "message": "Success Create Agency"
+                })
 
     @http.route("/api/create/receivable", auth="public", type="http", methods=["POST"], csrf=False)
     def CreatePaymentReceivable(self, **post):
@@ -221,6 +263,9 @@ class ExpenseChartController(http.Controller):
                 'customer_payment': customer_payment
             })
         return json.dumps({
+            "data": {
+                "receivable_id": receivable_id.id
+            },
             "success": True,
             "status_code": 200,
             "message": "Success Create Receivable"
@@ -259,6 +304,9 @@ class ExpenseChartController(http.Controller):
                 })]
             })
         return json.dumps({
+            "data": {
+                'payable_id': payable_id.id
+            },
             "success": True,
             "status_code": 200,
             "message": "Success Create Payable"
@@ -283,19 +331,20 @@ class ExpenseChartController(http.Controller):
         project = request.env['project.interior'].sudo().search([('id', '=', project_id)])
         agency = request.env['res.agency'].sudo().search([('id', '=', agency_id)])
         user_id = request.env['res.users'].sudo().search([('id', '=', paid_by_employee_id)])
-        if not name:
+        expenses_name = request.env['project.expenses'].sudo().search([('name', '=', name)])
+        if expenses_name:
             return json.dumps({
                 "success": False,
                 "status_code": 409,
-                "message": "Not Create Expenses."
+                "message": "The name must be unique"
             })
         else:
             expenses_id = request.env['project.expenses'].sudo().create({
                 'name': name,
                 'category_id': expenses_category.id,
                 'project_id': project.id,
-                'is_person': is_person,
-                'person_name': person_name,
+                'is_person': is_person if is_person else False,
+                'person_name': person_name if person_name else False,
                 'agency_id': agency.id,
                 'agency_category': agency_category.id,
                 'expense_date': expense_date,
@@ -315,7 +364,8 @@ class ExpenseChartController(http.Controller):
             line = payable_id.project_form_id[:1]
         return json.dumps({
             "data": {
-                "id": expenses_id.id
+                "expenses_id": expenses_id.id,
+                'payable_id': payable_id.id
             },
             "success": True,
             "status_code": 200,
@@ -354,154 +404,446 @@ class ExpenseChartController(http.Controller):
             "message": "Success Get Agency Work Category"
         })
 
-    @http.route("/api/projects/list", auth="public", type="http", methods=["GET"], csrf=False)
-    def ProjectList(self):
-        project_ids = request.env['project.interior'].sudo().search([])
-        projects = []
-        for project in project_ids:
-            projects.append({
-                "project_id": project.id,
-                "project_name": project.name,
-                "customer_id": project.customer_id.id,
-                "customer_name": project.customer_id.name
-            })
-        return json.dumps({
-            'Projects': projects,
-            "success": True,
-            "status_code": 200,
-            "message": "Success Get Projects"
-        })
-
-    @http.route("/api/customer/list", auth="public", type="http", methods=["GET"], csrf=False)
-    def CustomerList(self):
-        customer_id = request.env['res.customer'].sudo().search([])
-        customer_list = []
-        for customer in customer_id:
-            customer_list.append({
-                'customer_id': customer.id,
-                'customer_name': customer.name
-            })
-        return json.dumps({
-            'Projects': customer_list,
-            "success": True,
-            "status_code": 200,
-            "message": "Success Get Customer"
-        })
-
-    @http.route("/api/agency/list", auth="public", type="http", methods=["GET"], csrf=False)
-    def AgencyList(self):
-        agency_id = request.env['res.agency'].sudo().search([])
-        agency_list = []
-        for agency in agency_id:
-            agency_list.append({
-                'agency_id': agency.id,
-                'agency_name': agency.name
-            })
-        return json.dumps({
-            'Projects': agency_list,
-            "success": True,
-            "status_code": 200,
-            "message": "Success Get Agency"
-        })
-
-    @http.route("/api/state/list", auth="public", type="http", methods=["GET"], csrf=False)
-    def StateList(self):
-        state_id = request.env['res.country.state'].sudo().search([])
-        state_list = []
-        for state in state_id:
-            state_list.append({
-                'agency_id': state.id,
-                'agency_name': state.name
-            })
-        return json.dumps({
-            'States': state_list,
-            "success": True,
-            "status_code": 200,
-            "message": "Success Get All State"
-        })
-
-    @http.route("/api/project/engineering", auth="public", type="http", methods=["POST"], csrf=False)
-    def CreateProjectEngineering(self, **post):
-        name = post.get('name', '').title()
-        street = post.get('street', '').title()
-        street2 = post.get('street2', '').title()
-        city = post.get('city', '').title()
-        state_id = post.get('state_id')
-        zip = post.get('zip')
-        customer = post.get('customer')
-        poc_name = post.get('poc_name', '').title()
-        contact_information = post.get('contact_information')
-        cost_price = post.get('cost_price')
-        buffer = post.get('buffer')
-        project_name = request.env['project.interior'].sudo().search([('name', '=', name)])
-        state = request.env['res.country.state'].sudo().search([('id', '=', state_id)])
-        customer_id = request.env['res.customer'].sudo().search([('id', '=', customer)])
+    @http.route(['/api/project/engineering/list', '/api/project/engineering/list/page/<int:page>'],
+                auth="public", type="http", methods=["GET"], csrf=False)
+    def ProjectPagination(self, page=1, order=None, **post):
+        keep = QueryURL('/api/project/engineering/list', order=post.get('?order'))
+        if post.get('?order'):
+            order = post.get('?order')
+        url = "/api/project/engineering/list"
+        project_count = request.env['project.interior'].sudo().search_count([])
+        ppg = 10
+        offset = (int(page) - 1) * ppg
+        pager = portal_pager(url=url, total=project_count, page=page, step=ppg, url_args=post)
+        project_name = request.env['project.interior'].sudo().search([], offset=offset, order=order)
         if project_name:
+            data = []
+            for project_id in project_name:
+                data.append({
+                    'id': project_id.id,
+                    'name': project_id.name,
+                    'street': project_id.street,
+                    'street2': project_id.street2 if project_id.street2 else None,
+                    'state_id': project_id.state_id.name,
+                    'zip': project_id.zip,
+                    'country_id': project_id.country_id.name,
+                    'poc_name': project_id.poc_name,
+                    'contact_information': project_id.contact_information,
+                    'customer_id': project_id.customer_id.name,
+                    'cost_price': project_id.cost_price,
+                    'buffer': project_id.buffer,
+                    'total_ctc': project_id.total_ctc,
+                    'customer_amount': project_id.customer_amount,
+                    'balance_receivable': project_id.balance_receivable,
+                    'total_paid': project_id.total_paid,
+                    'pending_ctc': project_id.pending_ctc
+                })
+            return json.dumps({
+                "success": True,
+                "status_code": 200,
+                "message": "Get All Project ",
+                "data": {
+                    'data': data,
+                    'keep': keep,
+                    'page_count': pager['page_count'],
+                }
+            }, default=str)
+        else:
             return json.dumps({
                 "success": False,
                 "status_code": 409,
-                "message": "The name must be unique"
+                "message": "Data Not Found!"
             })
-        else:
-            project_id = request.env['project.interior'].sudo().create({
-                'name': name,
-                'street': street,
-                'street2': street2 if street2 else False,
-                'city': city,
-                'state_id': state.id,
-                'zip': zip,
-                'customer_id': customer_id.id,
-                'poc_name': poc_name,
-                'contact_information': contact_information,
-                'cost_price': cost_price,
-                'buffer': buffer
-            })
-        return json.dumps({
-            "data": {
-                'id': project_id.id,
-                'name': project_id.name,
-                'poc_name': project_id.poc_name,
-                'contact_information': project_id.contact_information,
-                'cost_price': project_id.cost_price,
-                'buffer': project_id.buffer
-            },
-            "success": True,
-            "status_code": 200,
-            "message": "Success Create Project"
-        })
 
-    @http.route("/api/project/quotation", auth="public", type="http", methods=["POST"], csrf=False)
-    def CreateProjectQuotation(self, **post):
-        project = post.get('project_id')
-        agency_category = post.get('agency_category_id')
-        buffer = post.get('buffer')
-        amount = post.get('amount')
-        vendor_id = post.get('vendor_id')
-        agency = request.env['res.agency'].sudo().search([('id', '=', vendor_id)])
-        project_id = request.env['project.interior'].sudo().search([('id', '=', project)])
-        agency_work_id = request.env['agency.category'].sudo().search([('id', '=', agency_category)])
-        if not project:
+    @http.route(['/api/customer/list', '/api/customer/list/page/<int:page>'], auth="public", type="http",
+                methods=["GET"], csrf=False)
+    def CustomerList(self, page=1, order=None, **post):
+        keep = QueryURL('/api/customer/list', order=post.get('?order'))
+        if post.get('?order'):
+            order = post.get('?order')
+        url = "/api/customer/list"
+        customer_count = request.env['res.customer'].sudo().search_count([])
+        ppg = 10
+        offset = (int(page) - 1) * ppg
+        pager = portal_pager(url=url, total=customer_count, page=page, step=ppg, url_args=post)
+        customer_id = request.env['res.customer'].sudo().search([], offset=offset, order=order)
+        if customer_id:
+            customer_list = []
+            for customer in customer_id:
+                customer_list.append({
+                    'customer_id': customer.id,
+                    'customer_name': customer.name,
+                    'street': customer.street,
+                    'street2': customer.street2 if customer.street2 else None,
+                    'state_id': customer.state_id.name,
+                    'zip': customer.zip,
+                    'country_id': customer.country_id.name,
+                    'phone': customer.phone if customer.phone else None,
+                    'mobile': customer.mobile,
+                    'email': customer.email if customer.email else None,
+                    'note': customer.note if customer.note else None,
+                    # 'project_count': len(customer.project_count),
+                    'tag_id': customer.tag_id if customer.tag_id else None
+                })
+            return json.dumps({
+                "success": True,
+                "status_code": 200,
+                "message": "Success Get All Customers ",
+                "data": {
+                    'data': customer_list,
+                    'keep': keep,
+                    'page_count': pager['page_count'],
+                }
+            }, default=str)
+        else:
             return json.dumps({
                 "success": False,
                 "status_code": 409,
-                "message": "Not Create Quotation"
+                "message": "Data Not Found!"
             })
+
+    @http.route(['/api/agency/list', '/api/agency/list/page/<int:page>'], auth="public", type="http", methods=["GET"],
+                csrf=False)
+    def AgencyList(self, page=1, order=None, **post):
+        keep = QueryURL('/api/agency/list', order=post.get('?order'))
+        if post.get('?order'):
+            order = post.get('?order')
+        url = "/api/agency/list"
+        customer_count = request.env['res.agency'].sudo().search_count([])
+        ppg = 10
+        offset = (int(page) - 1) * ppg
+        pager = portal_pager(url=url, total=customer_count, page=page, step=ppg, url_args=post)
+        agency_id = request.env['res.agency'].sudo().search([], offset=offset, order=order)
+        if agency_id:
+            agency_list = []
+            for agency in agency_id:
+                agency_list.append({
+                    'agency_id': agency.id,
+                    'agency_name': agency.name,
+                    'customer_name': agency.name,
+                    'street': agency.street,
+                    'street2': agency.street2 if agency.street2 else None,
+                    'state_id': agency.state_id.name,
+                    'zip': agency.zip,
+                    'country_id': agency.country_id.name,
+                    'poc_name': agency.poc_name if agency.poc_name else None,
+                    'phone': agency.phone if agency.phone else None,
+                    'mobile': agency.mobile,
+                    'email': agency.email if agency.email else None,
+                    'note': agency.note if agency.note else None
+                })
+            return json.dumps({
+                "success": True,
+                "status_code": 200,
+                "message": "Success Get All Agency ",
+                "data": {
+                    'data': agency_list,
+                    'keep': keep,
+                    'page_count': pager['page_count'],
+                }
+            }, default=str)
         else:
-            quotation_id = request.env['res.quotation'].sudo().create({
-                'interior_project_id': project_id.id,
-                'agency_category': agency_work_id.id,
-                'buffer': project_id.buffer,
-                'amount': amount,
-                'vendor_id': agency.id
+            return json.dumps({
+                "success": False,
+                "status_code": 409,
+                "message": "Data Not Found!"
             })
+
+    @http.route(['/api/receivable/list', '/api/receivable/list/page/<int:page>'], auth="public", type="http",
+                methods=["GET"],
+                csrf=False)
+    def ReceivableList(self, page=1, order=None, **post):
+        keep = QueryURL('/api/agency/list', order=post.get('?order'))
+        if post.get('?order'):
+            order = post.get('?order')
+        url = "/api/agency/list"
+        customer_count = request.env['payment.method'].sudo().search_count([])
+        ppg = 10
+        offset = (int(page) - 1) * ppg
+        pager = portal_pager(url=url, total=customer_count, page=page, step=ppg, url_args=post)
+        receivable_id = request.env['payment.method'].sudo().search([], offset=offset, order=order)
+        if receivable_id:
+            receivable = []
+            print("=======")
+            for receivables in receivable_id:
+                receivable.append({
+                    'id': receivables.id,
+                    'payment_method': receivables.name
+                })
+            return json.dumps({
+                "success": True,
+                "status_code": 200,
+                "message": "Success Get All Agency ",
+                "data": {
+                    'data': receivable,
+                    'keep': keep,
+                    'page_count': pager['page_count'],
+                }
+            },default=str)
+        else:
+            return json.dumps({
+            "success": False,
+            "status_code": 409,
+            "message": "Data Not Found!"
+            })
+
+        @http.route("/api/state/list", auth="public", type="http", methods=["GET"], csrf=False)
+        def StateList(self):
+            state_id = request.env['res.country.state'].sudo().search([])
+            state_list = []
+            for state in state_id:
+                state_list.append({
+                    'state_id': state.id,
+                    'state_name': state.name
+                })
+            return json.dumps({
+                'States': state_list,
+                "success": True,
+                "status_code": 200,
+                "message": "Success Get All State"
+            })
+
+        @http.route('/api/project/engineering', auth="public", type="http",
+                    methods=["POST"], csrf=False)
+        def CreateProjectEngineering(self, **post):
+            name = post.get('name', '').title()
+            street = post.get('street', '').title()
+            street2 = post.get('street2', '').title()
+            city = post.get('city', '').title()
+            state_id = post.get('state_id')
+            zip = post.get('zip')
+            customer = post.get('customer')
+            poc_name = post.get('poc_name', '').title()
+            contact_information = post.get('contact_information')
+            cost_price = post.get('cost_price')
+            buffer = post.get('buffer')
+            project_name = request.env['project.interior'].sudo().search([('name', '=', name)])
+            state = request.env['res.country.state'].sudo().search([('id', '=', state_id)])
+            customer_id = request.env['res.customer'].sudo().search([('id', '=', customer)])
+
+            if project_name:
+                return json.dumps({
+                    "success": False,
+                    "status_code": 409,
+                    "message": "The name must be unique"
+                })
+            else:
+                project_id = request.env['project.interior'].sudo().create({
+                    'name': name,
+                    'street': street,
+                    'street2': street2 if street2 else False,
+                    'city': city,
+                    'state_id': state.id,
+                    'zip': zip,
+                    'customer_id': customer_id.id,
+                    'poc_name': poc_name,
+                    'contact_information': contact_information,
+                    'cost_price': cost_price,
+                    'buffer': buffer
+                })
             return json.dumps({
                 "data": {
-                    "id" : quotation_id.id
+                    'id': project_id.id,
+                    'name': project_id.name,
+                    'poc_name': project_id.poc_name,
+                    'contact_information': project_id.contact_information,
+                    'cost_price': project_id.cost_price,
+                    'buffer': project_id.buffer,
                 },
                 "success": True,
                 "status_code": 200,
-                "message": "Success Create Quotation"
+                "message": "Success Create Project"
             })
+
+        @http.route("/api/edit/project/engineering", auth="public", type="http", methods=["POST"], csrf=False)
+        def EditProjectEngineering(self, **post):
+            project = post.get('project_id')
+            name = post.get('name', '').title()
+            street = post.get('street', '').title()
+            street2 = post.get('street2', '').title()
+            city = post.get('city', '').title()
+            state_id = post.get('state_id')
+            zip = post.get('zip')
+            customer = post.get('customer')
+            poc_name = post.get('poc_name', '').title()
+            contact_information = post.get('contact_information')
+            cost_price = post.get('cost_price')
+            buffer = post.get('buffer')
+
+            if not project:
+                return json.dumps({
+                    "success": False,
+                    "status_code": 409,
+                    "message": "The Project ID Is Null."
+                })
+            else:
+                project_id = request.env['project.interior'].sudo().search([('id', '=', project)])
+                print("============project_id", project_id)
+                if project_id:
+                    if state_id and customer:
+                        state = request.env['res.country.state'].sudo().search([('id', '=', state_id)])
+                        customer_id = request.env['res.customer'].sudo().search([('id', '=', customer)])
+                        project_id.write({
+                            'name': name,
+                            'street': street,
+                            'street2': street2 if street2 else False,
+                            'city': city,
+                            'state_id': state.id,
+                            'zip': zip,
+                            'customer_id': customer_id.id,
+                            'poc_name': poc_name,
+                            'contact_information': contact_information,
+                            'cost_price': cost_price,
+                            'buffer': buffer
+                        })
+                    else:
+                        project_id.write({
+                            'name': name,
+                            'street': street,
+                            'street2': street2 if street2 else False,
+                            'city': city,
+                            'zip': zip,
+                            'poc_name': poc_name,
+                            'contact_information': contact_information,
+                            'cost_price': cost_price,
+                            'buffer': buffer
+                        })
+                    return json.dumps({
+                        "data": {
+                            'id': project_id.id,
+                        },
+                        "success": True,
+                        "status_code": 200,
+                        "message": f"Success Edit {project_id.id}"
+                    })
+                else:
+                    return json.dumps({
+                        "success": False,
+                        "status_code": 409,
+                        "message": "The Project ID Not Exist."
+                    })
+
+        @http.route("/api/project/quotation", auth="public", type="http", methods=["POST"], csrf=False)
+        def CreateProjectQuotation(self, **post):
+            project = post.get('project_id')
+            agency_category = post.get('agency_category_id')
+            buffer = post.get('buffer')
+            amount = post.get('amount')
+            vendor_id = post.get('vendor_id')
+            agency = request.env['res.agency'].sudo().search([('id', '=', vendor_id)])
+            project_id = request.env['project.interior'].sudo().search([('id', '=', project)])
+            agency_work_id = request.env['agency.category'].sudo().search([('id', '=', agency_category)])
+            if not project:
+                return json.dumps({
+                    "success": False,
+                    "status_code": 409,
+                    "message": "Not Create Quotation"
+                })
+            else:
+                quotation_id = request.env['res.quotation'].sudo().create({
+                    'interior_project_id': project_id.id,
+                    'agency_category': agency_work_id.id,
+                    'buffer': project_id.buffer,
+                    'amount': amount,
+                    'vendor_id': agency.id
+                })
+                return json.dumps({
+                    "data": {
+                        "id": quotation_id.id
+                    },
+                    "success": True,
+                    "status_code": 200,
+                    "message": "Success Create Quotation"
+                })
+
+            @http.route('/project/expenses/chart/data', type='json', auth='user')
+            def get_expense_data(self):
+                data = request.env['project.expenses'].get_expense_chart_data()
+                return data
+
+            @http.route('/cash/flow/chart/data', type='json', auth='user')
+            def get_cash_flow_data(self):
+                # Default dicts to accumulate by year
+                credit_by_year = defaultdict(float)
+                debit_by_year = defaultdict(float)
+
+                # Get all customer payments (credits)
+                credit_records = request.env['payment.method'].search([])
+                for record in credit_records:
+                    if record.payment_date:
+                        year = record.payment_date.year
+                        credit_by_year[year] += record.customer_payment
+
+                # Get all vendor payments (debits)
+                debit_records = request.env['vendor.payment.method'].search([])
+                for record in debit_records:
+                    if record.payment_date:
+                        year = record.payment_date.year
+                        debit_by_year[year] += record.total_payment
+
+                # Collect unique years and sort
+                all_years = sorted(set(credit_by_year.keys()) | set(debit_by_year.keys()))
+
+                # Prepare data for chart
+                data = {
+                    'labels': [str(year) for year in all_years],
+                    'credits': [credit_by_year[year] for year in all_years],
+                    'debits': [debit_by_year[year] for year in all_years],
+                }
+                return data
+
+            @http.route('/project/cost/chart/data', type='json', auth='user')
+            def project_cost_chart_data(self):
+                records = request.env['project.interior'].search([])
+                result = []
+
+                for rec in records:
+                    result.append({
+                        'name': rec.name,
+                        'revenue': rec.customer_amount,
+                        'expense': rec.total_expenses_amount,
+                    })
+                return result
+
+            @http.route('/agency/payment/count/chart/data', type='json', auth='user')
+            def get_agency_expense_and_payment_data(self):
+                vendor_data = defaultdict(lambda: {
+                    'name': '',
+                    'total_expense': 0.0,
+                    'total_payment': 0.0,
+                    'projects': set(),
+                })
+
+                # Fetch Vendor Payments
+                payment_records = request.env['vendor.payment.method'].search([])
+                for rec in payment_records:
+                    vendor_id = rec.vendor_id.id
+                    vendor_data[vendor_id]['name'] = rec.vendor_id.name
+                    vendor_data[vendor_id]['total_payment'] += rec.vendor_payment
+                    if rec.interior_project_id:
+                        vendor_data[vendor_id]['projects'].add(rec.interior_project_id.name)
+
+                # Fetch Expenses
+                expense_records = request.env['project.expenses'].search([])
+                for exp in expense_records:
+                    vendor_id = exp.agency_id.id
+                    if vendor_id:  # only if linked to a vendor
+                        vendor_data[vendor_id]['name'] = exp.agency_id.name
+                        vendor_data[vendor_id]['total_expense'] += exp.total_amount
+                        if exp.project_id:
+                            vendor_data[vendor_id]['projects'].add(exp.project_id.name)
+
+                # Format Result
+                result = []
+                for data in vendor_data.values():
+                    if data['name']:
+                        result.append({
+                            'name': data['name'],
+                            'projects': ', '.join(data['projects']),
+                            'total_expense': data['total_expense'],
+                            'total_payment': data['total_payment'],
+                        })
+                return result
 
         @http.route('/project/expenses/chart/data', type='json', auth='user')
         def get_expense_data(self):

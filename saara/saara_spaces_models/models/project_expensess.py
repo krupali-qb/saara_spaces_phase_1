@@ -35,6 +35,10 @@ class ProjectExpenses(models.Model):
     is_vendor_payments = fields.Boolean(default=True)
     uniqe_id = fields.Char(string='uniqe_id Total')
 
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)', 'The name must be unique!')
+    ]
+
     @api.onchange('name', 'person_name')
     def _onchange_fields(self):
         for field in ['name', 'person_name']:

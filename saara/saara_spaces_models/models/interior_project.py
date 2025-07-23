@@ -16,7 +16,7 @@ class InteriorProject(models.Model):
 
     name = fields.Char(string="Name*", required=True, size=100)
     customer_id = fields.Many2one('res.customer', string="Customer*", required=True)
-    cost_price = fields.Float(string="Cost*", tracking=True, size=25)
+    cost_price = fields.Float(string="Cost*", tracking=True, size=50)
     agency_payment_id = fields.One2many(comodel_name='vendor.payment.method', domain=[('expenses', '=', False)],
                                         inverse_name='interior_project_id',
                                         string="Vendor Payment",
@@ -70,6 +70,14 @@ class InteriorProject(models.Model):
     _sql_constraints = [
         ('name_uniq', 'unique(name)', 'The name must be unique!')
     ]
+
+    @api.constrains('cost_price', 'total_amount')
+    def _check_cost_equals_total(self):
+        for record in self:
+            print("---------------if",record)
+            if record.cost_price != record.total_amount:
+                print("================================",record.cost_price)
+                raise ValidationError("Cost Price and Total Amount must be the same.")
 
     def write(self, vals):
         # Track specific fields inside quotation_ids
