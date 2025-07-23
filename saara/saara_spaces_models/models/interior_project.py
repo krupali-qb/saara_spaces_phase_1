@@ -1,5 +1,5 @@
 # from email.policy import default
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 import re
 from odoo.exceptions import ValidationError
 
@@ -40,14 +40,14 @@ class InteriorProject(models.Model):
         [('new', 'New'), ('quote_lock', 'Quote Lock'), ('inprogress', 'In progress'), ('completed', 'Completed')],
         default='new', tracking=True, string=
         'Status')
-    street = fields.Char(string='Street*', required=True, size=100)
-    street2 = fields.Char(string='Street2', size=100)
-    city = fields.Char(string='City*', required=True, size=25)
+    street = fields.Char(string='Street*', required=True, size=1000)
+    street2 = fields.Char(string='Street2', size=1000)
+    city = fields.Char(string='City*', required=True, size=50)
     state_id = fields.Many2one('res.country.state', string='State*', required=True)
     zip = fields.Char(string='Zip*', required=True, size=6)
     country_id = fields.Many2one('res.country', string='Country*', required=True,
                                  default=lambda self: self._default_state())
-    poc_name = fields.Char(string='POC Name*', required=True, size=25)
+    poc_name = fields.Char(string='POC Name*', required=True, size=50)
     contact_information = fields.Char(string='Contact Information*', required=True, size=13, default='+91')
     new_contact_field = fields.Char(string="New Contact", default='+91')
     expenses_ids = fields.One2many(comodel_name='project.expenses',
@@ -61,7 +61,7 @@ class InteriorProject(models.Model):
     buffer = fields.Integer(string="Buffer (%)")
     quotation_ids = fields.One2many(comodel_name='res.quotation',
                                     inverse_name='interior_project_id',
-                                    copy=True, auto_join=True)
+                                    copy=True, auto_join=True, tracking=True)
     total_amount = fields.Monetary(string="Total Amount:", compute='_compute_qut_total_amount')
     total_ctc = fields.Monetary(string="Total CTC:", compute='_compute_total_ctc')
     buffer_avg = fields.Char(string="Average:", compute='_compute_buffer_avg', store=True)
@@ -72,23 +72,69 @@ class InteriorProject(models.Model):
     ]
 
     def write(self, vals):
-        res = super().write(vals)
+        # Track specific fields inside quotation_ids
+        tracked_fields = ['agency_category', 'amount']  # Add more fields as needed
 
+        for record in self:
+            # Store the original values of quotation fields before the write
+            old_quotation_values = {
+                q.id: {f: q[f] for f in tracked_fields}
+                for q in record.quotation_ids
+            }
+
+        # --- PART 1: Vendor Payment Propagation ---
         if 'agency_payment_id' in vals:
             for cmd in vals['agency_payment_id']:
-                if isinstance(cmd, (list, tuple)) and cmd[0] == 1:
-                    vendor_method_id = cmd[1]  # vendor.payment.method ID
+                if isinstance(cmd, (list, tuple)) and cmd[0] == 1:  # Update command
+                    vendor_method_id = cmd[1]
                     line_vals = cmd[2] if len(cmd) > 2 else {}
-                    
                     if 'vendor_payment' in line_vals:
                         updated_vendor_payment = line_vals['vendor_payment']
-
-                        # Fetch the related vendor.payment.method record
                         vendor_method = self.env['vendor.payment.method'].browse(vendor_method_id)
-
-                        # Update all related vendor.payment.method.line records
                         for line in vendor_method.project_form_id:
                             line.write({'vendor_payment': updated_vendor_payment})
+
+        # Perform the actual write
+        res = super().write(vals)
+
+        # --- PART 2: Log Quotation Line Field Changes ---
+        for record in self:
+            new_quotation_values = {
+                q.id: {f: q[f] for f in tracked_fields}
+                for q in record.quotation_ids
+            }
+
+            messages = []
+            for qid, new_vals in new_quotation_values.items():
+                if qid in old_quotation_values:
+                    old_vals = old_quotation_values[qid]
+                    for field in tracked_fields:
+                        old_val = old_vals[field]
+                        new_val = new_vals[field]
+                        if old_val != new_val:
+                            quotation = self.env['res.quotation'].browse(qid)
+
+                            # Clean display for Many2one fields and None values
+                            def get_display(val):
+                                if not val:
+                                    return "N/A"
+                                elif hasattr(val, 'name'):
+                                    return val.name
+                                else:
+                                    return str(val)
+
+                            old_display = get_display(old_val)
+                            new_display = get_display(new_val)
+
+                            messages.append(
+                                _("%s -> %s") % (
+                                    old_display,
+                                    new_display
+                                )
+                            )
+
+            if messages:
+                record.message_post(body="<br/>".join(messages))
 
         return res
 

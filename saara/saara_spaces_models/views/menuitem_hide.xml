@@ -17,22 +17,27 @@
     <record id="mail.menu_root_discuss" model="ir.ui.menu">
         <field name="groups_id" eval="[(6, 0, [ref('saara_spaces_models.group_super_admin')])]"/>
     </record>
-<!--    <record id="contacts.menu_contacts" model="ir.ui.menu">-->
-<!--        <field name="groups_id" eval="[(6, 0, [ref('saara_spaces_models.group_super_admin')])]"/>-->
-<!--    </record>-->
-<!--    <record id="crm.crm_menu_root" model="ir.ui.menu">-->
-<!--        <field name="groups_id" eval="[(6, 0, [ref('saara_spaces_models.group_super_admin')])]"/>-->
-<!--    </record>-->
 
-     <record id="vendor_line_inherit_form_view" model="ir.ui.view">
-    <field name="name">vendor.payment.methods.view.inherit.form</field>
-    <field name="model">vendor.payment.method</field>
-    <field name="inherit_id" ref="saara_spaces_models.vendor_payment_methods_view_form"/>
-    <field name="arch" type="xml">
-      <form position="attributes">
-        <attribute name="js_class">vendor_payment_method_form_custom</attribute>
-      </form>
-    </field>
-  </record>
+    <record id="contacts.menu_contacts" model="ir.ui.menu">
+        <field name="name">System Users</field> <!-- Change the name here -->
+    </record>
+
+    <record id="contacts.menu_contacts" model="ir.ui.menu">
+        <field name="groups_id" eval="[(6, 0, [ref('saara_spaces_models.group_super_admin')])]"/>
+    </record>
+    <!--    <record id="crm.crm_menu_root" model="ir.ui.menu">-->
+    <!--        <field name="groups_id" eval="[(6, 0, [ref('saara_spaces_models.group_super_admin')])]"/>-->
+    <!--    </record>-->
+
+    <record id="vendor_line_inherit_form_view" model="ir.ui.view">
+        <field name="name">vendor.payment.methods.view.inherit.form</field>
+        <field name="model">vendor.payment.method</field>
+        <field name="inherit_id" ref="saara_spaces_models.vendor_payment_methods_view_form"/>
+        <field name="arch" type="xml">
+            <form position="attributes">
+                <attribute name="js_class">vendor_payment_method_form_custom</attribute>
+            </form>
+        </field>
+    </record>
 </odoo>
 

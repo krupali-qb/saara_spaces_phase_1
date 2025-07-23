@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+   <record id="view_start_sprint_wizard" model="ir.ui.view">
+        <field name="name">start.sprint.wizard.form</field>
+        <field name="model">start.sprint.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Start Sprint">
+                <group>
+                    <field name="project_id"/>
+                    <field name="name"/>
+                    <field name="sprint_id"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="meeting"/>
+                    <field name="meeting_time" invisible="meeting == False"/>
+                    <field name="meeting_type" invisible="meeting == False"/>
+                    <field name="reminder_id" invisible="meeting == False"/>
+                    <field name="duration" invisible="meeting == False"/>
+                </group>
+                <footer>
+                    <button name="action_start_meetings" string="Start" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_start_sprint_wizard" model="ir.actions.act_window">
+        <field name="name">Start Sprint</field>
+        <field name="res_model">start.sprint.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+
+    <record id="view_assign_sprint_wizard_form" model="ir.ui.view">
+    <field name="name">assign.sprint.wizard.form</field>
+    <field name="model">assign.sprint.wizard</field>
+    <field name="arch" type="xml">
+        <form string="Assign Sprint to Tasks">
+            <group>
+                <field name="sprint_id"/>
+                
+            </group>
+            <footer>
+                <button string="Assign" type="object" name="action_assign" class="btn-primary"/>
+                <button string="Cancel" class="btn-secondary" special="cancel"/>
+            </footer>
+        </form>
+    </field>
+</record>
+
+
+</odoo>
+

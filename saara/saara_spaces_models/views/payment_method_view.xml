@@ -7,8 +7,8 @@
             <form string="Payment Methods">
                 <sheet>
                     <group>
-                        <field name="sale_invoice"/>
                         <field name="name"/>
+                        <field name="sale_invoice"/>
                         <field name="interior_project_id"/>
                         <field name="form_customer_id"/>
                         <field name="payment_date"/>
@@ -80,7 +80,7 @@
         <field name="view_mode">tree,form,graph,pivot</field>
     </record>
 
-    <menuitem id="customer_payment_root" name="Accounts" sequence="5"/>
+    <menuitem id="customer_payment_root" name="Accounts" sequence="15"/>
 
     <menuitem id="customer_payments_menu" parent="customer_payment_root" sequence="50"
               name="Receivable" action="customer_payments_action"/>

@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_project_sprint_user,access.project.sprint.user,model_project_sprint,,1,1,1,1
+access_project_task_user,access.project.task.user,model_project_task,,1,1,1,1
+access_project_task_manager,access.project_task_manager,model_project_task,base.group_erp_manager,1,1,1,1
+project_sprint_management.access_start_sprint_wizard,access_start_sprint_wizard,project_sprint_management.model_start_sprint_wizard,base.group_user,1,1,1,1
+project_sprint_management.access_assign_sprint_wizard,access_assign_sprint_wizard,project_sprint_management.model_assign_sprint_wizard,base.group_user,1,1,1,1
+
+

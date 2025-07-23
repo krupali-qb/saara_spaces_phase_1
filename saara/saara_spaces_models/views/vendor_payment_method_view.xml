@@ -45,11 +45,11 @@
         <field name="model">vendor.payment.method</field>
         <field name="arch" type="xml">
             <tree string="Vendor Payment Methods" decoration-muted="interior_project_id, '=', False">
-                <field name="invoice_number"/>
-                <field name="name"/>
-                <field name="interior_project_id" invisible="0"/>
-                <field name="vendor_id"/>
                 <field name="payment_date"/>
+                <field name="name"/>
+                <field name="invoice_number"/>
+                <field name="vendor_id"/>
+                <field name="interior_project_id" invisible="0"/>
                 <field name="currency_id" column_invisible="True"/>
                 <field name="expenses"/>
                 <!--                <field name="re_write" column_invisible="0"/>-->

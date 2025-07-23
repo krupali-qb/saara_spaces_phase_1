@@ -13,12 +13,11 @@ class ProjectQuotation(models.Model):
         'res.currency', string="Currency",
         default=lambda self: self.env.user.company_id.currency_id.id)
     company_id = fields.Many2one('res.company', string='Company', index=True, default=lambda self: self.env.company)
-    agency_category = fields.Many2one('agency.category', string="Work Category")
-    buffer = fields.Char(string="Buffer%", compute="_compute_buffer", inverse="_inverse_buffer", store=True)
-    ctc = fields.Float(string="CTC", compute="_compute_ctc_payment")
-    amount = fields.Float(string="Total Amount*")
+    agency_category = fields.Many2one('agency.category', string="Work Category",tracking=True)
+    buffer = fields.Char(string="Buffer%", compute="_compute_buffer", inverse="_inverse_buffer", store=True, tracking=True)
+    ctc = fields.Float(string="CTC", compute="_compute_ctc_payment",tracking=True)
+    amount = fields.Float(string="Total Amount*", tracking=True)
     vendor_id = fields.Many2one('res.agency', string="Agency*", tracking=True)
-
 
 
     def _inverse_buffer(self):

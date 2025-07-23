@@ -254,7 +254,7 @@
         <field name="view_mode">tree,form,graph,pivot</field>
     </record>
 
-    <menuitem id="project_interior_root" sequence="15"
+    <menuitem id="project_interior_root" sequence="5"
               name="Engineering"/>
 
     <menuitem id="project_interior_menu" parent="project_interior_root"

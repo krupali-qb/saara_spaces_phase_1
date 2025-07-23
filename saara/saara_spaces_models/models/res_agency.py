@@ -12,16 +12,17 @@ class ResAgency(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(string='Name*', required=True, size=100)
-    street = fields.Char(string='Street*', required=True, size=25)
-    street2 = fields.Char(string='Street2', size=25)
-    city = fields.Char(string='City*', required=True, size=25)
+    street = fields.Char(string='Street*', required=True, size=1000)
+    street2 = fields.Char(string='Street2', size=1000)
+    city = fields.Char(string='City*', required=True, size=50)
     state_id = fields.Many2one('res.country.state', string='State*', required=True)
     zip = fields.Char(string='Zip', required=True, size=6)
     country_id = fields.Many2one('res.country', string='Country*', required=True,
                                  default=lambda self: self._default_state())
-    phone = fields.Char(string='Phone*', required=True, size=13, default='+91')
-    mobile = fields.Char(string='Mobile*', required=True, size=13, default='+91')
-    email = fields.Char(string='Email*', required=True, size=50)
+    poc_name = fields.Char(string="POC Name*", required=True, size=100)
+    phone = fields.Char(string='Phone', size=13, default='+91')
+    mobile = fields.Char(string='Mobile*', required=True, size=13)
+    email = fields.Char(string='Email', size=50)
     note = fields.Html(string='Note')
     image_1998 = fields.Image(string='Image', store=True)
     company_id = fields.Many2one('res.company', string='Company', index=True, default=lambda self: self.env.company)
@@ -33,6 +34,10 @@ class ResAgency(models.Model):
                                     string="GST Applicable", default='notapplicable')
     gst_no = fields.Char(string='GST*', required=False, size=15)
     project_id = fields.Many2one('project.interior', string='Projects')
+
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)', 'The name must be unique!')
+    ]
 
     @api.onchange('name', 'city', 'street', 'street2', 'note')
     def _onchange_fields(self):

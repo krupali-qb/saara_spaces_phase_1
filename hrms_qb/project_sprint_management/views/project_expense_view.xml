@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="view_project_sprint_tree" model="ir.ui.view">
+        <field name="name">project.sprint.tree</field>
+        <field name="model">project.sprint</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_project_sprint_form" model="ir.ui.view">
+        <field name="name">project.sprint.form</field>
+        <field name="model">project.sprint</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,started"/>
+                    <button name="action_start_sprint"
+                            type="object"
+                            string="Start Sprint"
+                            class="btn-primary"
+                            invisible="state in ('started')">
+                    </button>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="project_id"/>
+                        <field name="description"/>
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                    </group>
+                    <notebook>
+                        <page string="Tasks">
+                            <field name="task_ids">
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                    <field name="backlog_id"/>
+                                    <field name="item_type"/>
+                                    <field name="estimation_pts"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_tasks_by_sprint" model="ir.actions.act_window">
+    <field name="name">Board by Sprint</field>
+    <field name="res_model">project.task</field>
+    <field name="view_mode">kanban,tree,form</field>
+     <field name="domain">[
+        ('sprint_id', '=', context.get('active_id')),
+        
+    ]</field>
+    <field name="context">{'group_by': 'stage_id'}</field>
+</record>
+
+
+    <record id="view_project_sprint_kanban" model="ir.ui.view">
+    <field name="name">project.sprint.kanban</field>
+    <field name="model">project.sprint</field>
+    <field name="arch" type="xml">
+    <kanban js_class="project_sprint_kanban_custom" default_group_by="stage_id">
+    <field name="name"/>
+    <field name="stage_id"/>
+    <field name="start_date"/>
+    <field name="end_date"/>
+    <field name="state"/>
+     <field name="project_id"/>
+    <templates>
+        <t t-name="kanban-box">
+            <div class="oe_kanban_global_click o_kanban_record" t-att-data-id="record.id.raw_value">
+                <div class="o_kanban_card_header">
+                    <strong><field name="name"/></strong>
+                </div>
+                <div>
+                    <span>Start: <field name="start_date"/></span><br/>
+                    <span>End: <field name="end_date"/></span><br/>
+                    <span>Status: <field name="state"/></span>
+                </div>
+
+                <!-- Add a button or link here -->
+               <button type="action"
+                name="%(action_tasks_by_sprint)d"
+                string="View Tasks"
+               
+                class="btn btn-primary btn-sm"/>
+            </div>
+        </t>
+    </templates>
+</kanban>
+
+    </field>
+</record>
+
+
+
+
+
+    <record id="action_project_sprint" model="ir.actions.act_window">
+        <field name="name">Sprints</field>
+        <field name="res_model">project.sprint</field>
+        <field name="view_mode">kanban,tree,form</field>
+         <field name="view_id" ref="view_project_sprint_kanban"/>
+    </record>
+
+
+    <record id="project_kanban_custom" model="ir.ui.view">
+    <field name="name">project.project.kanban.inherit.custom</field>
+    <field name="model">project.project</field>
+    <field name="inherit_id" ref="project.project_kanban_view_group_stage"/>
+    <field name="arch" type="xml">
+        <xpath expr="//kanban" position="attributes">
+            <attribute name="default_action_id" ref="action_project_sprint"/>
+        </xpath>
+    </field>
+</record>
+
+
+    <record id="view_task_form_inherit_sprint" model="ir.ui.view">
+        <field name="name">project.task.form.inherit.sprint</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_ids']" position="after">
+                <field name="sprint_id"/>
+                <field name="estimation_pts"/>
+                <field name="item_type"/>
+                <field name="backlog_id_boolean"/>
+                <field name="points" invisible="1"/>
+                <field name="task_status"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_assign_sprint" model="ir.actions.server">
+        <field name="name">Assign to Sprint</field>
+        <field name="model_id" ref="project.model_project_task"/>
+        <field name="binding_model_id" ref="project.model_project_task"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = env['project.task'].action_assign_to_sprint()
+        </field>
+    </record>
+
+
+    <record id="action_project_task_backlog" model="ir.actions.act_window">
+        <field name="name">Backlog</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="context">{}</field>
+        <field name="domain">[('backlog_id_boolean','!=', True)]</field>
+    </record>
+
+
+    <record id="view_project_task_kanban_sprint" model="ir.ui.view">
+    <field name="name">project.task.kanban.sprint</field>
+    <field name="model">project.task</field>
+    <field name="inherit_id" ref="project.view_task_kanban"/>
+    <field name="arch" type="xml">
+        <xpath expr="//kanban" position="attributes">
+            <attribute name="group_expand">stage_id</attribute>
+        </xpath>
+    </field>
+</record>
+
+    <record id="action_project_task_board" model="ir.actions.act_window">
+        <field name="name">Sprint Board</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">[('sprint_id','!=', False)]</field>
+        <field name="context">{'group_by': 'stage_id'}</field>
+
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Manage your sprint tasks here.
+            </p>
+        </field>
+    </record>
+
+    <!-- Kanban view grouped by stage_id -->
+    <record id="view_project_task_kanban_sprint" model="ir.ui.view">
+        <field name="name">project.task.kanban.sprint</field>
+        <field name="model">project.task</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="stage_id">
+                <field name="name"/>
+                <field name="sprint_id"/>
+                <field name="stage_id"/>
+                <field name="user_ids"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click o_kanban_record_#{record.id.raw_value}">
+                            <div class="o_kanban_record_title">
+                                <field name="name"/>
+                            </div>
+                            <div>
+                                <strong>Sprint:</strong>
+                                <field name="sprint_id"/>
+                            </div>
+                            <div>
+                                <strong>Assigned To:</strong>
+                                <field name="user_ids"/>
+                            </div>
+                            <div>
+                                <strong>Estimation Points:</strong>
+                                <field name="estimation_pts"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+   
+
+
+   
+
+    <!-- Kanban view grouped by sprint and stage -->
+    <record id="view_project_task_kanban_all" model="ir.ui.view">
+        <field name="name">project.task.kanban.all</field>
+        <field name="model">project.task</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="sprint_id">
+                <field name="name"/>
+                <field name="sprint_id"/>
+                <field name="stage_id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click o_kanban_record_#{record.id.raw_value}">
+                            <div class="o_kanban_record_title">
+                                <field name="name"/>
+                            </div>
+                            <div>
+                                <strong>Sprint:</strong>
+                                <field name="sprint_id"/>
+                            </div>
+                            <div>
+                                <strong>Status:</strong>
+                                <field name="stage_id"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+   
+
+    <!-- Tree view -->
+    <record id="view_project_task_tree_all" model="ir.ui.view">
+        <field name="name">project.task.tree.all</field>
+        <field name="model">project.task</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="sprint_id"/>
+                <field name="stage_id"/>
+                <field name="user_ids"/>
+                <field name="estimation_pts"/>
+                <field name="item_type"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <!-- Modify the search view -->
+    <record id="view_task_search_inherit" model="ir.ui.view">
+        <field name="name">project.task.search.inherit.project_filter</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_search_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <filter name="project_id" string="Project" domain="[]" context="{}"/>
+                <field name="project_id"/>
+            </xpath>
+        </field>
+    </record>
+
+  
+
+
+    <record id="view_task_kanban_with_estimation_points" model="ir.ui.view">
+        <field name="name">project.task.kanban.estimation.points</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_kanban"/>
+        <field name="arch" type="xml">
+            <!-- Target the kanban column header using the correct xpath -->
+            <xpath expr="//progressbar" position="attributes">
+                <attribute name="sum_field">points</attribute>
+            </xpath>
+
+
+        </field>
+    </record>
+
+
+   
+
+
+   <record id="view_task_search_panel_custom_sprint" model="ir.ui.view">
+    <field name="name">project.task.search.panel.sprint.custom</field>
+    <field name="model">project.task</field>
+    <field name="type">search</field> <!-- ✅ Correct view type -->
+    <field name="arch" type="xml">
+        <search>
+            <searchpanel>
+                <field name="project_id" enable_counters="1"/>
+                <field name="sprint_id" enable_counters="1"/>
+                <field name="task_status" string="Task Status" select="multi"/>
+                <field name="deadline_status" string="Deadline Status" select="multi"/>
+            </searchpanel>
+        </search>
+    </field>
+</record>
+
+    <record id="action_project_task_all" model="ir.actions.act_window">
+        <field name="name">All Sprint Tasks</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+            <field name="search_view_id" ref="view_task_search_panel_custom_sprint"/> <!-- ✅ link here -->
+
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Manage all sprint-related tasks across projects.
+            </p>
+        </field>
+    </record>
+
+</odoo>

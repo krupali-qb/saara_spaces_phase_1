@@ -38,11 +38,10 @@ class VendorPaymentMethod(models.Model):
     )
     total_payment = fields.Float(string="Total Payment", compute="_compute_total_payment", store=True)
     expense_id = fields.Many2one('project.expenses', string='Expenses')
-    invoice_number = fields.Char(string='Invoice Number*', size=25)
+    invoice_number = fields.Char(string='Invoice Number*', size=50)
     re_write = fields.Boolean(default=False)
     exclude_from_total = fields.Boolean(string='Exclude from Total', default=False)
 
-    # 🔁 NEW: Link back to the line (only for re_write=True)
     linked_line_id = fields.Many2one('vendor.payment.method.line', string="Linked Original Line")
 
     @api.constrains('project_form_id')
@@ -60,7 +59,6 @@ class VendorPaymentMethod(models.Model):
     def create(self, vals):
         payment_record = super(VendorPaymentMethod, self).create(vals)
         projects = payment_record.project_form_id
-
         for project in projects:
             split_payment = self.env['vendor.payment.method'].create({
                 'name': payment_record.name,
@@ -120,7 +118,6 @@ class VendorPaymentMethod(models.Model):
                                     'payment_type': record.expense_id.payment_type,
                                     'uniqe_id': unique_id,
                                 })
-
                                 unique_id = self.env['ir.sequence'].next_by_code('vendor.payment.method.line') or _(
                                     'New')
                                 new_vpm = self.env['vendor.payment.method'].create({
@@ -185,14 +182,14 @@ class VendorPaymentMethod(models.Model):
                                     ])
                                     expenses.write({'total_amount': line_vals['vendor_payment']})
                                 else:
-                                    expensesv = self.env['project.expenses'].search([
+                                    expenses = self.env['project.expenses'].search([
                                         ('project_id', '=', line.project_id.id),
                                         ('agency_category', '=', line.agency_category.id),
                                         ('expense_date', '=', record.payment_date),
                                         ('agency_id', '=', record.vendor_id.id),
                                         ('id', '=', line.uniqe_id)
                                     ])
-                                    expensesv.write({'total_amount': line_vals['vendor_payment']})
+                                    expenses.write({'total_amount': line_vals['vendor_payment']})
 
         # Sync vendor_payment back if necessary
         for record in self:
@@ -224,7 +221,6 @@ class VendorPaymentMethodLine(models.Model):
 
     uniqe_id = fields.Char(string='Unique ID', readonly=True, copy=False, index=True, )
 
-    # 🔁 Link to cloned vendor.payment.method
     cloned_vendor_payment_id = fields.Many2one('vendor.payment.method', string="Cloned Vendor Payment")
 
     def write(self, vals):
@@ -244,7 +240,6 @@ class VendorPaymentMethodLine(models.Model):
                     expense.with_context(skip_project_update=True).write({
                         'total_amount': vals['vendor_payment']
                     })
-
         return res
 
     def unlink(self):

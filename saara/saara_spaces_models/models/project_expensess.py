@@ -20,7 +20,7 @@ class ProjectExpenses(models.Model):
     currency_id = fields.Many2one(
         'res.currency', string="Currency",
         default=lambda self: self.env.user.company_id.currency_id.id)
-    agency_id = fields.Many2one('res.agency', string='Agency')
+    agency_id = fields.Many2one('res.agency', string='Agency', required=True)
     is_person = fields.Boolean(string='Is Person')
     person_name = fields.Char(string='Person Name')
     paid_by_employee_id = fields.Many2one('res.users', string="Paid By*", required=True, tracking=True)
@@ -33,7 +33,7 @@ class ProjectExpenses(models.Model):
     remark = fields.Char(string="Remark", size=25)
     vendor_payment_id = fields.Many2one('vendor.payment.method', string="Vendor Payment")
     is_vendor_payments = fields.Boolean(default=True)
-    uniqe_id = fields.Char(string='uniqe_id Total',)
+    uniqe_id = fields.Char(string='uniqe_id Total')
 
     @api.onchange('name', 'person_name')
     def _onchange_fields(self):
@@ -56,8 +56,8 @@ class ProjectExpenses(models.Model):
                 'expenses': True
             })
             line = vendor_payment.project_form_id[:1]
-            
-            line_method = self.env['vendor.payment.method.line'].search([("id","=",line.id)])
+            print("-----------------line",line)
+            line_method = self.env['vendor.payment.method.line'].search([("id", "=", line.id)])
             line_method.uniqe_id = expenses.id
 
         return expenses
@@ -77,13 +77,13 @@ class ProjectExpenses(models.Model):
                 except ValueError:
                     pass
                 vendor_payment_recordss = self.env['vendor.payment.method.line'].search([
-                ('uniqe_id', '=', uniqe),
-            ])
+                    ('uniqe_id', '=', uniqe),
+                ])
                 vendor_payment_recordss.vendor_payment = record.total_amount
             else:
                 vendor_payment_recordssv = self.env['vendor.payment.method.line'].search([
-                ('uniqe_id', '=', record.id),
-            ])
+                    ('uniqe_id', '=', record.id),
+                ])
                 vendor_payment_recordssv.vendor_payment = record.total_amount
         return res
 

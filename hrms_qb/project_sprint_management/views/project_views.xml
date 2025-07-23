@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+   <!--<menuitem id="menu_project_sprint_root" name="Project custom"/>
+   <menuitem id="menu_sprint_backlog" name="All Projects" parent="menu_project_sprint_root" action="action_project_task_backlog" sequence="10"/>
+    <menuitem id="menu_project_sprint" name="Sprints" parent="menu_project_sprint_root" action="action_project_sprint" sequence="20"/>
+    <menuitem id="menu_sprint_board" name="Board" parent="menu_project_sprint_root" action="action_project_task_board" sequence="30"/>
+    <menuitem id="menu_global_view" name="Global View" parent="menu_project_sprint_root" action="action_project_task_all" sequence="40"/>-->
+    
+    
+     <menuitem id="menu_my_sprint"
+          name="Sprints"
+          parent="project.menu_main_pm"
+          sequence="30"
+          action="action_project_sprint"/>
+    
+     <menuitem id="menu_my_globle_views"
+          name="Global View"
+          parent="project.menu_main_pm"
+          sequence="31"
+          action="action_project_task_all"/>
+    
+     
+</odoo>

@@ -73,7 +73,7 @@
         <field name="view_mode">tree,form</field>
     </record>
 
-    <menuitem id="project_contact_root" sequence="10"
+    <menuitem id="project_contact_root" sequence="20"
               name="Contacts"/>
 
     <menuitem id="project_interior_contact_menu" parent="project_contact_root"
