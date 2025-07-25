@@ -248,6 +248,20 @@
         </field>
     </record>
 
+    <record id="view_project_interior_filter" model="ir.ui.view">
+        <field name="name">project.interior.search</field>
+        <field name="model">project.interior</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="poc_name"/>
+                <field name="contact_information"/>
+                <field name="customer_id"/>
+                <field name="cost_price"/>
+            </search>
+        </field>
+    </record>
+
     <record id="project_interior_action" model="ir.actions.act_window">
         <field name="name">Projects</field>
         <field name="res_model">project.interior</field>

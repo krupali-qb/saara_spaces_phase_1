@@ -23,7 +23,7 @@
                             <field name="project_form_id">
                                 <tree editable="bottom">
                                     <field name="project_id"/>
-                                     <field name="uniqe_id"/>
+<!--                                     <field name="uniqe_id"/>-->
                                     <field name="agency_category" options="{'no_create': True}"/>
                                     <field name="vendor_payment" widget="monetary"
                                            options="{'currency_field': 'currency_id'}"/>
@@ -49,7 +49,7 @@
                 <field name="name"/>
                 <field name="invoice_number"/>
                 <field name="vendor_id"/>
-                <field name="interior_project_id" invisible="0"/>
+                <field name="interior_project_id" column_invisible="True"/>
                 <field name="currency_id" column_invisible="True"/>
                 <field name="expenses"/>
                 <!--                <field name="re_write" column_invisible="0"/>-->
@@ -91,6 +91,8 @@
                 <field name="interior_project_id"/>
                 <field name="invoice_number"/>
                 <field name="payment_date"/>
+                <field name="vendor_id"/>
+                <field name="total_payment"/>
                 <separator/>
                 <filter string="Date" name="payment_date" date="payment_date"/>
                 <separator/>

@@ -40,7 +40,7 @@
                             <field name="mobile" placeholder="+91 xxxxx xxxxx"/>
                             <field name="email"/>
                             <field name="gst_required"/>
-                            <field name="gst_no" required="gst_required == 'applicable'" invisible="gst_required == 'notapplicable'" placeholder="GST NO.:"/>
+                            <field name="gst_no" required="gst_required == 'applicable'" invisible="gst_required == 'not_applicable'" placeholder="GST NO.:"/>
                         </group>
                     </group>
                     <notebook>

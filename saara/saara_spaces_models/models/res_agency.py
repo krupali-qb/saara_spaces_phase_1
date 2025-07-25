@@ -30,8 +30,8 @@ class ResAgency(models.Model):
                                      default=0)
     tag_id = fields.Selection([('agency', 'Agency'), ('supplier', 'Supplier')], default='agency', tracking=True, string=
     'Tags')
-    gst_required = fields.Selection([('applicable', 'Applicable'), ('notapplicable', 'Not Applicable')],
-                                    string="GST Applicable", default='notapplicable')
+    gst_required = fields.Selection([('applicable', 'Applicable'), ('not_applicable', 'Not Applicable')],
+                                    string="GST Applicable", default='not_applicable')
     gst_no = fields.Char(string='GST*', required=False, size=15)
     project_id = fields.Many2one('project.interior', string='Projects')
 

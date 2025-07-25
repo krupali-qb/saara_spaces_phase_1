@@ -45,6 +45,8 @@
                 <field name="interior_project_id"/>
                 <field name="sale_invoice"/>
                 <field name="payment_date"/>
+                <field name="customer_id"/>
+                <field name="customer_payment"/>
                 <separator/>
                 <filter string="Date" name="payment_date" date="payment_date"/>
             </search>
@@ -74,6 +76,7 @@
             </pivot>
         </field>
     </record>
+
     <record id="customer_payments_action" model="ir.actions.act_window">
         <field name="name">Received</field>
         <field name="res_model">payment.method</field>
