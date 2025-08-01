@@ -1,5 +1,5 @@
 from odoo import fields, models, api
-
+from odoo.exceptions import ValidationError
 
 class ProjectQuotation(models.Model):
     _name = "res.quotation"
@@ -7,7 +7,7 @@ class ProjectQuotation(models.Model):
     _description = 'Quotation For Project'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
-    interior_project_id = fields.Many2one('project.interior', string='Interior Project*', compute='_compute_project_id',
+    interior_project_id = fields.Many2one('project.interior', string='Interior Project*',
                                           store=True)
     currency_id = fields.Many2one(
         'res.currency', string="Currency",
@@ -18,6 +18,7 @@ class ProjectQuotation(models.Model):
     ctc = fields.Float(string="CTC", compute="_compute_ctc_payment",tracking=True)
     amount = fields.Float(string="Total Amount*", tracking=True)
     vendor_id = fields.Many2one('res.agency', string="Agency*", tracking=True)
+    q_total_paid = fields.Float(string='Total Paid')
 
 
     def _inverse_buffer(self):

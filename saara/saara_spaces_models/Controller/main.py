@@ -1,3 +1,5 @@
+from tkinter.font import names
+
 from odoo import http
 from odoo.http import request
 from collections import defaultdict
@@ -7,6 +9,7 @@ import jwt
 from werkzeug.exceptions import Unauthorized
 from odoo.addons.website_sale.controllers.main import QueryURL
 from odoo.addons.portal.controllers.portal import pager as portal_pager
+import ast
 
 
 class ExpenseChartController(http.Controller):
@@ -283,41 +286,89 @@ class ExpenseChartController(http.Controller):
     def CreateVendorPayable(self, **post):
         payment_method = post.get('payment_method')
         invoice_number = post.get('invoice_number')
-        interior_project_id = post.get('interior_project_id')
         agency = post.get('agency')
         payment_date = post.get('payment_date')
-        vendor_payment = post.get('vendor_payment')
-        agency_category = post.get('agency_category')
-        project_id = request.env['project.interior'].sudo().search([('id', '=', interior_project_id)])
-        agency_id = request.env['res.agency'].sudo().search([('id', '=', agency)])
-        work_category = request.env['agency.category'].sudo().search([('id', '=', agency_category)])
-        if not payment_method:
+        project_ids = post.get('interior_project_id')
+        agency_categories = post.get('agency_category')
+        vendor_payments = post.get('vendor_payment')
+
+        # Convert project_ids, agency_categories, and vendor_payments to lists
+        try:
+            if isinstance(project_ids, str):
+                project_ids = json.loads(project_ids)
+            if isinstance(agency_categories, str):
+                agency_categories = json.loads(agency_categories)
+            if isinstance(vendor_payments, str):
+                vendor_payments = json.loads(vendor_payments)
+        except Exception as e:
+            return json.dumps({
+                "success": False,
+                "status_code": 400,
+                "message": f"Invalid JSON format in lists: {str(e)}"
+            })
+
+        # Validate lists are present and of equal length
+        if not (project_ids and agency_categories and vendor_payments):
             return json.dumps({
                 "success": False,
                 "status_code": 409,
-                "message": "Not Create Payable"
+                "message": "Missing project_ids, agency_categories, or vendor_payments"
             })
-        else:
-            payable_id = request.env['vendor.payment.method'].sudo().create({
-                'name': payment_method,
-                'invoice_number': invoice_number,
-                # 'interior_project_id': project_id.id,
-                'vendor_id': agency_id.id,
-                'payment_date': payment_date,
-                're_write': True,
-                'project_form_id': [(0, 0, {
-                    'project_id': project_id.id,
-                    'agency_category': work_category.id,
-                    'vendor_payment': vendor_payment
-                })]
+
+        if not (len(project_ids) == len(agency_categories) == len(vendor_payments)):
+            return json.dumps({
+                "success": False,
+                "status_code": 400,
+                "message": "project_ids, agency_categories, and vendor_payments must be of equal length"
             })
+
+        # Fetch agency record
+        agency_id = request.env['res.agency'].sudo().search([('id', '=', int(agency))], limit=1)
+        if not agency_id:
+            return json.dumps({
+                "success": False,
+                "status_code": 404,
+                "message": "Agency not found"
+            })
+
+        # Prepare lines
+        form_lines = []
+        for idx in range(len(project_ids)):
+            project = request.env['project.interior'].sudo().search([('id', '=', project_ids[idx])], limit=1)
+            category = request.env['agency.category'].sudo().search([('id', '=', agency_categories[idx])], limit=1)
+            payment = vendor_payments[idx]
+
+            if project and category:
+                form_lines.append((0, 0, {
+                    'project_id': project.id,
+                    'agency_category': category.id,
+                    'vendor_payment': payment
+                }))
+
+        if not form_lines:
+            return json.dumps({
+                "success": False,
+                "status_code": 400,
+                "message": "No valid form lines to create"
+            })
+
+        # Create the vendor.payment.method record
+        payable = request.env['vendor.payment.method'].sudo().create({
+            'name': payment_method,
+            'invoice_number': invoice_number,
+            'vendor_id': agency_id.id,
+            'payment_date': payment_date,
+            're_write': True,
+            'project_form_id': form_lines
+        })
+
         return json.dumps({
             "data": {
-                'payable_id': payable_id.id
+                "payable_id": payable.id
             },
             "success": True,
             "status_code": 200,
-            "message": "Success Create Payable"
+            "message": "Payable created with multiple project lines"
         })
 
     @http.route("/api/create/expenses", auth="public", type="http", methods=["POST"], csrf=False)
@@ -390,7 +441,7 @@ class ExpenseChartController(http.Controller):
                 'name': expense.name,
             })
         return json.dumps({
-            'Expenses Category': expenses,
+            'Expenses_Category': expenses,
             "success": True,
             "status_code": 200,
             "message": "Success Get Expenses Category"
@@ -406,7 +457,7 @@ class ExpenseChartController(http.Controller):
                 'name': agency.name,
             })
         return json.dumps({
-            'Expenses Category': agency_list,
+            'Expenses_Category': agency_list,
             "success": True,
             "status_code": 200,
             "message": "Success Get Agency Work Category"
@@ -415,14 +466,26 @@ class ExpenseChartController(http.Controller):
     @http.route(['/api/project/engineering/list', '/api/project/engineering/list/page/<int:page>'],
                 auth="public", type="http", methods=["GET"], csrf=False)
     def ProjectPagination(self, page=1, order=None, **post):
-        keep = QueryURL('/api/project/engineering/list', order=post.get('?order'))
-        if post.get('?order'):
-            order = post.get('?order')
+        try:
+            page = int(page) if page else 1
+        except ValueError:
+            return json.dumps({
+                "success": False,
+                "status_code": 400,
+                "message": "Invalid page number"
+            })
+        order = post.get('order') or order or "id desc"
         url = "/api/project/engineering/list"
         project_count = request.env['project.interior'].sudo().search_count([])
         ppg = 10
-        offset = (int(page) - 1) * ppg
-        pager = portal_pager(url=url, total=project_count, page=page, step=ppg, url_args=post)
+        offset = (page - 1) * ppg
+        pager = portal_pager(
+            url=url,
+            total=project_count,
+            page=page,
+            step=ppg,
+            url_args=post
+        )
         project_name = request.env['project.interior'].sudo().search([], offset=offset, order=order)
         if project_name:
             data = []
@@ -440,6 +503,7 @@ class ExpenseChartController(http.Controller):
                     'customer_id': project_id.customer_id.name,
                     'cost_price': project_id.cost_price,
                     'buffer': project_id.buffer,
+                    'total_amount_quotation': project_id.total_amount,
                     'total_ctc': project_id.total_ctc,
                     'customer_amount': project_id.customer_amount,
                     'balance_receivable': project_id.balance_receivable,
@@ -452,8 +516,8 @@ class ExpenseChartController(http.Controller):
                 "message": "Get All Project ",
                 "data": {
                     'data': data,
-                    'keep': keep,
                     'page_count': pager['page_count'],
+                    'current_page': page,
                 }
             }, default=str)
         else:
@@ -463,21 +527,34 @@ class ExpenseChartController(http.Controller):
                 "message": "Data Not Found!"
             })
 
-    @http.route(['/api/customer/list', '/api/customer/list/page/<int:page>'], auth="public", type="http",
-                methods=["GET"], csrf=False)
-    def CustomerList(self, page=1, order=None, **post):
-        keep = QueryURL('/api/customer/list', order=post.get('?order'))
-        if post.get('?order'):
-            order = post.get('?order')
+    @http.route(['/api/customer/list', '/api/customer/list/page/<int:page>'],
+                auth="public", type="http", methods=["GET"], csrf=False)
+    def customer_list(self, page=1, order=None, **post):
+        try:
+            page = int(page) if page else 1
+        except ValueError:
+            return json.dumps({
+                "success": False,
+                "status_code": 400,
+                "message": "Invalid page number"
+            })
+        order = post.get('order') or order or "id desc"
         url = "/api/customer/list"
         customer_count = request.env['res.customer'].sudo().search_count([])
         ppg = 10
-        offset = (int(page) - 1) * ppg
-        pager = portal_pager(url=url, total=customer_count, page=page, step=ppg, url_args=post)
-        customer_id = request.env['res.customer'].sudo().search([], offset=offset, order=order)
-        if customer_id:
+        offset = (page - 1) * ppg
+
+        pager = portal_pager(
+            url=url,
+            total=customer_count,
+            page=page,
+            step=ppg,
+            url_args=post
+        )
+        customers = request.env['res.customer'].sudo().search([], offset=offset, limit=ppg, order=order)
+        if customers:
             customer_list = []
-            for customer in customer_id:
+            for customer in customers:
                 customer_list.append({
                     'customer_id': customer.id,
                     'customer_name': customer.name,
@@ -490,37 +567,51 @@ class ExpenseChartController(http.Controller):
                     'mobile': customer.mobile,
                     'email': customer.email if customer.email else None,
                     'note': customer.note if customer.note else None,
-                    # 'project_count': len(customer.project_count),
                     'tag_id': customer.tag_id if customer.tag_id else None
                 })
+
             return json.dumps({
                 "success": True,
                 "status_code": 200,
-                "message": "Success Get All Customers ",
+                "message": "Success - Customers retrieved",
                 "data": {
-                    'data': customer_list,
-                    'keep': keep,
+                    'customers': customer_list,
                     'page_count': pager['page_count'],
+                    'current_page': page,
+                    'total_customer': customer_count
                 }
             }, default=str)
         else:
             return json.dumps({
                 "success": False,
                 "status_code": 409,
-                "message": "Data Not Found!"
+                "message": "No customer data found!"
             })
 
     @http.route(['/api/agency/list', '/api/agency/list/page/<int:page>'], auth="public", type="http", methods=["GET"],
                 csrf=False)
     def AgencyList(self, page=1, order=None, **post):
-        keep = QueryURL('/api/agency/list', order=post.get('?order'))
-        if post.get('?order'):
-            order = post.get('?order')
+        try:
+            page = int(page) if page else 1
+        except ValueError:
+            return json.dumps({
+                "success": False,
+                "status_code": 400,
+                "message": "Invalid page number"
+            })
+        order = post.get('order') or order or "id desc"
         url = "/api/agency/list"
-        customer_count = request.env['res.agency'].sudo().search_count([])
+        agency_count = request.env['res.agency'].sudo().search_count([])
         ppg = 10
-        offset = (int(page) - 1) * ppg
-        pager = portal_pager(url=url, total=customer_count, page=page, step=ppg, url_args=post)
+        offset = (page - 1) * ppg
+
+        pager = portal_pager(
+            url=url,
+            total=agency_count,
+            page=page,
+            step=ppg,
+            url_args=post
+        )
         agency_id = request.env['res.agency'].sudo().search([], offset=offset, order=order)
         if agency_id:
             agency_list = []
@@ -546,8 +637,9 @@ class ExpenseChartController(http.Controller):
                 "message": "Success Get All Agency ",
                 "data": {
                     'data': agency_list,
-                    'keep': keep,
                     'page_count': pager['page_count'],
+                    'current_page': page,
+                    'total_agency': agency_count
                 }
             }, default=str)
         else:
@@ -560,14 +652,27 @@ class ExpenseChartController(http.Controller):
     @http.route(['/api/receivable/list', '/api/receivable/list/page/<int:page>'], auth="public", type="http",
                 methods=["GET"], csrf=False)
     def ReceivableList(self, page=1, order=None, **post):
-        keep = QueryURL('/api/receivable/list', order=post.get('?order'))
-        if post.get('?order'):
-            order = post.get('?order')
+        try:
+            page = int(page) if page else 1
+        except ValueError:
+            return json.dumps({
+                "success": False,
+                "status_code": 400,
+                "message": "Invalid page number"
+            })
+        order = post.get('order') or order or "id desc"
         url = "/api/receivable/list"
-        customer_count = request.env['payment.method'].sudo().search_count([])
+        receivable_count = request.env['payment.method'].sudo().search_count([])
         ppg = 10
-        offset = (int(page) - 1) * ppg
-        pager = portal_pager(url=url, total=customer_count, page=page, step=ppg, url_args=post)
+        offset = (page - 1) * ppg
+
+        pager = portal_pager(
+            url=url,
+            total=receivable_count,
+            page=page,
+            step=ppg,
+            url_args=post
+        )
         receivable_id = request.env['payment.method'].sudo().search([], offset=offset, order=order)
         if receivable_id:
             receivable = []
@@ -576,7 +681,7 @@ class ExpenseChartController(http.Controller):
                     'id': receivables.id,
                     'payment_method': receivables.name,
                     'sale_invoice': receivables.sale_invoice,
-                    'project': receivables.interior_project_id,
+                    'project': receivables.interior_project_id.name,
                     'customer_id': receivables.customer_id.name,
                     'payment_date': receivables.payment_date,
                     'customer_payment': receivables.customer_payment
@@ -587,8 +692,9 @@ class ExpenseChartController(http.Controller):
                 "message": "Success Get All Receivable ",
                 "data": {
                     'data': receivable,
-                    'keep': keep,
                     'page_count': pager['page_count'],
+                    'current_page': page,
+                    'total_receivable': receivable_count
                 }
             }, default=str)
         else:
@@ -601,15 +707,28 @@ class ExpenseChartController(http.Controller):
     @http.route(['/api/payable/list', '/api/payable/list/page/<int:page>'], auth="public", type="http",
                 methods=["GET"], csrf=False)
     def PayableList(self, page=1, order=None, **post):
-        keep = QueryURL('/api/payable/list', order=post.get('?order'))
-        if post.get('?order'):
-            order = post.get('?order')
+        try:
+            page = int(page) if page else 1
+        except ValueError:
+            return json.dumps({
+                "success": False,
+                "status_code": 400,
+                "message": "Invalid page number"
+            })
+        order = post.get('order') or order or "id desc"
         url = "/api/payable/list"
-        customer_count = request.env['vendor.payment.method'].sudo().search_count(
+        payable_count = request.env['vendor.payment.method'].sudo().search_count(
             [('interior_project_id', '=', False), ('expenses', '=', False)])
         ppg = 10
-        offset = (int(page) - 1) * ppg
-        pager = portal_pager(url=url, total=customer_count, page=page, step=ppg, url_args=post)
+        offset = (page - 1) * ppg
+
+        pager = portal_pager(
+            url=url,
+            total=payable_count,
+            page=page,
+            step=ppg,
+            url_args=post
+        )
         payable_id = request.env['vendor.payment.method'].sudo().search(
             [('interior_project_id', '=', False), ('expenses', '=', False)], offset=offset, order=order)
         if payable_id:
@@ -626,12 +745,12 @@ class ExpenseChartController(http.Controller):
                     })
                 payable_list.append({
                     'payable_id': payables.id,
-                    'payment_method' : payables.name,
-                    'invoice_number' : payables.invoice_number,
-                    'vendor_id' : payables.vendor_id.name,
-                    'payment_date' : payables.payment_date,
+                    'payment_method': payables.name,
+                    'invoice_number': payables.invoice_number,
+                    'vendor_id': payables.vendor_id.name,
+                    'payment_date': payables.payment_date,
                     'vendor_payment': payables.vendor_payment,
-                    'expenses' : payables.expenses,
+                    'expenses': payables.expenses,
                     'lines': line_list,
                 })
             return json.dumps({
@@ -640,8 +759,9 @@ class ExpenseChartController(http.Controller):
                 "message": "Success Get All Payable ",
                 "data": {
                     'data': payable_list,
-                    'keep': keep,
                     'page_count': pager['page_count'],
+                    'current_page': page,
+                    'total_payable': payable_count
                 }
             }, default=str)
         else:
@@ -654,15 +774,28 @@ class ExpenseChartController(http.Controller):
     @http.route(['/api/payable/line/list', '/api/payable/line/list/page/<int:page>'], auth="public", type="http",
                 methods=["GET"], csrf=False)
     def PayableLineList(self, page=1, order=None, **post):
-        keep = QueryURL('/api/payable/line/list', order=post.get('?order'))
-        if post.get('?order'):
-            order = post.get('?order')
+        try:
+            page = int(page) if page else 1
+        except ValueError:
+            return json.dumps({
+                "success": False,
+                "status_code": 400,
+                "message": "Invalid page number"
+            })
+        order = post.get('order') or order or "id desc"
         url = "/api/payable/line/list"
-        customer_count = request.env['vendor.payment.method'].sudo().search_count(
+        payable_count = request.env['vendor.payment.method'].sudo().search_count(
             [('interior_project_id', '=', False), ('expenses', '=', False)])
         ppg = 10
-        offset = (int(page) - 1) * ppg
-        pager = portal_pager(url=url, total=customer_count, page=page, step=ppg, url_args=post)
+        offset = (page - 1) * ppg
+
+        pager = portal_pager(
+            url=url,
+            total=payable_count,
+            page=page,
+            step=ppg,
+            url_args=post
+        )
         payable_id = request.env['vendor.payment.method'].sudo().search(
             [('interior_project_id', '=', False), ('expenses', '=', False)], offset=offset, order=order)
         if payable_id:
@@ -687,8 +820,8 @@ class ExpenseChartController(http.Controller):
                 "message": "Success Get All Payable Line",
                 "data": {
                     'data': payable_list,
-                    'keep': keep,
                     'page_count': pager['page_count'],
+                    'current_page': page,
                 }
             }, default=str)
         else:
@@ -699,24 +832,43 @@ class ExpenseChartController(http.Controller):
             })
 
     @http.route(['/api/payable/expenses/list', '/api/payable/expenses/list/page/<int:page>'], auth="public",
-                type="http",
-                methods=["GET"], csrf=False)
+                type="http", methods=["GET"], csrf=False)
     def ExpensesPayableList(self, page=1, order=None, **post):
-        keep = QueryURL('/api/payable/expenses/list', order=post.get('?order'))
-        if post.get('?order'):
-            order = post.get('?order')
+        try:
+            page = int(page) if page else 1
+        except ValueError:
+            return json.dumps({
+                "success": False,
+                "status_code": 400,
+                "message": "Invalid page number"
+            })
+        order = post.get('order') or order or "id desc"
         url = "/api/payable/expenses/list"
-        customer_count = request.env['vendor.payment.method'].sudo().search_count(
+        payable_count = request.env['vendor.payment.method'].sudo().search_count(
             [('expenses', '=', True), ('re_write', '=', False)])
         ppg = 10
-        offset = (int(page) - 1) * ppg
-        pager = portal_pager(url=url, total=customer_count, page=page, step=ppg, url_args=post)
+        offset = (page - 1) * ppg
+        pager = portal_pager(
+            url=url,
+            total=payable_count,
+            page=page,
+            step=ppg,
+            url_args=post
+        )
         payable_id = request.env['vendor.payment.method'].sudo().search(
             [('expenses', '=', True), ('re_write', '=', False)], offset=offset, order=order)
         if payable_id:
-            payable_list = []
+            exp_payable_list = []
             for payables in payable_id:
-                payable_list.append({
+                exp_line_list = []
+                for e_line in payables.project_form_id:
+                    exp_line_list.append({
+                        'id': e_line.id,
+                        'project_id': e_line.project_id.name,
+                        'agency_category': e_line.agency_category.name,
+                        'vendor_payment': e_line.vendor_payment
+                    })
+                exp_payable_list.append({
                     'id': payables.id,
                     'payment_date': payables.payment_date,
                     'payment_method': payables.name,
@@ -724,15 +876,17 @@ class ExpenseChartController(http.Controller):
                     'vendor_id': payables.vendor_id.name,
                     'total_payment': payables.total_payment,
                     'expenses': payables.expenses,
+                    'exp_lines': exp_line_list
                 })
             return json.dumps({
                 "success": True,
                 "status_code": 200,
                 "message": "Success Get All Expenses Payable ",
                 "data": {
-                    'data': payable_list,
-                    'keep': keep,
+                    'data': exp_payable_list,
                     'page_count': pager['page_count'],
+                    'current_page': page,
+                    'total_expenses_payable': payable_count
                 }
             }, default=str)
         else:
@@ -745,14 +899,27 @@ class ExpenseChartController(http.Controller):
     @http.route(['/api/expenses/list', '/api/expenses/list/page/<int:page>'], auth="public", type="http",
                 methods=["GET"], csrf=False)
     def ExpensesList(self, page=1, order=None, **post):
-        keep = QueryURL('/api/expenses/list', order=post.get('?order'))
-        if post.get('?order'):
-            order = post.get('?order')
+        try:
+            page = int(page) if page else 1
+        except ValueError:
+            return json.dumps({
+                "success": False,
+                "status_code": 400,
+                "message": "Invalid page number"
+            })
+        order = post.get('order') or order or "id desc"
         url = "/api/expenses/list"
-        customer_count = request.env['project.expenses'].sudo().search_count([])
+        expenses_count = request.env['project.expenses'].sudo().search_count([])
         ppg = 10
-        offset = (int(page) - 1) * ppg
-        pager = portal_pager(url=url, total=customer_count, page=page, step=ppg, url_args=post)
+        offset = (page - 1) * ppg
+
+        pager = portal_pager(
+            url=url,
+            total=expenses_count,
+            page=page,
+            step=ppg,
+            url_args=post
+        )
         expenses_id = request.env['project.expenses'].sudo().search([], offset=offset, order=order)
         if expenses_id:
             expenses_list = []
@@ -777,8 +944,8 @@ class ExpenseChartController(http.Controller):
                 "message": "Success Get All Expenses ",
                 "data": {
                     'data': expenses_list,
-                    'keep': keep,
                     'page_count': pager['page_count'],
+                    'current_page': page,
                 }
             }, default=str)
         else:
@@ -804,6 +971,23 @@ class ExpenseChartController(http.Controller):
             "message": "Success Get All State"
         })
 
+    @http.route("/api/employee/list", auth="public", type="http", methods=["GET"], csrf=False)
+    def EmployeeList(self):
+        employee_id = request.env['res.users'].sudo().search([])
+        employee_list = []
+        if employee_id:
+            for employee in employee_id:
+                employee_list.append({
+                    'emp_id': employee.id,
+                    'emp_name': employee.name
+                })
+            return json.dumps({
+                'Employees': employee_list,
+                "success": True,
+                "status_code": 200,
+                "message": "Success Get All Employee"
+            })
+
     @http.route('/api/project/engineering', auth="public", type="http",
                 methods=["POST"], csrf=False)
     def CreateProjectEngineering(self, **post):
@@ -821,6 +1005,7 @@ class ExpenseChartController(http.Controller):
         project_name = request.env['project.interior'].sudo().search([('name', '=', name)])
         state = request.env['res.country.state'].sudo().search([('id', '=', state_id)])
         customer_id = request.env['res.customer'].sudo().search([('id', '=', customer)])
+        quotation_ids = post.get('quotation_ids')
 
         if project_name:
             return json.dumps({
@@ -1198,6 +1383,103 @@ class ExpenseChartController(http.Controller):
                 "message": "The Receivable ID Not Exist."
             })
 
+    @http.route('/api/edit/expenses', auth="public", type="http", methods=["POST"], csrf=False)
+    def EditExpenses(self, **post):
+        expenses_id = post.get('expenses_id')
+        if not expenses_id:
+            return json.dumps({
+                "success": False,
+                "status_code": 409,
+                "message": "The Expenses ID Is Null."
+            })
+        # Search expense record
+        expenses = request.env['project.expenses'].sudo().search([('id', '=', expenses_id)])
+        if not expenses:
+            return json.dumps({
+                "success": False,
+                "status_code": 409,
+                "message": "The Expenses ID Does Not Exist."
+            })
+
+        # Prepare values
+        vals = {}
+        name = post.get('name')
+        if name:
+            vals['name'] = name
+
+        project = post.get('project_id')
+        if project:
+            project_id = request.env['project.interior'].sudo().search([('id', '=', int(project))], limit=1)
+            if project_id:
+                vals['project_id'] = project_id.id
+
+        expenses_category = post.get('category_id')
+        if expenses_category:
+            category_id = request.env['expenses.category'].sudo().search([('id', '=', int(expenses_category))], limit=1)
+            if category_id:
+                vals['category_id'] = category_id.id
+
+        agency = post.get('agency_id')
+        if agency:
+            agency_id = request.env['res.agency'].sudo().search([('id', '=', int(agency))], limit=1)
+            if agency_id:
+                vals['agency_id'] = agency_id.id
+
+        agency_category = post.get('agency_category')
+        if agency_category:
+            agency_category_id = request.env['agency.category'].sudo().search([('id', '=', int(agency_category))],
+                                                                              limit=1)
+            if agency_category_id:
+                vals['agency_category'] = agency_category_id.id
+
+        paid_by_employee = post.get('paid_by_employee_id')
+        if paid_by_employee:
+            paid_by_employee_id = request.env['res.users'].sudo().search([('id', '=', int(paid_by_employee))], limit=1)
+            if paid_by_employee_id:
+                vals['paid_by_employee_id'] = paid_by_employee_id.id
+
+        is_person = post.get('is_person')
+        if is_person is not None:
+            vals['is_person'] = is_person
+
+        person_name = post.get('person_name')
+        if person_name:
+            vals['person_name'] = person_name
+
+        expense_date = post.get('expense_date')
+        if expense_date:
+            vals['expense_date'] = expense_date
+
+        total_amount = post.get('total_amount')
+        if total_amount:
+            vals['total_amount'] = total_amount
+
+        payment_type = post.get('payment_type')
+        if payment_type:
+            vals['payment_type'] = payment_type
+
+        remark = post.get('remark')
+        if remark:
+            vals['remark'] = remark
+
+        # Write to the record
+        if vals:
+            expenses.write(vals)
+            return json.dumps({
+                "data": {
+                    'id': expenses.id,
+                },
+                "success": True,
+                "status_code": 200,
+                "message": f"Success Edit {expenses.id}"
+            })
+        else:
+            return json.dumps({
+                "success": False,
+                "status_code": 400,
+                "message": "No valid fields provided to update."
+            })
+
     @http.route("/api/project/quotation", auth="public", type="http", methods=["POST"], csrf=False)
     def CreateProjectQuotation(self, **post):
         project = post.get('project_id')
@@ -1208,7 +1490,7 @@ class ExpenseChartController(http.Controller):
         agency = request.env['res.agency'].sudo().search([('id', '=', vendor_id)])
         project_id = request.env['project.interior'].sudo().search([('id', '=', project)])
         agency_work_id = request.env['agency.category'].sudo().search([('id', '=', agency_category)])
-        if not project:
+        if not agency_category:
             return json.dumps({
                 "success": False,
                 "status_code": 409,
@@ -1230,6 +1512,213 @@ class ExpenseChartController(http.Controller):
                 "status_code": 200,
                 "message": "Success Create Quotation"
             })
+
+    @http.route('/api/report/project', type='http', auth='public', methods=['POST'], csrf=False)
+    def report_project_pdf(self, **post):
+        raw_project_ids = post.get('project_ids', [])
+        start_date = post.get('start_date')
+        end_date = post.get('end_date')
+        if not start_date or not end_date:
+            return {
+                "success": False,
+                "status_code": 409,
+                "message": "start_date and end_date are required."
+            }
+        project_ids = []
+        if isinstance(raw_project_ids, str) and raw_project_ids.strip():
+            try:
+                project_ids = ast.literal_eval(raw_project_ids.strip())
+            except Exception:
+                return {
+                    "success": False,
+                    "status_code": 409,
+                    "message": "Invalid format for project_ids. Expected a list of integers.",
+                }
+        elif isinstance(raw_project_ids, list):
+            project_ids = raw_project_ids
+
+        if project_ids and (not isinstance(project_ids, list) or not all(isinstance(i, int) for i in project_ids)):
+            return {
+                "success": False,
+                "status_code": 400,
+                "message": "project_ids must be a list of integers.",
+            }
+
+        domain = [
+            ('create_date', '>=', start_date),
+            ('create_date', '<=', end_date),
+        ]
+        if project_ids:
+            domain.append(('id', 'in', project_ids))
+
+        print("Domain:", domain)
+
+        projects = request.env['project.interior'].sudo().search(domain)
+        print("Projects found:", projects)
+
+        if not projects:
+            return {
+                "success": False,
+                "status_code": 404,
+                "message": "No projects found in the given date range."
+            }
+
+        all_project_data = []
+        for project in projects:
+            project_data = request.env['project.report'].sudo()._generate_data_mobile(start_date, end_date, project.id)
+            if project_data:
+                all_project_data.extend(project_data)
+
+        company_logo = base64.b64encode(request.env.company.logo or b'').decode('utf-8')
+        pdf_content, _ = request.env['ir.actions.report'].sudo()._render_qweb_pdf(
+            'saara_spaces_models.project_report_action_template',
+            data={
+                'data': all_project_data,
+                'start_date': start_date,
+                'end_date': end_date,
+                'company_logo': company_logo,
+            }
+        )
+
+        encoded_project_pdf = base64.b64encode(pdf_content).decode('utf-8')
+        return request.make_response(
+            json.dumps({
+                "success": True,
+                "status_code": 200,
+                "filename": f"project_report_{start_date}_to_{end_date}.pdf",
+                "pdf_base64": encoded_project_pdf,
+            }),
+            headers=[('Content-Type', 'application/json')]
+        )
+
+    @http.route('/api/report/agency', type='http', auth='public', methods=['POST'], csrf=False)
+    def report_agency_pdf(self, **post):
+        raw_agency_ids = post.get('agency_ids', [])
+        start_date = post.get('start_date')
+        end_date = post.get('end_date')
+        if not start_date or not end_date:
+            return {
+                "success": False,
+                "status_code": 409,
+                "message": "start_date and end_date are required."
+            }
+        agency_ids = []
+        if isinstance(raw_agency_ids, str) and raw_agency_ids.strip():
+            try:
+                agency_ids = ast.literal_eval(raw_agency_ids.strip())
+            except Exception:
+                return {
+                    "success": False,
+                    "status_code": 409,
+                    "message": "Invalid format for project_ids. Expected a list of integers.",
+                }
+        elif isinstance(raw_agency_ids, list):
+            agency_ids = raw_agency_ids
+
+        if agency_ids and (not isinstance(agency_ids, list) or not all(isinstance(i, int) for i in agency_ids)):
+            return {
+                "success": False,
+                "status_code": 400,
+                "message": "project_ids must be a list of integers.",
+            }
+        domain = [
+            ('create_date', '>=', start_date),
+            ('create_date', '<=', end_date),
+        ]
+        if agency_ids:
+            domain.append(('id', 'in', agency_ids))
+        agecnys = request.env['res.agency'].sudo().search(domain)
+        print("Projects found:", agecnys)
+        if not agecnys:
+            return {
+                "success": False,
+                "status_code": 404,
+                "message": "No projects found in the given date range."
+            }
+        all_agency_data = []
+        company_logo = base64.b64encode(request.env.company.logo or b'').decode('utf-8')
+        currency_id = request.env.company.currency_id.symbol
+        for agency in agecnys:
+            agency_data = request.env['agency.report'].sudo()._generate_data_mobile(start_date, end_date, agency.id)
+            grouped_by_project = request.env['agency.report'].sudo()._group_by_project(agency_data['report_data'])
+            if agency_data:
+                all_agency_data.append({
+                    'agency_ids': agency.name,
+                    'currency_id': currency_id,
+                    'project_groups': grouped_by_project,  # <-- grouped result here
+                    'TOTAL_paid': agency_data['total_expense_sum'] + agency_data['total_vendor_sum'],
+                    'total_cash_payment': agency_data['total_cash_payment'],
+                    'total_bank_payment': agency_data['total_bank_payment'],
+                    'TOTAL_CTC': agency_data['TOTAL_CTC'],
+                    'TOTAL_remaining': agency_data['TOTAL_CTC'] - (
+                            agency_data['total_expense_sum'] + agency_data['total_vendor_sum']),
+                    'report_data': agency_data  # Embed the report inside
+                })
+        pdf_content, _ = request.env['ir.actions.report'].sudo()._render_qweb_pdf(
+            'saara_spaces_models.agency_report_action_template_new',
+            data={
+                'data': all_agency_data,
+                'start_date': start_date,
+                'end_date': end_date,
+                'company_logo': company_logo,
+            }
+        )
+        encoded_agency_pdf = base64.b64encode(pdf_content).decode('utf-8')
+        # headers = [
+        #     ('Content-Type', 'application/pdf'),
+        #     ('Content-Disposition', f'attachment; filename="agency_report{start_date}_to_{end_date}.pdf"'),
+        # ]
+        return request.make_response(
+            json.dumps({
+                "success": True,
+                "status_code": 200,
+                "filename": f"agency_report_{start_date}_to_{end_date}.pdf",
+                "pdf_base64": encoded_agency_pdf,
+            }),
+            headers=[('Content-Type', 'application/json')]
+        )
+
+    @http.route('/api/report/month/account', type='http', auth='public', methods=['POST'], csrf=False)
+    def report_month_account_pdf(self, **post):
+        start_date = post.get('start_date')
+        end_date = post.get('end_date')
+        if not start_date or not end_date:
+            return {
+                "success": False,
+                "status_code": 409,
+                "message": "start_date and end_date are required."
+            }
+
+        domain = [
+            ('create_date', '>=', start_date),
+            ('create_date', '<=', end_date),
+        ]
+
+        work_data = request.env['work.category.report'].sudo()._generate_data_agency_mobile(start_date, end_date)
+        report_data = work_data.get('report_data', [])
+        pdf_content, _ = request.env['ir.actions.report'].sudo()._render_qweb_pdf(
+            'saara_spaces_models.work_category_report_action_template',
+            data={
+                'data': report_data,
+                'start_date': start_date,
+                'end_date': end_date,
+            }
+        )
+        encoded_account_pdf = base64.b64encode(pdf_content).decode('utf-8')
+        # headers = [
+        #     ('Content-Type', 'application/pdf'),
+        #     ('Content-Disposition', f'attachment; filename="agency_report{start_date}_to_{end_date}.pdf"'),
+        # ]
+        # return request.make_response(pdf_content, headers)
+        return request.make_response(
+            json.dumps({
+                "success": True,
+                "status_code": 200,
+                "filename": f"agency_report_{start_date}_to_{end_date}.pdf",
+                "pdf_base64": encoded_account_pdf,
+            }),
+            headers=[('Content-Type', 'application/json')]
+        )
 
     @http.route('/project/expenses/chart/data', type='json', auth='user')
     def get_expense_data(self):

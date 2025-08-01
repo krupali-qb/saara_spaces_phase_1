@@ -4,5 +4,5 @@ access_project_task_user,access.project.task.user,model_project_task,,1,1,1,1
 access_project_task_manager,access.project_task_manager,model_project_task,base.group_erp_manager,1,1,1,1
 project_sprint_management.access_start_sprint_wizard,access_start_sprint_wizard,project_sprint_management.model_start_sprint_wizard,base.group_user,1,1,1,1
 project_sprint_management.access_assign_sprint_wizard,access_assign_sprint_wizard,project_sprint_management.model_assign_sprint_wizard,base.group_user,1,1,1,1
-
+project_sprint_management.access_project_sprint_stage,access_project_sprint_stage,project_sprint_management.model_project_sprint_stage,base.group_user,1,1,1,1
 

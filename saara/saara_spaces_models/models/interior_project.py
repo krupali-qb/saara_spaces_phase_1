@@ -62,6 +62,8 @@ class InteriorProject(models.Model):
     quotation_ids = fields.One2many(comodel_name='res.quotation',
                                     inverse_name='interior_project_id',
                                     copy=True, auto_join=True, tracking=True)
+    q_total_amount_paid= fields.Monetary(string='Q Total Amount', compute='_q_total_paid_amount')
+
     total_amount = fields.Monetary(string="Total Amount:", compute='_compute_qut_total_amount')
     total_ctc = fields.Monetary(string="Total CTC:", compute='_compute_total_ctc')
     buffer_avg = fields.Char(string="Average:", compute='_compute_buffer_avg', store=True)
@@ -71,13 +73,13 @@ class InteriorProject(models.Model):
         ('name_uniq', 'unique(name)', 'The name must be unique!')
     ]
 
-    @api.constrains('cost_price', 'total_amount')
-    def _check_cost_equals_total(self):
-        for record in self:
-            print("---------------if",record)
-            if record.cost_price != record.total_amount:
-                print("================================",record.cost_price)
-                raise ValidationError("Cost Price and Total Amount must be the same.")
+    # @api.constrains('cost_price', 'total_amount')
+    # def _check_cost_equals_total(self):
+    #     for record in self:
+    #         print("---------------if",record)
+    #         if record.cost_price != record.total_amount:
+    #             print("================================",record.cost_price)
+    #             raise ValidationError("Cost Price and Total Amount must be the same.")
 
     def write(self, vals):
         # Track specific fields inside quotation_ids
@@ -228,6 +230,11 @@ class InteriorProject(models.Model):
     def _compute_qut_total_amount(self):
         for record in self:
             record.total_amount = sum(payment.amount for payment in record.quotation_ids)
+
+    @api.depends('quotation_ids.q_total_paid')
+    def _q_total_paid_amount(self):
+        for record in self:
+            record.q_total_amount_paid = sum(paid.q_total_paid for paid in record.quotation_ids)
 
     @api.depends('agency_amount', 'total_expenses_amount')
     def _compute_total_paid(self):

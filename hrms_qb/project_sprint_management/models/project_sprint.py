@@ -2,6 +2,7 @@ from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 from datetime import date
 
+
 class ProjectSprint(models.Model):
     _name = 'project.sprint'
     _description = 'Project Sprint'
@@ -22,10 +23,10 @@ class ProjectSprint(models.Model):
         ('started', 'Started'),
     ], default='draft', string='Status')
     stage_id = fields.Many2one(
-    'project.task.type',
-    string='Stage',
-    group_expand='_read_group_stage_ids'
-)
+        'project.sprint.stage',
+        string='Stage',
+        group_expand='_read_group_stage_ids'
+    )
 
     def action_start_sprint(self):
         self.ensure_one()
@@ -49,23 +50,52 @@ class ProjectSprint(models.Model):
             }
 
     @api.model
-    def _read_group_stage_ids(self, stages, domain, order):
-        """
-        Show only stages for the selected project in the Kanban view.
-        """
-        # Get project selected in the search panel or form default
-        project_id = None
-        for clause in domain:
-            if isinstance(clause, (list, tuple)) and clause[0] == 'project_id' and clause[1] == '=':
-                project_id = clause[2]
-                print("ddddddddddddddddddddddddddddddd", project_id)
-                break
-        # Only include stages explicitly linked to this project
-        stage_domain = [('project_ids', 'in', [project_id])]
-        vvv = self.env['project.task.type'].search(stage_domain, order=order)
-        print("2222222222222222222222222222", vvv)
+    def create(self, vals):
+        sprint = super(ProjectSprint, self).create(vals)
+        if sprint.state == 'draft':
+            stage = self.env['project.sprint.stage'].search([
+                ('name', '=', 'Upcoming'),
+                ('project_ids', 'in', [sprint.project_id.id])
+            ], limit=1)
+            sprint.stage_id = stage.id
+        return sprint
 
-        return self.env['project.task.type'].search(stage_domain, order=order)
+    def write(self, vals):
+        res = super(ProjectSprint, self).write(vals)
+        for sprint in self:
+            if 'state' in vals:
+                if vals['state'] == 'started':
+                    stage = self.env['project.sprint.stage'].search([
+                        ('name', '=', 'Ongoing'),
+                        ('project_ids', 'in', [sprint.project_id.id])
+                    ], limit=1)
+                    if stage:
+                        sprint.stage_id = stage.id
+                elif vals['state'] == 'draft':
+                    stage = self.env['project.sprint.stage'].search([
+                        ('name', '=', 'draft'),
+                        ('project_ids', 'in', [sprint.project_id.id])
+                    ], limit=1)
+                    if stage:
+                        sprint.stage_id = stage.id
+        return res
+
+    @api.model
+    def _read_group_stage_ids(self, stages, domain, order):
+        project_id = None
+
+        for clause in domain:
+            if isinstance(clause, (list, tuple)) and clause[0] == 'project_id' and clause[1] in ('=', 'in'):
+                project_id = clause[2]
+                break
+
+        if not project_id:
+            project_id = self.env.context.get('default_project_id')
+
+        if project_id:
+            return self.env['project.sprint.stage'].search([('project_ids', 'in', [project_id])], order=order)
+
+        return self.env['project.sprint.stage'].search([], order=order)
 
 
 class ProjectProject(models.Model):
@@ -128,11 +158,9 @@ class ProjectTask(models.Model):
             'target': 'new',
             'context': {'default_task_ids': [(6, 0, active_ids)]},
         }
-                
+
     points = fields.Integer(string="Points")
-    
-    
-    
+
     is_active = fields.Boolean(
         string='Is Active',
     )
@@ -155,7 +183,6 @@ class ProjectTask(models.Model):
     def _compute_task_status(self):
         for task in self:
             task.task_status = 'completed' if task.stage_id.fold else 'active' or 'Canceled'
-            
 
     @api.depends('date_deadline')
     def _compute_deadline_status(self):
@@ -168,7 +195,6 @@ class ProjectTask(models.Model):
             else:
                 task.deadline_status = 'upcoming'
 
-    
     @api.onchange('estimation_pts')
     def _onchange_estimation_pts(self):
         for record in self:
@@ -248,14 +274,14 @@ class ProjectTask(models.Model):
                 break
 
         # Fallback to context
-        
+
         if not project_id:
             # Get from sprint
             sprint_id = self.env.context.get('active_id') or self.env.context.get('default_sprint_id')
             if sprint_id:
                 sprint = self.env['project.sprint'].browse(sprint_id)
                 project_id = sprint.project_id.id
-        print("vvvvvvvvvvvvvvvvvvvv",project_id)
+        print("vvvvvvvvvvvvvvvvvvvv", project_id)
         if not project_id:
             project_id = self.env.context.get('default_project_id')
 
@@ -265,7 +291,6 @@ class ProjectTask(models.Model):
 
         # Only show stages linked to this project
         return self.env['project.task.type'].search([('project_ids', 'in', [project_id])], order=order)
-
 
 
 class ProjectProject(models.Model):
@@ -286,5 +311,3 @@ class ProjectProject(models.Model):
             'target': 'new',
             'context': {'default_project_id': self.id}
         }
-        
-

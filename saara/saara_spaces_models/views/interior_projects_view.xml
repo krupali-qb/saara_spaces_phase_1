@@ -158,8 +158,10 @@
                                     <field name="ctc" widget="monetary"
                                            options="{'currency_field': 'currency_id'}"/>
                                     <field name="vendor_id"/>
+                                    <field name="q_total_paid"/>
                                 </tree>
                             </field>
+
                             <div class="">
                                 <div class="">
                                     <table class="table table-borderless"
@@ -195,7 +197,16 @@
                                                         </span>
                                                     </b>
                                                 </td>
-                                                <td style="width: 20%;padding: unset;padding-right: 35px;"/>
+                                                <td class="text-center"
+                                                    style="width: 20%;padding: unset;padding-left: 155px;">
+                                                    <b>
+                                                        <span title="Total CTC">
+                                                            <field name="q_total_amount_paid" widget="monetary"
+                                                                   options="{'currency_field': 'currency_id'}"
+                                                            />
+                                                        </span>
+                                                    </b>
+                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>

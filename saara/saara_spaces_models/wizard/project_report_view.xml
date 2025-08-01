@@ -11,7 +11,8 @@
                     <field name="end_date"/>
                 </group>
                 <footer>
-                    <button string="Generate Report" type="object" name="generate_report" class="btn-primary"/>
+                    <button string="Generate PDF Report" type="object" name="generate_report" class="btn-primary"/>
+                    <button string="Generate Excel Report" type="object" name="generate_excel_report" class="btn-primary"/>
                     <button string="Cancel" type="object" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
